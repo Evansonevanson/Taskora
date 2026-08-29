@@ -8,26 +8,28 @@ Clean, modern, professional-but-approachable productivity tool — think "Linear
 
 ## Color Tokens
 
-| Token | Usage | Example value (adjust to taste) |
-|---|---|---|
-| `--color-primary` | Primary buttons, active nav, progress bar fill | Indigo `#4F46E5` |
-| `--color-primary-hover` | Hover state | `#4338CA` |
-| `--color-bg` | App background | `#FAFAFA` (light) |
-| `--color-surface` | Cards, modals | `#FFFFFF` |
-| `--color-border` | Dividers, card borders | `#E5E7EB` |
-| `--color-text-primary` | Headings, body text | `#111827` |
-| `--color-text-secondary` | Muted labels, metadata | `#6B7280` |
-| `--color-success` | Completed status, positive states | `#16A34A` |
-| `--color-warning` | `needs_revision` banner, medium priority | `#D97706` |
-| `--color-danger` | High priority, destructive actions | `#DC2626` |
-| `--color-info` | General/neutral badges | `#2563EB` |
+| Token                    | Usage                                          | Example value (adjust to taste) |
+| ------------------------ | ---------------------------------------------- | ------------------------------- |
+| `--color-primary`        | Primary buttons, active nav, progress bar fill | Indigo `#4F46E5`                |
+| `--color-primary-hover`  | Hover state                                    | `#4338CA`                       |
+| `--color-bg`             | App background                                 | `#FAFAFA` (light)               |
+| `--color-surface`        | Cards, modals                                  | `#FFFFFF`                       |
+| `--color-border`         | Dividers, card borders                         | `#E5E7EB`                       |
+| `--color-text-primary`   | Headings, body text                            | `#111827`                       |
+| `--color-text-secondary` | Muted labels, metadata                         | `#6B7280`                       |
+| `--color-success`        | Completed status, positive states              | `#16A34A`                       |
+| `--color-warning`        | `needs_revision` banner, medium priority       | `#D97706`                       |
+| `--color-danger`         | High priority, destructive actions             | `#DC2626`                       |
+| `--color-info`           | General/neutral badges                         | `#2563EB`                       |
 
 ### Priority Color Mapping
+
 - High → `--color-danger`
 - Medium → `--color-warning`
 - Low → `--color-text-secondary` (deliberately muted — don't over-color low-priority items)
 
 ### Category Badge Colors (suggested, keep distinct and consistent)
+
 - General → neutral gray
 - Work → `--color-primary` tint
 - Personal → teal
@@ -36,14 +38,14 @@ Clean, modern, professional-but-approachable productivity tool — think "Linear
 
 ## Typography
 
-| Role | Font | Weight/Size |
-|---|---|---|
-| Font family | Inter (or system-ui fallback) | — |
-| Page titles | 24–28px | Semibold (600) |
-| Section headings | 18–20px | Semibold (600) |
-| Body text | 14–16px | Regular (400) |
-| Metadata/labels | 12–13px | Medium (500), `--color-text-secondary` |
-| Stat card numbers | 28–32px | Bold (700) |
+| Role              | Font                          | Weight/Size                            |
+| ----------------- | ----------------------------- | -------------------------------------- |
+| Font family       | Inter (or system-ui fallback) | —                                      |
+| Page titles       | 24–28px                       | Semibold (600)                         |
+| Section headings  | 18–20px                       | Semibold (600)                         |
+| Body text         | 14–16px                       | Regular (400)                          |
+| Metadata/labels   | 12–13px                       | Medium (500), `--color-text-secondary` |
+| Stat card numbers | 28–32px                       | Bold (700)                             |
 
 ## Spacing Scale
 
@@ -68,6 +70,7 @@ Use Tailwind's default spacing scale (4px base unit). Standard component padding
 ## Iconography
 
 `lucide-react` throughout, consistent stroke width (default 2px). Suggested icon mapping:
+
 - Total tasks → `ListTodo`
 - Pending → `Clock`
 - Completed → `CheckCircle2`

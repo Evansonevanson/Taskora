@@ -23,47 +23,49 @@ public.comments ───────────► public.profiles (author_id)
 ## Tables
 
 ### `profiles`
+
 Mirrors `auth.users`, adds role and display info. One row per authenticated user (Admin or Client).
 
-| Column | Type | Constraints |
-|---|---|---|
-| `id` | uuid | PK, references `auth.users.id` |
-| `role` | text | `'admin' \| 'client'`, not null |
-| `full_name` | text | not null |
-| `email` | text | not null, unique |
-| `created_at` | timestamptz | default `now()` |
+| Column       | Type        | Constraints                     |
+| ------------ | ----------- | ------------------------------- |
+| `id`         | uuid        | PK, references `auth.users.id`  |
+| `role`       | text        | `'admin' \| 'client'`, not null |
+| `full_name`  | text        | not null                        |
+| `email`      | text        | not null, unique                |
+| `created_at` | timestamptz | default `now()`                 |
 
 ### `clients`
+
 One row per client business/person. Links a `profiles` row (role=client) to their client metadata.
 
-| Column | Type | Constraints |
-|---|---|---|
-| `id` | uuid | PK, default `gen_random_uuid()` |
-| `profile_id` | uuid | FK → `profiles.id`, unique, not null |
-| `display_name` | text | not null — shown in Admin's client dropdown |
-| `company_name` | text | nullable |
-| `active` | boolean | default `true` — deactivated clients can't log in |
-| `created_at` | timestamptz | default `now()` |
+| Column         | Type        | Constraints                                       |
+| -------------- | ----------- | ------------------------------------------------- |
+| `id`           | uuid        | PK, default `gen_random_uuid()`                   |
+| `profile_id`   | uuid        | FK → `profiles.id`, unique, not null              |
+| `display_name` | text        | not null — shown in Admin's client dropdown       |
+| `company_name` | text        | nullable                                          |
+| `active`       | boolean     | default `true` — deactivated clients can't log in |
+| `created_at`   | timestamptz | default `now()`                                   |
 
 ### `tasks`
 
-| Column | Type | Constraints |
-|---|---|---|
-| `id` | uuid | PK, default `gen_random_uuid()` |
-| `title` | text | not null |
-| `category` | text | `'general' \| 'work' \| 'personal' \| 'urgent' \| 'shopping'`, not null |
-| `client_id` | uuid | FK → `clients.id`, nullable; **required if `category = 'work'`** (enforced via check constraint + application validation) |
-| `priority` | text | `'low' \| 'medium' \| 'high'`, not null, default `'medium'` |
-| `due_date` | date | nullable |
-| `status` | text | `'pending' \| 'completed'`, not null, default `'pending'` |
-| `needs_revision` | boolean | default `false` — set true when a client comments on a completed task |
-| `notes` | text | nullable |
-| `archived` | boolean | default `false` — set true by "Clear completed" instead of hard delete |
-| `created_by` | uuid | FK → `profiles.id` (the Admin who created it) |
-| `created_at` | timestamptz | default `now()` |
-| `updated_at` | timestamptz | default `now()`, updated via trigger |
-| `completed_at` | timestamptz | nullable, set when status → completed |
-| `client_notified_at` | timestamptz | nullable, set only after the task-completion email is successfully sent to the Client |
+| Column               | Type        | Constraints                                                                                                               |
+| -------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `id`                 | uuid        | PK, default `gen_random_uuid()`                                                                                           |
+| `title`              | text        | not null                                                                                                                  |
+| `category`           | text        | `'general' \| 'work' \| 'personal' \| 'urgent' \| 'shopping'`, not null                                                   |
+| `client_id`          | uuid        | FK → `clients.id`, nullable; **required if `category = 'work'`** (enforced via check constraint + application validation) |
+| `priority`           | text        | `'low' \| 'medium' \| 'high'`, not null, default `'medium'`                                                               |
+| `due_date`           | date        | nullable                                                                                                                  |
+| `status`             | text        | `'pending' \| 'completed'`, not null, default `'pending'`                                                                 |
+| `needs_revision`     | boolean     | default `false` — set true when a client comments on a completed task                                                     |
+| `notes`              | text        | nullable                                                                                                                  |
+| `archived`           | boolean     | default `false` — set true by "Clear completed" instead of hard delete                                                    |
+| `created_by`         | uuid        | FK → `profiles.id` (the Admin who created it)                                                                             |
+| `created_at`         | timestamptz | default `now()`                                                                                                           |
+| `updated_at`         | timestamptz | default `now()`, updated via trigger                                                                                      |
+| `completed_at`       | timestamptz | nullable, set when status → completed                                                                                     |
+| `client_notified_at` | timestamptz | nullable, set only after the task-completion email is successfully sent to the Client                                     |
 
 **Check constraint:** `category != 'work' OR client_id IS NOT NULL` — enforces at the DB level that Work tasks must have a client.
 
@@ -71,13 +73,13 @@ One row per client business/person. Links a `profiles` row (role=client) to thei
 
 ### `comments`
 
-| Column | Type | Constraints |
-|---|---|---|
-| `id` | uuid | PK, default `gen_random_uuid()` |
-| `task_id` | uuid | FK → `tasks.id`, not null, on delete cascade |
-| `author_id` | uuid | FK → `profiles.id`, not null |
-| `body` | text | not null, length > 0 |
-| `created_at` | timestamptz | default `now()` |
+| Column       | Type        | Constraints                                  |
+| ------------ | ----------- | -------------------------------------------- |
+| `id`         | uuid        | PK, default `gen_random_uuid()`              |
+| `task_id`    | uuid        | FK → `tasks.id`, not null, on delete cascade |
+| `author_id`  | uuid        | FK → `profiles.id`, not null                 |
+| `body`       | text        | not null, length > 0                         |
+| `created_at` | timestamptz | default `now()`                              |
 
 ## Indexes
 
@@ -108,15 +110,18 @@ $$;
 ```
 
 ### `profiles`
+
 - **Select:** a user can select their own row; Admin can select all rows.
 - **Update:** a user can update their own `full_name`; only Admin can change `role`.
 - **Insert/Delete:** service-role only (provisioning happens server-side).
 
 ### `clients`
+
 - **Select:** Admin can select all; a Client can select only the row matching `profile_id = auth.uid()`.
 - **Insert/Update/Delete:** Admin only (`current_role() = 'admin'`).
 
 ### `tasks` — the critical table
+
 - **Select (Admin):** `current_role() = 'admin'` → all rows.
 - **Select (Client):** `current_role() = 'client' AND client_id = current_client_id() AND status = 'completed'`. The `archived` flag does **not** remove Client visibility; it only removes the task from the Admin's default active-task view so delivered-work history is preserved.
 - **Insert:** Admin only.
@@ -141,6 +146,7 @@ using (
 ```
 
 ### `comments`
+
 - **Select:** Admin can select all comments. Client can select comments where the related `task.client_id = current_client_id()`.
 - **Insert:** Admin can insert on any task. Client can insert only where: the task belongs to them (`client_id = current_client_id()`), the task `status = 'completed'`, and `author_id = auth.uid()` (a client can't post a comment authored as someone else).
 - **Update/Delete:** not allowed for either role in MVP (comments are immutable once posted — keeps the feedback trail honest).

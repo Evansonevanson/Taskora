@@ -1,10 +1,11 @@
 # AI-RULES.md — Rules Specifically for AI Agents
 
-This file governs *agent conduct* — how an AI coding agent should behave while working on Taskora, as distinct from `AGENTS.md` (which is the entry-point index) and the technical docs (which describe the system itself). If this file and `AGENTS.md` conflict on conduct, this file wins.
+This file governs _agent conduct_ — how an AI coding agent should behave while working on Taskora, as distinct from `AGENTS.md` (which is the entry-point index) and the technical docs (which describe the system itself). If this file and `AGENTS.md` conflict on conduct, this file wins.
 
 ## 1. Ask, Don't Assume — On These Topics Specifically
 
 Stop and surface the question (don't silently pick an answer) whenever a task touches:
+
 - Who can see/do what (cross-check `RBAC.md`; if a request seems to widen access, flag it explicitly rather than implementing it).
 - Whether to hard-delete vs. archive any data (`DATABASE.md`/`PRODUCT.md` default to archive — don't introduce a hard-delete path without confirmation).
 - Email trigger conditions — a wrong assumption here causes real emails to real clients, which is hard to "undo."

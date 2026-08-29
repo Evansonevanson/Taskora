@@ -49,7 +49,7 @@
 
 ## Comments in Code
 
-- Comment *why*, not *what* — the code should be readable enough to explain what it does; comments should explain non-obvious reasoning (e.g., "// archived instead of deleted so clients retain history — see DATABASE.md").
+- Comment _why_, not _what_ — the code should be readable enough to explain what it does; comments should explain non-obvious reasoning (e.g., "// archived instead of deleted so clients retain history — see DATABASE.md").
 - Flag any deliberate deviation from a doc in this set with a comment referencing which doc/section and why.
 
 ## Formatting & Linting

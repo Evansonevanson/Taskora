@@ -26,6 +26,7 @@ Follow Conventional Commits:
 **Scopes (examples):** `tasks`, `comments`, `clients`, `auth`, `rls`, `email`, `ui`, `db`
 
 Examples:
+
 ```
 feat(tasks): add priority-based sorting to dashboard task list
 

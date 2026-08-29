@@ -6,12 +6,12 @@ Given the core trust promise of Taskora (clients can never see each other's data
 
 ## Test Levels
 
-| Level | Tool | What it covers |
-|---|---|---|
-| Unit | Vitest | Validation schemas, utility functions (e.g., progress % calculation, sort/filter logic), email payload builders |
-| Component | Vitest + React Testing Library | Individual UI components (task card, stat card, filter chips, comment box) in isolation |
+| Level       | Tool                                                         | What it covers                                                                                                                 |
+| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Unit        | Vitest                                                       | Validation schemas, utility functions (e.g., progress % calculation, sort/filter logic), email payload builders                |
+| Component   | Vitest + React Testing Library                               | Individual UI components (task card, stat card, filter chips, comment box) in isolation                                        |
 | Integration | Vitest + a test Supabase project (or local Supabase via CLI) | Server Actions against a real Postgres instance with RLS enabled — this is where access-control correctness is actually proven |
-| End-to-End | Playwright | Full user journeys: Admin creates + completes a task, Client receives notification and comments, Admin resolves revision |
+| End-to-End  | Playwright                                                   | Full user journeys: Admin creates + completes a task, Client receives notification and comments, Admin resolves revision       |
 
 ## Mandatory Access-Control Test Suite
 
@@ -31,10 +31,12 @@ These tests must exist and pass before any release, and must be re-run (or exten
 ## Feature Acceptance Criteria (examples — extend per feature as built)
 
 ### Task Creation
+
 - [ ] Creating a task with `category = 'work'` and no `client_id` is rejected both client-side (Zod) and server-side (DB check constraint).
 - [ ] Newly created task appears in the Admin dashboard's stat counts and task list without a manual refresh.
 
 ### Marking Complete
+
 - [ ] Marking a Work task complete with "notify client" checked sends exactly one email (test with a mocked/stubbed Resend client — never hit the real email API in automated tests).
 - [ ] After a successful completion email, `client_notified_at` is set.
 - [ ] Repeating/double-submitting the completion-notification action does not send a second email while `client_notified_at` is already set.
@@ -43,10 +45,12 @@ These tests must exist and pass before any release, and must be re-run (or exten
 - [ ] The task becomes visible to the assigned Client (integration test against RLS).
 
 ### Comments
+
 - [ ] Client comment on a completed task sets `needs_revision = true` and triggers exactly one email to Admin (mocked in tests).
 - [ ] Admin "Mark Resolved" clears `needs_revision`.
 
 ### Clear Completed
+
 - [ ] Bulk archive sets `archived = true` on all eligible completed tasks.
 - [ ] Archived tasks disappear from the Admin's default active task view.
 - [ ] Archived tasks are excluded from Admin active dashboard counts.
@@ -55,6 +59,7 @@ These tests must exist and pass before any release, and must be re-run (or exten
 - [ ] No hard deletion occurs.
 
 ### Rate Limiting
+
 - [ ] 6th login attempt within 15 minutes for the same email+IP is rejected with a rate-limit message, not a normal auth error.
 - [ ] 11th comment within 10 minutes from the same user is rejected.
 

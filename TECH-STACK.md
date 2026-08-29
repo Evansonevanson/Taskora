@@ -4,22 +4,22 @@ Agents must use these exact tools. Do not substitute a different framework, ORM,
 
 ## Core
 
-| Layer | Choice | Version (minimum) | Notes |
-|---|---|---|---|
-| Language | TypeScript | 5.x | Strict mode on (`"strict": true` in tsconfig) |
-| Framework | Next.js | 16.3.x (Active LTS) | Use App Router, Server Components, Server Actions, and Route Handlers where needed; never use Pages Router for new code |
-| UI Library | React | 19.2.x | Use the stable React release compatible with the locked Next.js 16.3.x installation |
-| Styling | Tailwind CSS | 4.3.x | See `DESIGN-SYSTEM.md` for tokens; use Tailwind v4 conventions |
-| Component primitives | shadcn/ui | latest compatible stable | For accessible base components (dialog, dropdown, etc.) |
-| Icons | lucide-react | latest compatible stable | |
-| Database | Postgres | via Supabase | |
-| Backend-as-a-service | Supabase | `@supabase/supabase-js` v2 + `@supabase/ssr`, latest compatible stable | Auth + Postgres + RLS |
-| Email | Resend | latest compatible stable (`resend` npm package) | Transactional email only |
-| Form validation | Zod | latest compatible stable | Shared schemas between client forms and Server Actions |
-| Rate limiting | Upstash Redis + `@upstash/ratelimit` | latest compatible stable | See `SECURITY.md` §Rate Limiting |
-| Hosting (app) | Vercel | — | |
-| Hosting (DB/auth) | Supabase Cloud | — | |
-| Testing | Vitest + React Testing Library (unit/component), Playwright (E2E) | latest compatible stable | See `TESTING.md` |
+| Layer                | Choice                                                            | Version (minimum)                                                      | Notes                                                                                                                   |
+| -------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Language             | TypeScript                                                        | 5.x                                                                    | Strict mode on (`"strict": true` in tsconfig)                                                                           |
+| Framework            | Next.js                                                           | 16.3.x (Active LTS)                                                    | Use App Router, Server Components, Server Actions, and Route Handlers where needed; never use Pages Router for new code |
+| UI Library           | React                                                             | 19.2.x                                                                 | Use the stable React release compatible with the locked Next.js 16.3.x installation                                     |
+| Styling              | Tailwind CSS                                                      | 4.3.x                                                                  | See `DESIGN-SYSTEM.md` for tokens; use Tailwind v4 conventions                                                          |
+| Component primitives | shadcn/ui                                                         | latest compatible stable                                               | For accessible base components (dialog, dropdown, etc.)                                                                 |
+| Icons                | lucide-react                                                      | latest compatible stable                                               |                                                                                                                         |
+| Database             | Postgres                                                          | via Supabase                                                           |                                                                                                                         |
+| Backend-as-a-service | Supabase                                                          | `@supabase/supabase-js` v2 + `@supabase/ssr`, latest compatible stable | Auth + Postgres + RLS                                                                                                   |
+| Email                | Resend                                                            | latest compatible stable (`resend` npm package)                        | Transactional email only                                                                                                |
+| Form validation      | Zod                                                               | latest compatible stable                                               | Shared schemas between client forms and Server Actions                                                                  |
+| Rate limiting        | Upstash Redis + `@upstash/ratelimit`                              | latest compatible stable                                               | See `SECURITY.md` §Rate Limiting                                                                                        |
+| Hosting (app)        | Vercel                                                            | —                                                                      |                                                                                                                         |
+| Hosting (DB/auth)    | Supabase Cloud                                                    | —                                                                      |                                                                                                                         |
+| Testing              | Vitest + React Testing Library (unit/component), Playwright (E2E) | latest compatible stable                                               | See `TESTING.md`                                                                                                        |
 
 ## Package Manager
 

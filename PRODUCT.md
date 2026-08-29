@@ -11,6 +11,7 @@ Tracking multiple clients' work in one flat to-do list doesn't scale: there's no
 ## Users
 
 ### Admin (single user in MVP)
+
 - Owns and manages all tasks: General, Work, Personal, Urgent, Shopping.
 - For "Work" tasks, assigns a Client from a dropdown.
 - Sets priority and due dates, tracks completion.
@@ -18,6 +19,7 @@ Tracking multiple clients' work in one flat to-do list doesn't scale: there's no
 - Receives email when a client comments on a task.
 
 ### Client (multiple users)
+
 - Logs into a scoped portal.
 - Sees only tasks assigned to them, and only once marked **Completed** by the Admin (see decision below).
 - Can leave a comment/correction request on a completed task.
@@ -26,13 +28,13 @@ Tracking multiple clients' work in one flat to-do list doesn't scale: there's no
 
 ## Goals
 
-| Goal | Why it matters |
-|---|---|
-| Centralize all task tracking in one dashboard | Reduces context-switching, missed deadlines |
-| Give clients self-serve visibility into their work | Reduces "what's the status?" messages |
-| Attach feedback directly to the task it concerns | Feedback doesn't get lost in chat/email threads |
-| Enforce strict data isolation between clients | Trust — a client must never see another client's job |
-| Close the loop via email | Neither party has to remember to check the app |
+| Goal                                               | Why it matters                                       |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| Centralize all task tracking in one dashboard      | Reduces context-switching, missed deadlines          |
+| Give clients self-serve visibility into their work | Reduces "what's the status?" messages                |
+| Attach feedback directly to the task it concerns   | Feedback doesn't get lost in chat/email threads      |
+| Enforce strict data isolation between clients      | Trust — a client must never see another client's job |
+| Close the loop via email                           | Neither party has to remember to check the app       |
 
 ## Decisions Locked for MVP
 

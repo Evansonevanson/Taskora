@@ -37,24 +37,29 @@ Taskora is a server-rendered React app (Next.js App Router) backed by Postgres (
 ## Layers
 
 ### 1. Presentation Layer (Next.js App Router)
+
 - **Server Components** for data-heavy read views (dashboard, task lists) — fetch directly via Supabase server client, respecting RLS.
 - **Client Components** for interactive pieces: filters, search box, modals, forms, comment box.
 - Two route groups: `(admin)` and `(client)`, each with their own layout, enforcing role-appropriate navigation. See `ROUTES.md`.
 
 ### 2. Authorization Layer (Middleware + RLS)
+
 - Next.js middleware checks session validity and role on every request to a protected route group, redirecting mismatched roles (e.g., a Client hitting `/admin/*`) before any page code runs.
 - **RLS is the real security boundary**, not the middleware. Middleware improves UX (fast redirects) and defends in depth; RLS policies in Postgres are what actually prevent a client from reading another client's rows, even via a direct API call. See `DATABASE.md` §RLS and `SECURITY.md`.
 
 ### 3. Application/API Layer (Server Actions)
+
 - All mutations (create task, update task, mark complete, add comment, clear completed) go through Server Actions, never direct client-side Supabase writes for sensitive tables.
 - Server Actions validate input, check role, apply rate limiting, then perform the Supabase call using a session-scoped client (not the service-role key) so RLS still applies.
 - The one exception: transactional email dispatch, which uses a server-only Resend API key, never exposed to the client. See `API.md` §Email.
 
 ### 4. Data Layer (Postgres via Supabase)
+
 - Tables: `users`, `clients`, `tasks`, `comments`. See `DATABASE.md` for full schema.
 - RLS policies enforce: Admin sees all rows; Client sees only rows where `tasks.client_id` maps to their own `client` record, and only where `status = 'completed'`.
 
 ### 5. Notification Layer
+
 - Triggered from Server Actions after a successful mutation (not from database triggers, to keep logic in one place and easier to reason about/test).
 - Uses Resend's API via a thin server-side email module (`lib/email.ts` or equivalent). See `API.md` §Email for exact trigger conditions.
 

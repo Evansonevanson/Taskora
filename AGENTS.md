@@ -46,6 +46,7 @@ Only `AI-RULES.md` is more important than this file for agent behavior — if th
 ## 3. Definition of Done
 
 A feature/task is not done until:
+
 - [ ] It matches its spec in `FEATURES.md` / `API.md`
 - [ ] RBAC rules from `RBAC.md` are enforced at the DB layer, not just UI
 - [ ] Relevant tests from `TESTING.md` pass (or are added if missing)
