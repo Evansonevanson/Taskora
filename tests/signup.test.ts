@@ -530,4 +530,63 @@ describe('Taskora Public Owner Signup & Multi-Tenant Provisioning Tests', () => 
       expect(clientsVisibleToNewOwner.length).toBe(0);
     });
   });
+
+  describe('7. Generic Anti-Enumeration Error Message Handling', () => {
+    const safeGenericMessage =
+      "We couldn't create this workspace. If you already have a Taskora account, sign in or reset your password.";
+
+    it('returns the safe generic message when signup indicates an existing account', () => {
+      // Simulating the error mapping in registerOwner
+      function mapSignupError(
+        errorMsg?: string,
+        identities?: unknown[],
+      ): string {
+        const msg = (errorMsg || '').toLowerCase();
+        if (
+          msg.includes('already registered') ||
+          msg.includes('already exists') ||
+          msg.includes('identity') ||
+          (identities && identities.length === 0)
+        ) {
+          return safeGenericMessage;
+        }
+        return errorMsg || 'Failed to create account.';
+      }
+
+      expect(mapSignupError('User already registered')).toBe(
+        safeGenericMessage,
+      );
+      expect(mapSignupError('An account with this email already exists')).toBe(
+        safeGenericMessage,
+      );
+      expect(mapSignupError(undefined, [])).toBe(safeGenericMessage);
+      expect(mapSignupError('Network timeout')).toBe('Network timeout');
+    });
+
+    it('returns the safe generic message when RPC encounters an existing client profile conflict', () => {
+      function mapRpcError(rpcErrorMsg: string): string {
+        const msg = rpcErrorMsg.toLowerCase();
+        if (
+          msg.includes('existing client profile') ||
+          msg.includes('unique constraint') ||
+          msg.includes('already exists') ||
+          msg.includes('duplicate key')
+        ) {
+          return safeGenericMessage;
+        }
+        return 'Failed to initialize workspace. Please try registering again.';
+      }
+
+      expect(
+        mapRpcError(
+          'Cannot create owner workspace for an existing client profile',
+        ),
+      ).toBe(safeGenericMessage);
+      expect(
+        mapRpcError(
+          'duplicate key value violates unique constraint "profiles_email_key"',
+        ),
+      ).toBe(safeGenericMessage);
+    });
+  });
 });

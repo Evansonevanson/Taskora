@@ -96,19 +96,33 @@ export async function registerOwner(
     },
   });
 
+  const existingAccountMsg =
+    "We couldn't create this workspace. If you already have a Taskora account, sign in or reset your password.";
+
   if (authError || !authData.user) {
     const errorMsg = authError?.message || 'Failed to create account.';
-    // Standardize duplicate email error without exposing sensitive user state
-    if (errorMsg.toLowerCase().includes('already registered')) {
+    // Generic anti-enumeration error for already registered accounts or existing identity conflicts
+    if (
+      errorMsg.toLowerCase().includes('already registered') ||
+      errorMsg.toLowerCase().includes('already exists') ||
+      errorMsg.toLowerCase().includes('identity')
+    ) {
       return {
         success: false,
-        error:
-          'An account with this email address already exists. Please log in.',
+        error: existingAccountMsg,
       };
     }
     return {
       success: false,
       error: errorMsg,
+    };
+  }
+
+  // Supabase GoTrue returns user with empty identities if user already exists
+  if (authData.user.identities && authData.user.identities.length === 0) {
+    return {
+      success: false,
+      error: existingAccountMsg,
     };
   }
 
@@ -133,6 +147,21 @@ export async function registerOwner(
       console.error('[Signup Workspace RPC Error]', rpcError);
       // Cleanup created auth user to avoid partial state
       await adminClient.auth.admin.deleteUser(userId);
+
+      // If the RPC error indicates the profile already existed or was an existing client profile, return safe anti-enumeration message
+      const rpcErrorMsg = (rpcError?.message || '').toLowerCase();
+      if (
+        rpcErrorMsg.includes('existing client profile') ||
+        rpcErrorMsg.includes('unique constraint') ||
+        rpcErrorMsg.includes('already exists') ||
+        rpcErrorMsg.includes('duplicate key')
+      ) {
+        return {
+          success: false,
+          error: existingAccountMsg,
+        };
+      }
+
       return {
         success: false,
         error: 'Failed to initialize workspace. Please try registering again.',

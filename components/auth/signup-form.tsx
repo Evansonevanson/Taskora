@@ -158,7 +158,25 @@ export function SignupForm() {
           className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 backdrop-blur-sm duration-200 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-200"
         >
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-          <div className="leading-relaxed">{errors.general}</div>
+          <div className="space-y-2 leading-relaxed">
+            <p>{errors.general}</p>
+            {errors.general.includes('already have a Taskora account') && (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-0.5 text-xs font-semibold">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center text-red-800 underline underline-offset-2 hover:text-red-950 dark:text-red-300 dark:hover:text-red-100"
+                >
+                  Sign in &rarr;
+                </Link>
+                <Link
+                  href="/forgot-password"
+                  className="inline-flex items-center text-red-800 underline underline-offset-2 hover:text-red-950 dark:text-red-300 dark:hover:text-red-100"
+                >
+                  Forgot password? &rarr;
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
