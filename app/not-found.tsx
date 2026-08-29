@@ -40,10 +40,13 @@ export default function NotFound() {
               asChild
               variant="primary"
               size="sm"
-              className="w-full gap-2 sm:w-auto"
+              className="w-full sm:w-auto"
             >
-              <Link href="/">
-                <LayoutDashboard className="h-3.5 w-3.5" />
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2"
+              >
+                <LayoutDashboard className="h-4 w-4 shrink-0" />
                 <span>Go to Dashboard</span>
               </Link>
             </Button>
@@ -52,9 +55,9 @@ export default function NotFound() {
           <div className="pt-2">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-xs text-stone-500 transition-colors hover:text-stone-300"
+              className="inline-flex items-center justify-center gap-1.5 rounded-sm text-xs text-stone-500 transition-colors hover:text-stone-300 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
-              <ArrowLeft className="h-3 w-3" />
+              <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
               <span>Back to Login</span>
             </Link>
           </div>
