@@ -12,9 +12,9 @@ Do not guess project progress from filenames or partial code when this file exis
 
 ## Project Status
 
-**Stage:** Phase 13 Complete — Light Mode Design Audit & Harmonization Complete  
-**Current Phase:** Phase 13 Complete (MVP Feature Set & Theme Polish Fully Verified)  
-**Current Task:** Light Mode Audit & Fix Across All Views (Verified: Types, Lints, Tests, Build)  
+**Stage:** Phase 13 Complete — Public Landing Page & Branding Complete  
+**Current Phase:** Phase 13 Complete (MVP Feature Set & Public Landing Page Fully Verified)  
+**Current Task:** Public Landing Page at `/` (Verified: Types, Lints, Tests, Build)  
 **MVP Status:** Complete (14 Phases — Phase 0 through Phase 13)
 
 ---

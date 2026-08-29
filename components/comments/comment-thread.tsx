@@ -21,20 +21,21 @@ export interface CommentThreadProps {
   taskId: string;
   comments: CommentItem[];
   currentUserRole?: 'admin' | 'client' | string;
+  embedded?: boolean;
 }
 
 export function CommentThread({
   taskId,
   comments,
   currentUserRole = 'client',
+  embedded = false,
 }: CommentThreadProps) {
   const router = useRouter();
   const [content, setContent] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitComment = async () => {
     if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
@@ -59,7 +60,75 @@ export function CommentThread({
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitComment();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      void submitComment();
+    }
+  };
+
   const isClient = currentUserRole === 'client';
+
+  const composerContent = (
+    <>
+      {errorMessage && (
+        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      <div className="space-y-1.5">
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={
+            isClient
+              ? 'Describe feedback or requested revisions for this deliverable...'
+              : 'Write a response...'
+          }
+          className="min-h-[90px] resize-none text-xs"
+          maxLength={2000}
+          disabled={isSubmitting}
+        />
+        <div className="flex items-center justify-between px-1 text-[11px] text-stone-500 dark:text-stone-400">
+          <span>
+            {isClient &&
+              'Note: Posting will automatically flag this deliverable for revision.'}
+          </span>
+          <span>{content.length}/2000</span>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          type={embedded ? 'button' : 'submit'}
+          onClick={embedded ? submitComment : undefined}
+          disabled={!content.trim() || isSubmitting}
+          size="sm"
+          className="gap-1.5 text-xs font-semibold shadow-sm shadow-indigo-500/20"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <span>Posting...</span>
+            </>
+          ) : (
+            <>
+              <Send className="h-3.5 w-3.5" />
+              <span>{isClient ? 'Request Revision / Send' : 'Post Reply'}</span>
+            </>
+          )}
+        </Button>
+      </div>
+    </>
+  );
 
   return (
     <div className="space-y-6">
@@ -159,60 +228,14 @@ export function CommentThread({
         )}
       </div>
 
-      {/* Submission Form */}
-      <form onSubmit={handleSubmit} className="space-y-3 pt-2">
-        {errorMessage && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-400">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        <div className="space-y-1.5">
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={
-              isClient
-                ? 'Describe feedback or requested revisions for this deliverable...'
-                : 'Write a response...'
-            }
-            className="min-h-[90px] resize-none text-xs"
-            maxLength={2000}
-            disabled={isSubmitting}
-          />
-          <div className="flex items-center justify-between px-1 text-[11px] text-stone-500 dark:text-stone-400">
-            <span>
-              {isClient &&
-                'Note: Posting will automatically flag this deliverable for revision.'}
-            </span>
-            <span>{content.length}/2000</span>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={!content.trim() || isSubmitting}
-            size="sm"
-            className="gap-1.5 text-xs font-semibold shadow-sm shadow-indigo-500/20"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Posting...</span>
-              </>
-            ) : (
-              <>
-                <Send className="h-3.5 w-3.5" />
-                <span>
-                  {isClient ? 'Request Revision / Send' : 'Post Reply'}
-                </span>
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
+      {/* Submission Composer: Standalone Form vs Embedded Div */}
+      {embedded ? (
+        <div className="space-y-3 pt-2">{composerContent}</div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-3 pt-2">
+          {composerContent}
+        </form>
+      )}
     </div>
   );
 }

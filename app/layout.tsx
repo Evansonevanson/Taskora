@@ -10,9 +10,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Taskora — Freelance Task Management & Client Portal',
+  metadataBase: new URL('https://taskora.app'),
+  title: 'Taskora — Client Task & Deliverable Management',
   description:
-    'Role-based task management web app for freelancers and client review.',
+    'Manage client tasks, deliverables, project files, feedback, and revisions in one secure workspace with Taskora.',
+  openGraph: {
+    title: 'Taskora — Client Task & Deliverable Management',
+    description:
+      'Manage client tasks, deliverables, project files, feedback, and revisions in one secure workspace with Taskora.',
+    url: 'https://taskora.app',
+    siteName: 'Taskora',
+    images: [
+      {
+        url: '/brand/logo-icon-square.png',
+        width: 512,
+        height: 512,
+        alt: 'Taskora Logo',
+      },
+    ],
+    type: 'website',
+  },
   icons: {
     icon: [
       { url: '/icon.png', sizes: '512x512', type: 'image/png' },

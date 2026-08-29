@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
+import { LandingView } from '@/components/landing/landing-view';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,10 +11,12 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // 1. Unauthenticated visitor: render the public Taskora landing page
   if (!user) {
-    redirect('/login');
+    return <LandingView />;
   }
 
+  // 2. Authenticated user: retrieve role & route to respective dashboard/portal
   const { data: profileData } = await supabase
     .from('profiles')
     .select('role')
@@ -32,5 +35,6 @@ export default async function HomePage() {
     redirect('/portal/jobs');
   }
 
-  redirect('/login');
+  // Fallback for authenticated user without an established role
+  return <LandingView />;
 }

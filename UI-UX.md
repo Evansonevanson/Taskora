@@ -59,6 +59,13 @@
 - **Real-Time Responsiveness:** Theme changes apply immediately across all portal and dashboard views without full page reload.
 - **Device Persistence:** Setting is persisted locally to `taskora-theme` without requiring server mutations.
 
+## Public Landing Page (UX)
+
+- **Unauthenticated Showcase:** Root `/` presents a modern, distraction-free SaaS landing page detailing Taskora's purpose, live product preview, benefits, delivery steps, client portal capabilities, security architecture, and theme options.
+- **Realistic Product Preview:** Recreates a simplified live-sprint dashboard visual using HTML/CSS design tokens instead of generic stock images.
+- **Frictionless Onboarding Entry:** Navigation and hero CTAs guide visitors directly to `/login`. No public signup buttons are exposed.
+- **Theme-Aware Public Presentation:** Landing page seamlessly respects the active Light, Dark, or System mode choice via the header appearance control.
+
 ## Loading & Empty States
 
 - Every list view (dashboard task list, client list, my-jobs list) needs a defined empty state and a loading skeleton — never a blank white screen during data fetch.

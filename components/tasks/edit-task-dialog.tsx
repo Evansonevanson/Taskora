@@ -422,6 +422,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
               taskId={task.id}
               comments={comments}
               currentUserRole="admin"
+              embedded={true}
             />
           </div>
         )}

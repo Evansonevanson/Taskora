@@ -73,9 +73,10 @@ Use Tailwind's default spacing scale (4px base unit). Standard component padding
 
 ## Layout
 
+- **Public Landing Page:** wide responsive container (`max-w-7xl`), modular section blocks with generous vertical rhythm (`py-16` / `py-24`), balanced ambient glows, and interactive HTML/CSS UI previews.
 - **Admin dashboard:** max-width container (`max-w-7xl`), stat cards in a responsive grid, task list full-width below.
 - **Client portal:** focused container (`max-w-4xl`) — reinforces the simpler, focused feel described in `UI-UX.md`.
-- **Top navigation:** AdminNav (Dashboard, Clients, Settings), ClientNav (My Jobs, Company badge, ThemeToggle, UserMenu).
+- **Top navigation:** LandingNav (Features, How It Works, Portal, Security, Appearance, ThemeToggle, Sign in), AdminNav (Dashboard, Clients, Settings), ClientNav (My Jobs, Company badge, ThemeToggle, UserMenu).
 
 ## Light & Dark Appearance Modes
 

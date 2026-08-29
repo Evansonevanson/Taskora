@@ -87,6 +87,12 @@ Applies to the Admin task list (and optionally the Client's job list):
 - **Persistence:** Locally persisted under `taskora-theme` with anti-FOUC initialization script.
 - **Official Branding:** Integrated official Taskora logo assets and multi-resolution favicons across all auth screens, admin views, client portals, and 404 pages.
 
+## 13. Public Landing Page — [MVP]
+
+- **Root Route `/` Behavior:** Public landing page for unauthenticated visitors presenting Taskora's core value proposition, live UI preview, benefits, 3-step delivery workflow, client portal demo, security isolation architecture, and appearance system.
+- **Role Redirection Entrypoint:** Authenticated users hitting `/` are immediately routed to `/admin/dashboard` (Admin) or `/portal/jobs` (Client).
+- **Public CTAs:** Links to `/login` for sign-in without exposing public signup or registration routes.
+
 ---
 
 ## Phase 2 (not to be built without explicit request)

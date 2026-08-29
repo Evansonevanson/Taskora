@@ -4,13 +4,13 @@ Framework: Next.js App Router. Two protected route groups (`app/admin`, `app/por
 
 ## Public Routes
 
-| Route              | Purpose                                                                                                        | Auth required    |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- | ---------------- |
-| `/`                | Root entry: redirects authenticated users to `/admin/dashboard` or `/portal/jobs`; unauthenticated to `/login` | No               |
-| `/login`           | Single login page, role-based redirect after success                                                           | No               |
-| `/forgot-password` | Request password reset email                                                                                   | No               |
-| `/reset-password`  | Set new password from reset link (token/session exchange)                                                      | No (token-gated) |
-| `/auth/callback`   | Auth callback handler for password recovery and invitation exchanges                                           | No               |
+| Route              | Purpose                                                                                                                                       | Auth required    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `/`                | Public SaaS Landing Page for unauthenticated visitors; redirects authenticated users to `/admin/dashboard` (Admin) or `/portal/jobs` (Client) | No               |
+| `/login`           | Single login page, role-based redirect after success                                                                                          | No               |
+| `/forgot-password` | Request password reset email                                                                                                                  | No               |
+| `/reset-password`  | Set new password from reset link (token/session exchange)                                                                                     | No (token-gated) |
+| `/auth/callback`   | Auth callback handler for password recovery and invitation exchanges                                                                          | No               |
 
 ## Admin Routes — `app/admin` group
 
