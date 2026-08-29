@@ -28,6 +28,7 @@ import type { AdminTaskItem } from '@/lib/data/tasks';
 import { cn } from '@/lib/utils';
 
 import { CommentThread } from '@/components/comments/comment-thread';
+import { TaskAttachmentsManager } from '@/components/tasks/task-attachments-manager';
 import { getCommentsAction } from '@/lib/actions/comments';
 import type { CommentItem } from '@/lib/data/comments';
 
@@ -52,6 +53,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
     priority: (task.priority as UpdateTaskInput['priority']) || 'medium',
     dueDate: task.dueDate || '',
     notes: task.notes || '',
+    projectUrl: task.projectUrl || '',
     needsRevision: task.needsRevision,
   }));
 
@@ -367,7 +369,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
           <Textarea
             id="edit-task-notes"
             rows={3}
-            placeholder="Add key deliverables, Figma links, or specifications..."
+            placeholder="Add key deliverables or internal specifications..."
             value={formData.notes || ''}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, notes: e.target.value }))
@@ -378,6 +380,37 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
           {errors.notes && (
             <p className="text-[11px] text-red-400">{errors.notes}</p>
           )}
+        </div>
+
+        {/* Project Link */}
+        <div className="space-y-1.5">
+          <Label htmlFor="edit-task-project-url">Project Link (Optional)</Label>
+          <Input
+            id="edit-task-project-url"
+            type="url"
+            placeholder="https://figma.com/file/... or https://drive.google.com/..."
+            value={formData.projectUrl || ''}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, projectUrl: e.target.value }))
+            }
+            className={cn(
+              'h-10 text-xs',
+              errors.projectUrl && 'border-red-500 focus-visible:ring-red-500',
+            )}
+            disabled={isPending || isArchiving}
+          />
+          {errors.projectUrl ? (
+            <p className="text-[11px] text-red-400">{errors.projectUrl}</p>
+          ) : (
+            <p className="text-[11px] text-stone-500">
+              External URL for Figma, Google Drive, live website, or Behance.
+            </p>
+          )}
+        </div>
+
+        {/* Deliverable Attachments */}
+        <div className="rounded-xl border border-stone-800 bg-stone-950/40 p-3.5">
+          <TaskAttachmentsManager taskId={task.id} canEdit={true} />
         </div>
 
         {/* Discussion / Comment Thread (for deliverables / tasks with comments or work category) */}

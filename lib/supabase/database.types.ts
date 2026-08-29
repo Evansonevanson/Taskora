@@ -85,6 +85,7 @@ export interface Database {
           status: TaskStatus;
           needs_revision: boolean;
           notes: string | null;
+          project_url: string | null;
           archived: boolean;
           created_by: string | null;
           created_at: string;
@@ -102,6 +103,7 @@ export interface Database {
           status?: TaskStatus;
           needs_revision?: boolean;
           notes?: string | null;
+          project_url?: string | null;
           archived?: boolean;
           created_by?: string | null;
           created_at?: string;
@@ -119,6 +121,7 @@ export interface Database {
           status?: TaskStatus;
           needs_revision?: boolean;
           notes?: string | null;
+          project_url?: string | null;
           archived?: boolean;
           created_by?: string | null;
           created_at?: string;
@@ -178,6 +181,54 @@ export interface Database {
             columns: ['task_id'];
             isOneToOne: false;
             referencedRelation: 'tasks';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      task_attachments: {
+        Row: {
+          id: string;
+          task_id: string;
+          file_name: string;
+          storage_path: string;
+          mime_type: string;
+          file_size: number;
+          uploaded_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          task_id: string;
+          file_name: string;
+          storage_path: string;
+          mime_type: string;
+          file_size: number;
+          uploaded_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          task_id?: string;
+          file_name?: string;
+          storage_path?: string;
+          mime_type?: string;
+          file_size?: number;
+          uploaded_by?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'task_attachments_task_id_fkey';
+            columns: ['task_id'];
+            isOneToOne: false;
+            referencedRelation: 'tasks';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'task_attachments_uploaded_by_fkey';
+            columns: ['uploaded_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];

@@ -217,7 +217,8 @@ export async function getClientDetail(
       `
       id,
       title,
-      description,
+      notes,
+      project_url,
       category,
       status,
       priority,
@@ -240,7 +241,8 @@ export async function getClientDetail(
   type RawTask = {
     id: string;
     title: string;
-    description: string | null;
+    notes: string | null;
+    project_url: string | null;
     category: string;
     status: string;
     priority: string;
@@ -257,7 +259,8 @@ export async function getClientDetail(
   const tasks: AdminTaskItem[] = rawTasks.map((t) => ({
     id: t.id,
     title: t.title,
-    notes: t.description,
+    notes: t.notes,
+    projectUrl: t.project_url,
     category: t.category.toLowerCase(),
     status: t.status.toLowerCase(),
     priority: t.priority.toLowerCase(),

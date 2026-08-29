@@ -78,6 +78,9 @@ Use Tailwind's default spacing scale (4px base unit). Standard component padding
 - Comments → `MessageSquare`
 - Clients → `Users`
 - Settings → `Settings`
+- Attachments/Deliverables → `Paperclip`, `FileText`, `Image`
+- External Project Link → `ExternalLink`, `Globe`
+- Upload/Download → `UploadCloud`, `Download`
 
 ## Dark Mode
 

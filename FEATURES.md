@@ -68,14 +68,23 @@ Applies to the Admin task list (and optionally the Client's job list):
 ## 10. Settings — [MVP, minimal]
 
 - Manage the category list (add a new category beyond the default five) — Admin only.
-- Notification preference: toggle whether the "notify client" prompt defaults to checked or unchecked on task completion.
+
+## 11. Deliverables & Project Links — [MVP]
+
+- **Project Link:** Admin can attach an optional external project URL (e.g., Figma, Google Drive, Dropbox, live sites, Behance) to a task. Server strictly validates safe `http` / `https` URLs and blocks dangerous protocols (`javascript:`, `data:`, `file:`, etc.). Rendered with secure `target="_blank" rel="noopener noreferrer"` attributes.
+- **Deliverable Attachments:** Admin can upload deliverable files directly to a task using private Supabase Storage (`task-deliverables` bucket).
+  - Allowed MIME types: JPG/JPEG, PNG, WEBP, PDF (max 20MB per file). Executable files are strictly rejected.
+  - Dedicated `task_attachments` table stores metadata.
+  - Clients can view/download deliverable attachments belonging strictly to their own **Completed** tasks.
+  - Access is mediated via short-lived (300s) signed URLs generated server-side after verifying client identity, task ownership, and completed status.
+  - Admin can upload, list, preview, and remove attachments (which safely cleans up both metadata and storage objects).
+  - Client detail view on Completed tasks displays a dedicated "Deliverables" section with "View Project", "Preview", and "Download" actions.
 
 ---
 
 ## Phase 2 (not to be built without explicit request)
 
 - Client "Approve" button that resolves `needs_revision` without requiring a comment.
-- File/image attachments on tasks (deliverable previews).
 - In-app notification bell (in addition to email).
 - Distinct "Needs Changes" status separate from Completed (rather than a flag on Completed).
 - Recurring tasks.

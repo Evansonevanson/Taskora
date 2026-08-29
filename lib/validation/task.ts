@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { projectUrlSchema } from './attachment';
 
 export const taskCategorySchema = z.enum([
   'general',
@@ -31,6 +32,7 @@ export const createTaskSchema = z
       .max(2000, 'Notes must be 2000 characters or less')
       .nullable()
       .optional(),
+    projectUrl: projectUrlSchema,
   })
   .refine(
     (data) => {
@@ -68,6 +70,7 @@ export const updateTaskSchema = z
       .max(2000, 'Notes must be 2000 characters or less')
       .nullable()
       .optional(),
+    projectUrl: projectUrlSchema,
     needsRevision: z.boolean().optional(),
   })
   .refine(

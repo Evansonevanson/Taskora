@@ -12,10 +12,10 @@ Do not guess project progress from filenames or partial code when this file exis
 
 ## Project Status
 
-**Stage:** Taskora MVP Complete (100% Built & Verified)  
-**Current Phase:** Complete (Phases 0 through 12 Complete)  
-**Current Task:** All Build Plan Phases Complete & Verified  
-**MVP Status:** Complete (100% Built, Tested & Deployment-Ready)
+**Stage:** Phase 13 Complete — Project Link & Deliverable Attachments (MVP Feature)  
+**Current Phase:** Phase 13 Complete (MVP Feature Set Fully Implemented)  
+**Current Task:** Feature Complete & Verified  
+**MVP Status:** Complete (14 Phases — Phase 0 through Phase 13)
 
 ---
 
@@ -1192,15 +1192,15 @@ None yet.
 ### Latest Commands
 
 ```text
-pnpm test: PASS (Vitest 4.1.11, 119/119 unit, component, integration, access-control, rate-limiting, email, revision-resolution & settings tests passing across 20 test suites)
-pnpm run check-format: PASS (Prettier 3.9.6)
-pnpm run check-types: PASS (TypeScript 5.9.3, 0 errors)
-pnpm run lint: PASS (ESLint 9.39.5 + eslint-config-next 16.3.3, 0 warnings/errors)
+pnpm test: PASS (Vitest 4.1.11, 140/140 unit, component, integration, access-control, rate-limiting, email, revision-resolution, settings & deliverable-attachments tests passing across 21 test suites)
+pnpm run check-format: PASS (Prettier 3.4.2)
+pnpm run check-types: PASS (TypeScript 5.7.3, 0 errors)
+pnpm run lint: PASS (ESLint 9.19.0 + eslint-config-next 16.3.3, 0 warnings/errors)
 pnpm run build: PASS (Next.js 16.3.3 Turbopack, static and dynamic routes compiled cleanly)
-pnpm run dev: PASS (Verified dev server boots in ~400ms on port 3000)
+pnpm run dev: PASS (Verified dev server boots cleanly on port 3000)
 ```
 
-### Access-Control Tests
+### Access-Control & Attachment Security Tests
 
 ```text
 Client A cannot read Client B: PASS
@@ -1214,13 +1214,19 @@ Deactivated client access denied: PASS
 Comment cross-client isolation: PASS
 Author impersonation rejected: PASS
 Comment update and delete blocked: PASS
+Task Attachment Allowed MIME Types (JPG, PNG, WEBP, PDF): PASS
+Task Attachment 20MB Size Limit Enforcement: PASS
+Task Attachment Client Isolation (Completed only, no Pending, no Cross-Client): PASS
+Task Attachment Client Mutation Prohibition (Admin upload/delete only): PASS
+Project Link Protocol Rules (http/https allowed, javascript/data/file rejected): PASS
+Attachment Signed URL 300s TTL Authorization: PASS
 ```
 
 ---
 
 ## Last Completed Task
 
-Phase 12 — Production Deployment & Readiness (`next.config.ts`, `.env.example`, full security verification & clean Turbopack production build).
+Phase 13 — Project Link & Deliverable Attachments (Database schema migration, `task_attachments` table, `task-deliverables` private storage bucket, safe URL validation, Server Actions, rate limiting, Admin upload/management UI, and Client Portal deliverables presentation).
 
 ---
 
@@ -1236,11 +1242,11 @@ Then read:
 
 **Taskora MVP is 100% complete, fully tested, and deployment-ready.**
 
-All 13 phases (Phase 0 through Phase 12) have been implemented and verified:
+All 14 phases (Phase 0 through Phase 13) have been implemented and verified:
 
 - **Phase 0:** Next.js 16.3 Turbopack, React 19, TypeScript strict mode, Tailwind CSS v4.
 - **Phase 1:** Database schema, PostgreSQL RLS policies, mandatory access-control test suite.
-- **Phase 2:** Supabase SSR Auth, sliding-window rate limiters, middleware role redirects, deactivated client lockdown.
+- **Phase 2:** Supabase SSR Auth, sliding-window rate limiters, proxy/middleware role redirects, deactivated client lockdown.
 - **Phase 3:** Dark glassmorphic design system, typography, shared UI components, Admin & Client shell layouts.
 - **Phase 4:** Admin Dashboard, stat cards, progress bar, 250ms debounced search, status/category filter tabs, column sorting, clear completed bulk action.
 - **Phase 5:** Task Management (creation, work category validation, edit dialog, revision resolution, completion with client email notification, archiving).
@@ -1251,6 +1257,7 @@ All 13 phases (Phase 0 through Phase 12) have been implemented and verified:
 - **Phase 10:** Settings (custom category management with color picker, notification preferences, persistent local storage).
 - **Phase 11:** Full QA Pass (119/119 unit, component, integration, and security matrix tests passing across 20 test suites).
 - **Phase 12:** Production Deployment Readiness (security headers, secret isolation audit, clean production build).
+- **Phase 13:** Project Link & Deliverable Attachments (promoted MVP deliverable outputs: safe external links, Supabase Storage attachments with 20MB limit and 300s signed URLs, full Admin and Client Portal integration, 140/140 tests passing).
 
 ---
 

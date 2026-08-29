@@ -10,6 +10,7 @@ import {
   Edit2,
   Archive,
   Loader2,
+  Globe,
 } from 'lucide-react';
 import {
   Table,
@@ -304,6 +305,18 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                           >
                             {task.title}
                           </span>
+                          {task.projectUrl && (
+                            <a
+                              href={task.projectUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-stone-400 hover:text-indigo-300"
+                              title={`Project Link: ${task.projectUrl}`}
+                            >
+                              <Globe className="h-3 w-3" />
+                            </a>
+                          )}
                           {task.needsRevision && (
                             <Badge
                               variant="urgent"

@@ -29,7 +29,7 @@ Taskora uses Next.js **Server Actions** as its primary API surface (not a separa
 
 ### `createTask(input)`
 
-- Validates: `title` non-empty, `category` in enum, `client_id` required if `category === 'work'`, `priority` in enum.
+- Validates: `title` non-empty, `category` in enum, `client_id` required if `category === 'work'`, `priority` in enum, `project_url` optional safe http/https URL.
 - Rate limited: 30 creates / 10 min (guards against runaway scripts/misclicks, generous for legitimate use).
 - Inserts row with `created_by = current admin id`.
 
@@ -37,6 +37,7 @@ Taskora uses Next.js **Server Actions** as its primary API surface (not a separa
 
 - Validates ownership implicitly via RLS (Admin-scoped policy covers all rows) but still explicitly checks `current_role() === 'admin'` before calling.
 - If `patch.status` transitions `pending → completed`: sets `completed_at = now()`.
+- Supports updating `project_url` (validated safe http/https URL).
 - If the task has a `client_id` and the Admin confirmed the notify prompt, dispatch `notifyClientTaskCompleted(id)` after the database update succeeds.
 - Completing a task must **not** set `client_notified_at`; that field is set only after the email provider successfully accepts the completion email.
 
@@ -48,6 +49,33 @@ Taskora uses Next.js **Server Actions** as its primary API surface (not a separa
 ### `resolveRevision(id)`
 
 - Sets `needs_revision = false`. Admin-only. Used after addressing a client's correction request.
+
+---
+
+## Attachment Actions
+
+### `uploadTaskAttachment(taskId, formData)` (Admin only)
+
+- Validates caller role `current_role() === 'admin'`.
+- Validates file: MIME type in `image/jpeg`, `image/png`, `image/webp`, `application/pdf`; max size <= 20MB (20,971,520 bytes). Executables and script files are strictly rejected.
+- Sanitizes file name and generates unique storage path: `tasks/${taskId}/${attachmentId}-${sanitizedFileName}`.
+- Uploads file buffer to private Supabase Storage bucket `task-deliverables`.
+- Inserts row in `public.task_attachments` (`task_id`, `file_name`, `storage_path`, `mime_type`, `file_size`, `uploaded_by`).
+- Rate limited: 30 uploads / 10 min per admin.
+
+### `deleteTaskAttachment(attachmentId)` (Admin only)
+
+- Validates caller role `current_role() === 'admin'`.
+- Fetches attachment metadata from `public.task_attachments`.
+- Deletes storage file object from `task-deliverables` bucket.
+- Deletes row from `public.task_attachments`.
+
+### `getAttachmentSignedUrl(attachmentId)` (Admin or Client)
+
+- Re-verifies role and access permission:
+  - If **Admin**: allowed for any attachment.
+  - If **Client**: verifies related `task.client_id === current_client_id()` AND `task.status === 'completed'`. Requests for Pending tasks or other clients' tasks are rejected with `403 Forbidden`.
+- Generates a short-lived signed URL (300 seconds TTL) using Supabase Storage API.
 
 ---
 
@@ -112,5 +140,6 @@ Email sends are dispatched from within the relevant Server Action, after the dat
 | `createTask`           | 30 / 10 min per admin      |
 | `createClient`         | 20 / hour per admin        |
 | `addComment`           | 10 / 10 min per user       |
+| `uploadTaskAttachment` | 30 / 10 min per admin      |
 
 See `SECURITY.md` §Rate Limiting for implementation details (Upstash + `@upstash/ratelimit`).

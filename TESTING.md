@@ -27,6 +27,13 @@ These tests must exist and pass before any release, and must be re-run (or exten
 8. **Direct URL access to unauthorized task/client id returns a 404-style not-found**, not a 403 revealing existence (see `SECURITY.md` §7).
 9. **Client can read their own archived Completed task** — seed a Completed task for Client A with `archived = true`; authenticate as Client A; assert it remains queryable/visible.
 10. **Client cannot read another Client's archived Completed task** — seed an archived Completed task for Client B; authenticate as Client A; assert querying it returns no row.
+11. **Client A can access attachments on own Completed task** — assert signed URL can be generated for Client A's completed task attachment.
+12. **Client A cannot access Client B's attachments** — assert signed URL request / query for Client B's attachment is rejected.
+13. **Client cannot access attachments on own Pending task** — assert attachment query / signed URL generation is denied while task status is pending.
+14. **Client cannot upload or delete attachments** — assert direct insert/delete attempts on `task_attachments` or Storage are rejected.
+15. **Unsafe Project URL schemes are rejected** — assert `javascript:`, `data:`, `file:`, etc. fail server validation.
+16. **Invalid file types and oversized files (>20MB) are rejected** — assert non-whitelisted MIME types and files > 20MB are rejected.
+17. **Removing attachment cleans up DB and Storage** — assert deleting attachment removes `task_attachments` row and deletes object from `task-deliverables` bucket.
 
 ## Feature Acceptance Criteria (examples — extend per feature as built)
 

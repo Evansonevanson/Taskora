@@ -60,6 +60,10 @@ export async function createTask(
     const clientId = input.category === 'work' ? input.clientId || null : null;
     const dueDate =
       input.dueDate && input.dueDate.trim() !== '' ? input.dueDate : null;
+    const projectUrl =
+      input.projectUrl && input.projectUrl.trim() !== ''
+        ? input.projectUrl.trim()
+        : null;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.from('tasks') as any)
@@ -70,6 +74,7 @@ export async function createTask(
         priority: input.priority,
         due_date: dueDate,
         notes: input.notes || null,
+        project_url: projectUrl,
         status: 'pending',
         archived: false,
         needs_revision: false,
@@ -134,6 +139,10 @@ export async function updateTask(
     const clientId = input.category === 'work' ? input.clientId || null : null;
     const dueDate =
       input.dueDate && input.dueDate.trim() !== '' ? input.dueDate : null;
+    const projectUrl =
+      input.projectUrl && input.projectUrl.trim() !== ''
+        ? input.projectUrl.trim()
+        : null;
 
     const updatePayload: Record<string, unknown> = {
       title: input.title,
@@ -142,6 +151,7 @@ export async function updateTask(
       priority: input.priority,
       due_date: dueDate,
       notes: input.notes || null,
+      project_url: projectUrl,
       updated_at: new Date().toISOString(),
     };
 

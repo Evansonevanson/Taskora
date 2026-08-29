@@ -148,6 +148,8 @@ export async function checkTaskCreationRateLimit(adminId: string): Promise<{
   };
 }
 
+let attachmentRateLimiter: Ratelimit | undefined;
+
 /**
  * 20 client creations per hour per admin
  */
@@ -170,6 +172,35 @@ export async function checkClientCreationRateLimit(adminId: string): Promise<{
   }
 
   const result = await clientRateLimiter.limit(adminId);
+  return {
+    success: result.success,
+    remaining: result.remaining,
+    reset: result.reset,
+  };
+}
+
+/**
+ * 30 attachment uploads per 10 minutes per admin
+ */
+export async function checkAttachmentUploadRateLimit(adminId: string): Promise<{
+  success: boolean;
+  remaining: number;
+  reset: number;
+}> {
+  const redis = getUpstashRedis();
+  if (!redis) {
+    return memoryRateLimit(`attachment:${adminId}`, 30, 10 * 60);
+  }
+
+  if (!attachmentRateLimiter) {
+    attachmentRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, '10 m'),
+      prefix: 'taskora:ratelimit:attachment',
+    });
+  }
+
+  const result = await attachmentRateLimiter.limit(adminId);
   return {
     success: result.success,
     remaining: result.remaining,

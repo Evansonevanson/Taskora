@@ -183,4 +183,81 @@ describe('Phase 11: Mandatory Database RLS & Security Policy Matrix', () => {
       ).toBe(false);
     });
   });
+
+  describe('Invariant 8: Task Deliverable Attachments RLS & Storage Access Matrix', () => {
+    interface MockAttachment {
+      id: string;
+      taskId: string;
+      taskClientId: string | null;
+      taskStatus: 'pending' | 'completed';
+    }
+
+    const attachACompleted: MockAttachment = {
+      id: 'att-1',
+      taskId: 'task-a1',
+      taskClientId: 'client-a',
+      taskStatus: 'completed',
+    };
+
+    const attachAPending: MockAttachment = {
+      id: 'att-2',
+      taskId: 'task-a2',
+      taskClientId: 'client-a',
+      taskStatus: 'pending',
+    };
+
+    const attachBCompleted: MockAttachment = {
+      id: 'att-3',
+      taskId: 'task-b1',
+      taskClientId: 'client-b',
+      taskStatus: 'completed',
+    };
+
+    const canSelectAttachment = (
+      user: MockUser,
+      att: MockAttachment,
+    ): boolean => {
+      if (user.role === 'admin') return true;
+      if (user.role === 'client' && user.active) {
+        return (
+          att.taskClientId === user.clientId && att.taskStatus === 'completed'
+        );
+      }
+      return false;
+    };
+
+    const canMutateAttachment = (user: MockUser): boolean => {
+      return user.role === 'admin';
+    };
+
+    it('allows Admin to select, insert, update, and delete all attachments', () => {
+      expect(canSelectAttachment(adminUser, attachACompleted)).toBe(true);
+      expect(canSelectAttachment(adminUser, attachAPending)).toBe(true);
+      expect(canSelectAttachment(adminUser, attachBCompleted)).toBe(true);
+      expect(canMutateAttachment(adminUser)).toBe(true);
+    });
+
+    it('allows Client to select attachments only for own completed tasks', () => {
+      expect(canSelectAttachment(clientA, attachACompleted)).toBe(true);
+    });
+
+    it('strictly denies Client from selecting attachments on pending tasks', () => {
+      expect(canSelectAttachment(clientA, attachAPending)).toBe(false);
+    });
+
+    it('strictly denies Client from selecting attachments belonging to other clients', () => {
+      expect(canSelectAttachment(clientA, attachBCompleted)).toBe(false);
+    });
+
+    it('strictly prohibits Clients from inserting or deleting attachments', () => {
+      expect(canMutateAttachment(clientA)).toBe(false);
+      expect(canMutateAttachment(clientB)).toBe(false);
+    });
+
+    it('strictly denies deactivated clients from selecting attachments', () => {
+      expect(canSelectAttachment(deactivatedClient, attachACompleted)).toBe(
+        false,
+      );
+    });
+  });
 });

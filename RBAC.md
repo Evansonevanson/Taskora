@@ -16,10 +16,15 @@ This is the single source of truth for "who can do what." When in doubt, this do
 | View own pending/in-progress tasks                                  | ✅                            | ❌ (MVP decision — see `PRODUCT.md`) |
 | View another client's tasks                                         | ✅ (as Admin, sees all)       | ❌ never                             |
 | Create task                                                         | ✅                            | ❌                                   |
-| Edit task (any field)                                               | ✅                            | ❌                                   |
+| Edit task (any field, including Project Link)                       | ✅                            | ❌                                   |
 | Mark task complete                                                  | ✅                            | ❌                                   |
 | Delete/archive task                                                 | ✅                            | ❌                                   |
 | Bulk "clear completed"                                              | ✅                            | ❌                                   |
+| Upload task deliverable attachments                                 | ✅                            | ❌                                   |
+| View/Download attachments on own completed tasks (signed URLs)      | ✅                            | ✅                                   |
+| View/Download attachments on pending tasks                          | ✅                            | ❌                                   |
+| View/Download another client's attachments                          | ✅ (as Admin, sees all)       | ❌ never                             |
+| Delete task deliverable attachments                                 | ✅                            | ❌                                   |
 | Comment on a task                                                   | ✅ (reply)                    | ✅ (only on own completed tasks)     |
 | View comments on a task                                             | ✅ (all)                      | ✅ (only own task's comments)        |
 | Edit/delete a comment                                               | ❌                            | ❌ (comments immutable in MVP)       |

@@ -15,6 +15,7 @@ export interface PortalTaskItem {
   id: string;
   title: string;
   notes: string | null;
+  projectUrl: string | null;
   category: string;
   priority: 'low' | 'medium' | 'high' | string;
   status: 'completed' | string;
@@ -99,6 +100,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
       id,
       title,
       notes,
+      project_url,
       category,
       priority,
       status,
@@ -122,6 +124,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
     id: string;
     title: string;
     notes: string | null;
+    project_url: string | null;
     category: string;
     priority: string;
     status: string;
@@ -138,6 +141,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
     id: t.id,
     title: t.title,
     notes: t.notes,
+    projectUrl: t.project_url,
     category: t.category.toLowerCase(),
     priority: t.priority.toLowerCase(),
     status: t.status.toLowerCase(),
@@ -233,6 +237,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
       id,
       title,
       notes,
+      project_url,
       category,
       priority,
       status,
@@ -256,6 +261,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
     id: string;
     title: string;
     notes: string | null;
+    project_url: string | null;
     category: string;
     priority: string;
     status: string;
@@ -282,6 +288,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
       id: t.id,
       title: t.title,
       notes: t.notes,
+      projectUrl: t.project_url,
       category: t.category.toLowerCase(),
       priority: t.priority.toLowerCase(),
       status: t.status.toLowerCase(),

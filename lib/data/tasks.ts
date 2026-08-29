@@ -17,6 +17,7 @@ export interface AdminTaskItem {
   status: 'pending' | 'completed' | string;
   dueDate: string | null;
   notes: string | null;
+  projectUrl: string | null;
   clientId: string | null;
   clientName: string | null;
   needsRevision: boolean;
@@ -97,6 +98,7 @@ export async function getAdminTasks(): Promise<AdminTaskItem[]> {
       status,
       due_date,
       notes,
+      project_url,
       client_id,
       needs_revision,
       archived,
@@ -125,6 +127,7 @@ export async function getAdminTasks(): Promise<AdminTaskItem[]> {
     status: string;
     due_date: string | null;
     notes: string | null;
+    project_url: string | null;
     client_id: string | null;
     needs_revision: boolean;
     archived: boolean;
@@ -147,6 +150,7 @@ export async function getAdminTasks(): Promise<AdminTaskItem[]> {
     status: t.status,
     dueDate: t.due_date,
     notes: t.notes,
+    projectUrl: t.project_url,
     clientId: t.client_id,
     clientName: t.clients?.company_name || t.clients?.display_name || null,
     needsRevision: t.needs_revision,

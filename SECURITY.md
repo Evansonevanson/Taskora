@@ -51,6 +51,7 @@ profiles
 clients
 tasks
 comments
+task_attachments
 ```
 
 Rules:
@@ -234,6 +235,7 @@ Rate limiting is mandatory on every endpoint that is a plausible abuse or brute-
 | `addComment`           | 10 / 10 min         | `user id`    |
 | `createTask`           | 30 / 10 min         | `admin id`   |
 | `createClient`         | 20 / hour           | `admin id`   |
+| `uploadTaskAttachment` | 30 / 10 min         | `admin id`   |
 
 - On limit exceeded, return a clear but non-revealing error ("Too many attempts, try again in X minutes") — don't leak internal limiter details.
 - Consider IP-level rate limiting at the middleware/edge layer as an additional blanket safeguard against scripted abuse, independent of the per-action limits above.
@@ -242,6 +244,7 @@ Rate limiting is mandatory on every endpoint that is a plausible abuse or brute-
 
 - Every Server Action validates its input with a Zod schema before touching the database — never rely on client-side form validation alone (see `API.md`).
 - Sanitize/escape any user-generated content (task notes, comments) before rendering — use React's default escaping; never use `dangerouslySetInnerHTML` on user content.
+- `project_url` on tasks must strictly match `^https?://` and validate cleanly via server-side URL parser. Prohibit `javascript:`, `data:`, `file:`, `vbscript:`, or custom executable schemes. Client links must always specify `target="_blank" rel="noopener noreferrer"`.
 
 ## 6. Authentication Hardening
 
@@ -268,6 +271,17 @@ Rate limiting is mandatory on every endpoint that is a plausible abuse or brute-
 ## 10. Incident Response (lightweight, for a solo-admin product)
 
 - If a data leak or cross-client access bug is discovered: immediately patch the RLS policy/Server Action, redeploy, then audit logs (Supabase's built-in logs) for evidence of whether the bug was exploited before reporting to affected clients if applicable.
+
+## 11. Deliverable Attachments & File Storage Security
+
+- **Private Storage Bucket:** Deliverable files are stored exclusively in the private `task-deliverables` Supabase Storage bucket (`public = false`). Direct public object access is disabled.
+- **Allowed MIME Types:** Only `image/jpeg`, `image/png`, `image/webp`, and `application/pdf` are accepted. Executables (`.exe`, `.sh`, `.bat`, `.cmd`), HTML/SVG scripts, or active content files are strictly rejected.
+- **Size Limitation:** 20MB per file (`20,971,520 bytes`), validated on client and re-verified on the server before upload.
+- **Sanitized Paths:** Storage paths are generated using UUID prefixes: `tasks/${taskId}/${attachmentId}-${sanitizedFileName}` to prevent path traversal or object collisions.
+- **Short-Lived Signed URLs:** File downloads/previews use time-limited signed URLs (TTL 300 seconds). Signed URLs are generated server-side ONLY after verifying:
+  1. The authenticated user holds the `client` or `admin` role.
+  2. For `client`: The attachment belongs to a `completed` task assigned to their verified `client_id`.
+  3. Pending tasks and other clients' tasks return `403 Forbidden` and never generate a signed URL.
 
 ## Non-Negotiable Summary (repeat for emphasis)
 

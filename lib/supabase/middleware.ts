@@ -61,8 +61,7 @@ export async function updateSession(
     return redirectResponse;
   };
 
-  const isAuthRoute =
-    pathname === '/login' || pathname === '/forgot-password';
+  const isAuthRoute = pathname === '/login' || pathname === '/forgot-password';
 
   const isAdminRoute = pathname.startsWith('/admin');
   const isPortalRoute = pathname.startsWith('/portal');

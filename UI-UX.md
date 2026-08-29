@@ -39,8 +39,18 @@
 ## Client Portal — Job Detail
 
 - Task notes/deliverable info at the top, clearly separated from the comment thread below.
+- **Deliverables Section:** prominently displayed below task info when a `project_url` or attachments exist:
+  - **Project Link:** displayed with an "External Link / View Deliverable" button with an `ExternalLink` icon, opening in a new tab with `rel="noopener noreferrer"`.
+  - **Attachments List:** clean list of deliverable files with icon (PDF, Image, etc.), file name, humanized file size, and actionable "Preview" and "Download" buttons.
+  - Generates secure, short-lived signed URLs on click.
 - Comment box always visible at the bottom, not hidden behind a "leave feedback" toggle — lower the friction to respond.
 - After sending a comment, show immediate optimistic feedback ("Sent — [Admin name] has been notified") so the Client isn't left wondering if it worked.
+
+## Deliverables Management (Admin UX)
+
+- **Project Link Input:** Optional text field in Task Creation and Edit modal with URL helper and protocol validation.
+- **Deliverable Upload Dropzone:** Drag-and-drop or file selector supporting allowed types (JPG, PNG, WEBP, PDF) up to 20MB.
+- **Attachment List:** shows uploaded deliverables with file size, uploaded date, and a safe "Remove" action (which cleans up both database metadata and storage object).
 
 ## Loading & Empty States
 

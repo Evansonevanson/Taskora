@@ -174,9 +174,7 @@ export async function requestPasswordReset(
 
   // 3. Supabase Auth reset password request
   const origin =
-    process.env.APP_URL ||
-    headerList.get('origin') ||
-    'http://localhost:3000';
+    process.env.APP_URL || headerList.get('origin') || 'http://localhost:3000';
   const supabase = await createClient();
 
   // Always proceed silently on error or success to prevent email enumeration

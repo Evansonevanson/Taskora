@@ -48,6 +48,14 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
             <Badge variant={priorityVariant} className="text-[10px]">
               {task.priority} Priority
             </Badge>
+            {task.projectUrl && (
+              <Badge
+                variant="outline"
+                className="border-indigo-500/30 bg-indigo-950/30 text-[10px] text-indigo-300"
+              >
+                Link
+              </Badge>
+            )}
           </div>
 
           {task.needsRevision ? (

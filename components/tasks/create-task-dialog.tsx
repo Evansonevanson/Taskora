@@ -36,6 +36,7 @@ const getInitialFormData = (
   priority: 'medium',
   dueDate: '',
   notes: '',
+  projectUrl: '',
 });
 
 export function CreateTaskDialog({
@@ -306,7 +307,7 @@ export function CreateTaskDialog({
             <Textarea
               id="task-notes"
               rows={3}
-              placeholder="Add key deliverables, Figma links, or specifications..."
+              placeholder="Add key deliverables or internal specifications..."
               value={formData.notes || ''}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, notes: e.target.value }))
@@ -316,6 +317,33 @@ export function CreateTaskDialog({
             />
             {errors.notes && (
               <p className="text-[11px] text-red-400">{errors.notes}</p>
+            )}
+          </div>
+
+          {/* Project Link */}
+          <div className="space-y-1.5">
+            <Label htmlFor="task-project-url">Project Link (Optional)</Label>
+            <Input
+              id="task-project-url"
+              type="url"
+              placeholder="https://figma.com/file/... or https://drive.google.com/..."
+              value={formData.projectUrl || ''}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, projectUrl: e.target.value }))
+              }
+              className={cn(
+                errors.projectUrl &&
+                  'border-red-500 focus-visible:ring-red-500',
+              )}
+              disabled={isPending}
+            />
+            {errors.projectUrl ? (
+              <p className="text-[11px] text-red-400">{errors.projectUrl}</p>
+            ) : (
+              <p className="text-[11px] text-stone-500">
+                Direct external link for Figma, Google Drive, live website, or
+                Behance.
+              </p>
             )}
           </div>
 

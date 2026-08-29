@@ -702,6 +702,42 @@ Verify in production/staging:
 - [ ] Production build healthy.
 - [ ] `CURRENT-STATE.md` updated to launch status.
 
+## Phase 13 — Project Link & Deliverable Attachments (MVP Feature)
+
+### 13.1 Database & Storage Schema
+
+- [ ] Add `project_url` (nullable text) to `public.tasks`.
+- [ ] Create `public.task_attachments` table (`id`, `task_id`, `file_name`, `storage_path`, `mime_type`, `file_size`, `uploaded_by`, `created_at`).
+- [ ] Create indexes on `task_attachments(task_id)` and `task_attachments(uploaded_by)`.
+- [ ] Enable RLS on `public.task_attachments` (Admin full access, Client select-only on own completed tasks).
+- [ ] Configure private Supabase Storage bucket `task-deliverables` with strict RLS policies.
+
+### 13.2 Validation & Server Actions
+
+- [ ] Add Zod validation schemas for safe `project_url` (http/https only) and file uploads (JPEG/PNG/WEBP/PDF, <=20MB).
+- [ ] Implement `uploadTaskAttachment(taskId, formData)` with rate limiting and MIME verification.
+- [ ] Implement `deleteTaskAttachment(attachmentId)` (removes both DB record and storage object).
+- [ ] Implement `getAttachmentSignedUrl(attachmentId)` (generates 300s signed URL after verifying role/completed status).
+- [ ] Update `createTask` and `updateTask` to persist `project_url`.
+
+### 13.3 Admin & Client UI
+
+- [ ] Add Project Link input and Deliverable Attachments manager to Admin task dialogs and details.
+- [ ] Add Deliverables section to Client Completed Job Detail with "View Project", "Preview", and "Download".
+
+### 13.4 Testing & Verification
+
+- [ ] Unit & integration tests for attachment upload, MIME type rejection, 20MB limit, Client isolation, Pending task denial, and signed URL generation.
+- [ ] Verify full test suite passes.
+
+### Phase 13 Checkpoint
+
+- [ ] Documentation updated.
+- [ ] Database migration and storage policies created.
+- [ ] Admin & Client UI functional.
+- [ ] Access control & signed URL tests pass.
+- [ ] `CURRENT-STATE.md` updated.
+
 ---
 
 # Phase 2 / Future Features
@@ -709,7 +745,6 @@ Verify in production/staging:
 Do not implement these during MVP unless explicitly requested:
 
 - Client Approve button
-- File/image attachments
 - In-app notification bell
 - Distinct Needs Changes status
 - Recurring tasks

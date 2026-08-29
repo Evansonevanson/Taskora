@@ -150,11 +150,22 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
             </div>
           </div>
 
-          {createdResult.emailSent && (
-            <p className="flex items-center gap-1 pt-1 text-[11px] text-emerald-400">
-              <Check className="h-3 w-3" />
+          {createdResult.emailSent ? (
+            <p className="flex items-center gap-1.5 pt-1 text-xs text-emerald-400">
+              <Check className="h-3.5 w-3.5 shrink-0" />
               <span>Welcome email with credentials dispatched to client.</span>
             </p>
+          ) : (
+            <div
+              role="status"
+              className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-950/30 p-2.5 text-xs text-amber-200"
+            >
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+              <span className="leading-relaxed">
+                Automated invite email could not be delivered. Please copy and
+                manually share the temporary credentials with the client.
+              </span>
+            </div>
           )}
         </div>
 

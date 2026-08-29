@@ -16,8 +16,9 @@ public.clients                │
       ▼                       │
 public.tasks ◄─────────────── (created_by: profiles.id, admin)
       │ 1:N
-      ▼
-public.comments ───────────► public.profiles (author_id)
+      ├────────────────────────► public.comments ───────────► public.profiles (author_id)
+      │ 1:N
+      └────────────────────────► public.task_attachments ──► public.profiles (uploaded_by)
 ```
 
 ## Tables
@@ -60,6 +61,7 @@ One row per client business/person. Links a `profiles` row (role=client) to thei
 | `status`             | text        | `'pending' \| 'completed'`, not null, default `'pending'`                                                                 |
 | `needs_revision`     | boolean     | default `false` — set true when a client comments on a completed task                                                     |
 | `notes`              | text        | nullable                                                                                                                  |
+| `project_url`        | text        | nullable — validated safe http/https link to external deliverables (Figma, Drive, live site)                              |
 | `archived`           | boolean     | default `false` — set true by "Clear completed" instead of hard delete                                                    |
 | `created_by`         | uuid        | FK → `profiles.id` (the Admin who created it)                                                                             |
 | `created_at`         | timestamptz | default `now()`                                                                                                           |
@@ -81,6 +83,21 @@ One row per client business/person. Links a `profiles` row (role=client) to thei
 | `body`       | text        | not null, length > 0                         |
 | `created_at` | timestamptz | default `now()`                              |
 
+### `task_attachments`
+
+Stores metadata for files uploaded by Admin to private Supabase Storage (`task-deliverables`).
+
+| Column         | Type        | Constraints                                                           |
+| -------------- | ----------- | --------------------------------------------------------------------- |
+| `id`           | uuid        | PK, default `gen_random_uuid()`                                       |
+| `task_id`      | uuid        | FK → `tasks.id`, not null, on delete cascade                          |
+| `file_name`    | text        | not null                                                              |
+| `storage_path` | text        | not null, unique                                                      |
+| `mime_type`    | text        | not null (`image/jpeg`, `image/png`, `image/webp`, `application/pdf`) |
+| `file_size`    | bigint      | not null, max 20,971,520 bytes (20MB)                                 |
+| `uploaded_by`  | uuid        | FK → `profiles.id`, not null                                          |
+| `created_at`   | timestamptz | default `now()`                                                       |
+
 ## Indexes
 
 - `tasks(client_id)`
@@ -88,6 +105,8 @@ One row per client business/person. Links a `profiles` row (role=client) to thei
 - `tasks(category)`
 - `tasks(due_date)`
 - `comments(task_id)`
+- `task_attachments(task_id)`
+- `task_attachments(uploaded_by)`
 
 ## Row-Level Security Policies
 
@@ -164,6 +183,43 @@ with check (
   )
 );
 ```
+
+### `task_attachments`
+
+- **Select:** Admin can select all attachments. Client can select only attachments where the related `task.client_id = current_client_id()` AND `task.status = 'completed'`.
+- **Insert/Update/Delete:** Admin only (`current_role() = 'admin'`). Clients cannot directly insert, update, or delete attachments.
+
+```sql
+create policy "admin_all_task_attachments"
+on public.task_attachments for all
+using (public.current_role() = 'admin')
+with check (public.current_role() = 'admin');
+
+create policy "client_select_own_completed_task_attachments"
+on public.task_attachments for select
+using (
+  public.current_role() = 'client'
+  and exists (
+    select 1 from public.tasks t
+    where t.id = task_attachments.task_id
+      and t.client_id = public.current_client_id()
+      and t.status = 'completed'
+  )
+);
+```
+
+## Supabase Storage
+
+### Bucket: `task-deliverables`
+
+- **Access:** Private (`public = false`).
+- **File Types Allowed:** `image/jpeg`, `image/png`, `image/webp`, `application/pdf`.
+- **Max File Size:** 20MB (`20,971,520 bytes`).
+- **Storage Path Structure:** `tasks/{task_id}/{attachment_id}-{sanitized_file_name}`.
+- **Client Access Pattern:** Client never accesses files via direct public URLs. Short-lived signed URLs (300s TTL) are generated on-demand by the server only after verifying the user's Client role, task ownership, and completed task status.
+- **Storage Policies:**
+  - Admin: Full access (`ALL`) on `storage.objects` for bucket `task-deliverables`.
+  - Client: Read access (`SELECT`) on `storage.objects` for bucket `task-deliverables` where the object path corresponds to their completed task.
 
 ## Migrations
 

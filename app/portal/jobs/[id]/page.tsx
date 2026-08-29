@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getClientPortalJobDetail } from '@/lib/data/portal';
 import { getTaskComments } from '@/lib/data/comments';
+import { getTaskAttachments } from '@/lib/data/attachments';
 import { PortalJobDetailView } from '@/components/portal/portal-job-detail-view';
 
 interface ClientJobDetailPageProps {
@@ -33,9 +34,10 @@ export default async function ClientJobDetailPage({
   params,
 }: ClientJobDetailPageProps) {
   const { id } = await params;
-  const [data, comments] = await Promise.all([
+  const [data, comments, attachments] = await Promise.all([
     getClientPortalJobDetail(id),
     getTaskComments(id),
+    getTaskAttachments(id),
   ]);
 
   if (!data) {
@@ -48,6 +50,7 @@ export default async function ClientJobDetailPage({
         client={data.client}
         task={data.task}
         comments={comments}
+        attachments={attachments}
       />
     </div>
   );
