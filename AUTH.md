@@ -25,8 +25,8 @@ Supabase Auth, email + password strategy. No social login, no magic links in MVP
 1. Single `/login` page — no separate Admin/Client login screens.
 2. User submits email + password.
 3. On success, middleware/server reads the user's `profiles.role` and redirects:
-   - `role = 'admin'` → `/dashboard`
-   - `role = 'client'` → `/my-jobs`
+   - `role = 'admin'` → `/admin/dashboard`
+   - `role = 'client'` → `/portal`
 4. On failure, show a generic "Invalid email or password" message — never reveal whether the email exists (prevents user enumeration).
 
 ## Rate Limiting on Auth
@@ -53,4 +53,4 @@ Login attempts are rate-limited per `SECURITY.md` §Rate Limiting: max 5 attempt
 - Never store or log plaintext passwords.
 - Never expose `SUPABASE_SERVICE_ROLE_KEY` to any client-rendered code path — it is only used inside Server Actions for the client-provisioning flow above.
 - Never build a client self-registration path without explicit product sign-off — it's a deliberate MVP constraint (see `PRODUCT.md`).
-- Never skip the role-based redirect check — a Client must never be able to land on `/dashboard` even by direct URL entry (middleware must enforce this; see `RBAC.md`).
+- Never skip the role-based redirect check — a Client must never be able to land on `/admin/dashboard` even by direct URL entry (middleware must enforce this; see `RBAC.md`).

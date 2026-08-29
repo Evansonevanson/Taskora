@@ -1,10 +1,12 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { getClientPortalJobDetail } from '@/lib/data/portal';
 import { getTaskComments } from '@/lib/data/comments';
 import { getTaskAttachments } from '@/lib/data/attachments';
 import { PortalJobDetailView } from '@/components/portal/portal-job-detail-view';
+import type { Database } from '@/lib/supabase/database.types';
 
 interface ClientJobDetailPageProps {
   params: Promise<{ id: string }>;
@@ -34,6 +36,30 @@ export default async function ClientJobDetailPage({
   params,
 }: ClientJobDetailPageProps) {
   const { id } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(`/login?next=/portal/jobs/${id}`);
+  }
+
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const profile = profileData as {
+    role: Database['public']['Tables']['profiles']['Row']['role'];
+  } | null;
+
+  // If Admin manually accesses Client deliverable route, redirect to Admin Dashboard
+  if (profile?.role === 'admin') {
+    redirect('/admin/dashboard');
+  }
+
   const [data, comments, attachments] = await Promise.all([
     getClientPortalJobDetail(id),
     getTaskComments(id),

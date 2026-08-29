@@ -178,6 +178,27 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.redirectUrl).toBe('/admin/dashboard');
     });
 
+    it('redirects admin attempting to access /portal/jobs/job-123 to /admin/dashboard', () => {
+      const decision = evaluateMiddlewareRoute(
+        '/portal/jobs/job-123',
+        adminUser,
+      );
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/admin/dashboard');
+    });
+
+    it('redirects authenticated admin visiting / to /admin/dashboard', () => {
+      const decision = evaluateMiddlewareRoute('/', adminUser);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/admin/dashboard');
+    });
+
+    it('redirects authenticated client visiting / to /portal', () => {
+      const decision = evaluateMiddlewareRoute('/', activeClientUser);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/portal');
+    });
+
     it('redirects authenticated admin visiting /login to /admin/dashboard', () => {
       const decision = evaluateMiddlewareRoute('/login', adminUser);
       expect(decision.action).toBe('redirect');

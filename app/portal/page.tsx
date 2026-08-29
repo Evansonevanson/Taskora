@@ -1,8 +1,10 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { getClientPortalData } from '@/lib/data/portal';
 import { PortalView } from '@/components/portal/portal-view';
+import type { Database } from '@/lib/supabase/database.types';
 
 export const metadata: Metadata = {
   title: 'My Jobs | Taskora Client Portal',
@@ -12,10 +14,34 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function ClientPortalPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?next=/portal');
+  }
+
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const profile = profileData as {
+    role: Database['public']['Tables']['profiles']['Row']['role'];
+  } | null;
+
+  // If Admin manually accesses Client Portal, redirect to Admin Dashboard
+  if (profile?.role === 'admin') {
+    redirect('/admin/dashboard');
+  }
+
   const data = await getClientPortalData();
 
   if (!data) {
-    notFound();
+    redirect('/login?error=deactivated');
   }
 
   return (

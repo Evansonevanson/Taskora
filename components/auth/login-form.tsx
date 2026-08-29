@@ -263,6 +263,11 @@ export function LoginForm() {
           </>
         )}
       </Button>
+
+      {/* Account Provisioning Notice */}
+      <p className="text-center text-[11px] text-stone-500">
+        Client accounts are created and provisioned by your administrator.
+      </p>
     </form>
   );
 }

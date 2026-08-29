@@ -36,7 +36,7 @@ This is the single source of truth for "who can do what." When in doubt, this do
 
 ## Enforcement Layers (defense in depth)
 
-1. **Middleware** — redirects based on `profiles.role` before a mismatched-role request even reaches page code. E.g., a Client hitting `/dashboard` is redirected to `/my-jobs`.
+1. **Middleware** — redirects based on `profiles.role` before a mismatched-role request even reaches page code. E.g., a Client hitting `/admin/dashboard` is redirected to `/portal`, and an Admin hitting `/portal` is redirected to `/admin/dashboard`.
 2. **Server Actions** — every action re-checks role server-side (`current_role()` equivalent) before performing a mutation. Never trust a role claim passed from the client.
 3. **RLS (Postgres)** — the actual, unbypassable boundary. Even if middleware or a Server Action had a bug, RLS policies in `DATABASE.md` prevent a Client's session from reading/writing rows outside their scope. **This is the layer that must never be weakened, disabled "temporarily," or bypassed for convenience.**
 
