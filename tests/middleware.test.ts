@@ -21,9 +21,7 @@ function evaluateMiddlewareRoute(
   user: MiddlewareUser | null,
 ): MiddlewareRouteDecision {
   const isAuthRoute =
-    pathname === '/login' ||
-    pathname === '/forgot-password' ||
-    pathname === '/reset-password';
+    pathname === '/login' || pathname === '/forgot-password';
   const isAdminRoute = pathname.startsWith('/admin');
   const isPortalRoute = pathname.startsWith('/portal');
 
@@ -185,6 +183,19 @@ describe('Protected Route Middleware Invariant Tests', () => {
       const decision = evaluateMiddlewareRoute('/login', adminUser);
       expect(decision.action).toBe('redirect');
       expect(decision.redirectUrl).toBe('/admin/dashboard');
+    });
+
+    it('allows authenticated admin on password recovery session to access /reset-password', () => {
+      const decision = evaluateMiddlewareRoute('/reset-password', adminUser);
+      expect(decision.action).toBe('next');
+    });
+
+    it('allows authenticated client on password recovery session to access /reset-password', () => {
+      const decision = evaluateMiddlewareRoute(
+        '/reset-password',
+        activeClientUser,
+      );
+      expect(decision.action).toBe('next');
     });
   });
 });

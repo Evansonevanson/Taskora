@@ -476,6 +476,7 @@ Exact installed versions must be recorded after Phase 0 initialization and prese
 Taskora MVP is **100% complete**. All phases from Phase 0 to Phase 12 have been implemented and verified.
 
 Optional future enhancements (Phase 2):
+
 1. Client "Approve" button that resolves `needs_revision` without requiring a comment.
 2. File/image deliverable attachments.
 3. In-app notification bell.
@@ -509,6 +510,7 @@ If an agent finds a disagreement between code and documentation:
 
 Decision:
 Finalized production readiness, secret isolation, and deployment configuration:
+
 1. **Security Headers** (`next.config.ts`): Configured modern HTTP security headers: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
 2. **Secret & Key Isolation Audit**: Confirmed server-only credentials (`SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `UPSTASH_REDIS_REST_TOKEN`) are guarded by `import 'server-only'` and never leaked into client bundles or `.env` files.
 3. **Environment Template** (`.env.example`): Documented required environment variables with explicit client vs server comments.
@@ -518,9 +520,11 @@ Reason:
 Fulfills `BUILD-PLAN.md` §Phase 12, `SECURITY.md`, `TECH-STACK.md`, and `API.md`.
 
 Docs affected:
+
 - `CURRENT-STATE.md`
 
 Code affected:
+
 - `next.config.ts`
 - `.env.example`
 
@@ -1233,6 +1237,7 @@ Then read:
 **Taskora MVP is 100% complete, fully tested, and deployment-ready.**
 
 All 13 phases (Phase 0 through Phase 12) have been implemented and verified:
+
 - **Phase 0:** Next.js 16.3 Turbopack, React 19, TypeScript strict mode, Tailwind CSS v4.
 - **Phase 1:** Database schema, PostgreSQL RLS policies, mandatory access-control test suite.
 - **Phase 2:** Supabase SSR Auth, sliding-window rate limiters, middleware role redirects, deactivated client lockdown.

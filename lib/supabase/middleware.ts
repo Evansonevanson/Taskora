@@ -62,9 +62,7 @@ export async function updateSession(
   };
 
   const isAuthRoute =
-    pathname === '/login' ||
-    pathname === '/forgot-password' ||
-    pathname === '/reset-password';
+    pathname === '/login' || pathname === '/forgot-password';
 
   const isAdminRoute = pathname.startsWith('/admin');
   const isPortalRoute = pathname.startsWith('/portal');
