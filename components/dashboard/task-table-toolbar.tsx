@@ -67,13 +67,13 @@ export function TaskTableToolbar({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Search Input */}
         <div className="relative max-w-md flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-stone-500" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
           <input
             type="text"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             placeholder="Search tasks by title or notes..."
-            className="h-10 w-full rounded-xl border border-stone-800 bg-stone-900/60 pr-8 pl-9 text-xs text-stone-100 placeholder-stone-500 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            className="h-10 w-full rounded-xl border border-stone-300/80 bg-white/80 pr-8 pl-9 text-xs text-stone-900 placeholder-stone-400 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-100 dark:placeholder-stone-500"
           />
           {localSearch && (
             <button
@@ -82,7 +82,7 @@ export function TaskTableToolbar({
                 setLocalSearch('');
                 onSearchChange('');
               }}
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 text-stone-500 hover:text-stone-300"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:text-stone-500 dark:hover:text-stone-300"
               aria-label="Clear search"
             >
               <X className="h-4 w-4" />
@@ -96,7 +96,7 @@ export function TaskTableToolbar({
           <select
             value={categoryFilter}
             onChange={(e) => onCategoryFilterChange(e.target.value)}
-            className="h-10 rounded-xl border border-stone-800 bg-stone-900/60 px-3 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            className="h-10 rounded-xl border border-stone-300/80 bg-white/80 px-3 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-200"
             aria-label="Filter by category"
           >
             {categoryOptions.map((opt) => (
@@ -111,7 +111,7 @@ export function TaskTableToolbar({
             <select
               value={sortBy}
               onChange={(e) => onSortByChange(e.target.value as SortOption)}
-              className="h-10 appearance-none rounded-xl border border-stone-800 bg-stone-900/60 pr-8 pl-8 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              className="h-10 appearance-none rounded-xl border border-stone-300/80 bg-white/80 pr-8 pl-8 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-200"
               aria-label="Sort tasks"
             >
               <option value="newest">Newest First</option>
@@ -119,7 +119,7 @@ export function TaskTableToolbar({
               <option value="due_date">Due Date</option>
               <option value="priority">Priority</option>
             </select>
-            <ArrowUpDown className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+            <ArrowUpDown className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
           </div>
 
           {/* Clear Completed Button */}
@@ -128,7 +128,7 @@ export function TaskTableToolbar({
               variant="secondary"
               size="sm"
               onClick={onClearCompletedClick}
-              className="gap-1.5 text-xs text-stone-300 hover:border-amber-500/40 hover:text-amber-300"
+              className="gap-1.5 text-xs text-stone-700 hover:border-amber-500/40 hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-300"
             >
               <Archive className="h-3.5 w-3.5" />
               <span>Clear Completed ({completedCount})</span>
@@ -150,7 +150,7 @@ export function TaskTableToolbar({
                 'rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-150',
                 isActive
                   ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                  : 'border border-stone-800/80 bg-stone-900/40 text-stone-400 hover:bg-stone-800/60 hover:text-stone-200',
+                  : 'border border-stone-300/80 bg-stone-100/80 text-stone-600 hover:bg-stone-200/80 hover:text-stone-900 dark:border-stone-800/80 dark:bg-stone-900/40 dark:text-stone-400 dark:hover:bg-stone-800/60 dark:hover:text-stone-200',
               )}
             >
               {tab.label}

@@ -92,7 +92,7 @@ export function EditClientDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-950/40 text-indigo-400">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-400">
               <Edit3 className="h-4 w-4" />
             </div>
             <div>
@@ -108,7 +108,7 @@ export function EditClientDialog({
           {generalError && (
             <div
               role="alert"
-              className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-400"
+              className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/20 dark:bg-red-950/30 dark:text-red-400"
             >
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{generalError}</span>
@@ -117,7 +117,7 @@ export function EditClientDialog({
 
           <div className="space-y-1.5">
             <Label htmlFor="edit-client-display-name">
-              Display Name <span className="text-red-400">*</span>
+              Display Name <span className="text-red-500">*</span>
             </Label>
             <Input
               id="edit-client-display-name"
@@ -136,7 +136,7 @@ export function EditClientDialog({
               disabled={isPending}
             />
             {errors.displayName && (
-              <p className="text-[11px] text-red-400">{errors.displayName}</p>
+              <p className="text-[11px] text-red-500">{errors.displayName}</p>
             )}
           </div>
 
@@ -159,10 +159,10 @@ export function EditClientDialog({
                 )}
                 disabled={isPending}
               />
-              <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+              <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
             </div>
             {errors.companyName && (
-              <p className="text-[11px] text-red-400">{errors.companyName}</p>
+              <p className="text-[11px] text-red-500">{errors.companyName}</p>
             )}
           </div>
 
@@ -185,18 +185,20 @@ export function EditClientDialog({
               disabled={isPending}
             />
             {errors.fullName && (
-              <p className="text-[11px] text-red-400">{errors.fullName}</p>
+              <p className="text-[11px] text-red-500">{errors.fullName}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-stone-400">Account Email</Label>
+            <Label className="text-stone-600 dark:text-stone-400">
+              Account Email
+            </Label>
             <Input
               value={client.email}
               disabled
-              className="h-10 cursor-not-allowed bg-stone-900/50 text-xs text-stone-400"
+              className="h-10 cursor-not-allowed bg-stone-100/80 text-xs text-stone-600 dark:bg-stone-900/50 dark:text-stone-400"
             />
-            <p className="text-[11px] text-stone-500">
+            <p className="text-[11px] text-stone-500 dark:text-stone-500">
               Auth email address is managed via credentials.
             </p>
           </div>

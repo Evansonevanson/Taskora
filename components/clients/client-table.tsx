@@ -105,7 +105,7 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
       />
 
       {/* Table Container */}
-      <div className="overflow-hidden rounded-xl border border-stone-800/80 bg-stone-900/40 shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-stone-200/80 bg-white/80 shadow-sm dark:border-stone-800/80 dark:bg-stone-900/40">
         {sortedClients.length === 0 ? (
           <EmptyState
             icon={Users}
@@ -131,7 +131,7 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-stone-800 bg-stone-900/80 hover:bg-stone-900/80">
+              <TableRow className="border-stone-200 bg-stone-50/80 hover:bg-stone-50/80 dark:border-stone-800 dark:bg-stone-900/80 dark:hover:bg-stone-900/80">
                 <TableHead>Client</TableHead>
                 <TableHead className="hidden sm:table-cell">Company</TableHead>
                 <TableHead className="hidden md:table-cell">Email</TableHead>
@@ -149,8 +149,9 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                   <TableRow
                     key={client.id}
                     className={cn(
-                      'group cursor-pointer border-stone-800/60 transition-colors hover:bg-stone-800/30',
-                      !client.active && 'bg-stone-950/20 opacity-60',
+                      'group cursor-pointer border-stone-200/60 transition-colors hover:bg-stone-50/80 dark:border-stone-800/60 dark:hover:bg-stone-800/30',
+                      !client.active &&
+                        'bg-stone-100/50 opacity-60 dark:bg-stone-950/20',
                     )}
                   >
                     {/* Client Name & Avatar */}
@@ -163,13 +164,13 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                         <div className="space-y-0.5">
                           <Link
                             href={`/admin/clients/${client.id}`}
-                            className="text-xs font-semibold text-stone-100 transition-colors group-hover:text-indigo-300"
+                            className="text-xs font-semibold text-stone-900 transition-colors group-hover:text-indigo-600 dark:text-stone-100 dark:group-hover:text-indigo-300"
                           >
                             {client.displayName}
                           </Link>
                           {client.fullName &&
                             client.fullName !== client.displayName && (
-                              <p className="text-[11px] text-stone-400">
+                              <p className="text-[11px] text-stone-500 dark:text-stone-400">
                                 {client.fullName}
                               </p>
                             )}
@@ -180,21 +181,23 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                     {/* Company */}
                     <TableCell className="hidden p-3 sm:table-cell">
                       {client.companyName ? (
-                        <div className="inline-flex items-center gap-1.5 text-xs text-stone-300">
-                          <Building2 className="h-3.5 w-3.5 text-stone-500" />
+                        <div className="inline-flex items-center gap-1.5 text-xs text-stone-700 dark:text-stone-300">
+                          <Building2 className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
                           <span className="max-w-[140px] truncate">
                             {client.companyName}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-stone-600">—</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-600">
+                          —
+                        </span>
                       )}
                     </TableCell>
 
                     {/* Email */}
                     <TableCell className="hidden p-3 md:table-cell">
-                      <div className="inline-flex items-center gap-1.5 text-xs text-stone-400">
-                        <Mail className="h-3 w-3 text-stone-500" />
+                      <div className="inline-flex items-center gap-1.5 text-xs text-stone-600 dark:text-stone-400">
+                        <Mail className="h-3 w-3 text-stone-400 dark:text-stone-500" />
                         <span className="max-w-[160px] truncate">
                           {client.email}
                         </span>
@@ -208,17 +211,19 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                           variant="work"
                           className="px-2 py-0.5 text-[11px] font-semibold"
                         >
-                          <Sparkles className="mr-1 h-2.5 w-2.5 text-indigo-300" />
+                          <Sparkles className="mr-1 h-2.5 w-2.5 text-indigo-700 dark:text-indigo-300" />
                           <span>{client.activeTasksCount} active</span>
                         </Badge>
                       ) : (
-                        <span className="text-xs text-stone-600">0</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-600">
+                          0
+                        </span>
                       )}
                     </TableCell>
 
                     {/* Completed Jobs Count */}
                     <TableCell className="hidden p-3 text-center lg:table-cell">
-                      <span className="text-xs font-medium text-stone-300">
+                      <span className="text-xs font-medium text-stone-700 dark:text-stone-300">
                         {client.completedTasksCount}
                       </span>
                     </TableCell>
@@ -228,14 +233,14 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                       {client.active ? (
                         <Badge
                           variant="outline"
-                          className="border-emerald-500/30 bg-emerald-950/30 text-[10px] text-emerald-400"
+                          className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-400"
                         >
                           Active
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
-                          className="border-red-500/30 bg-red-950/30 text-[10px] text-red-400"
+                          className="border-red-200 bg-red-50 text-[10px] text-red-700 dark:border-red-500/30 dark:bg-red-950/30 dark:text-red-400"
                         >
                           Inactive
                         </Badge>
@@ -248,7 +253,7 @@ export function ClientTable({ clients, onAddClientClick }: ClientTableProps) {
                         variant="ghost"
                         size="sm"
                         asChild
-                        className="h-7 px-2 text-xs text-stone-400 hover:bg-stone-800/60 hover:text-stone-100"
+                        className="h-7 px-2 text-xs text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800/60 dark:hover:text-stone-100"
                       >
                         <Link href={`/admin/clients/${client.id}`}>
                           <span>View</span>

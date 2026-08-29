@@ -141,12 +141,14 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
     <>
       <DialogHeader>
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-950/40 text-indigo-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-400">
             <Edit3 className="h-4 w-4" />
           </div>
           <div>
-            <DialogTitle>Edit Task</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-stone-900 dark:text-stone-100">
+              Edit Task
+            </DialogTitle>
+            <DialogDescription className="text-stone-500 dark:text-stone-400">
               Update task details, schedule, client assignment, or revision
               status.
             </DialogDescription>
@@ -158,7 +160,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
         {generalError && (
           <div
             role="alert"
-            className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-400"
+            className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/20 dark:bg-red-950/30 dark:text-red-400"
           >
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{generalError}</span>
@@ -167,12 +169,12 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
 
         {/* Revision Alert & Resolution Checkbox */}
         {task.needsRevision && (
-          <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-950/20 p-3.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-red-400">
+          <div className="space-y-2 rounded-xl border border-red-200 bg-red-50/80 p-3.5 dark:border-red-500/30 dark:bg-red-950/20">
+            <div className="flex items-center gap-2 text-xs font-semibold text-red-700 dark:text-red-400">
               <AlertCircle className="h-4 w-4" />
               <span>Client Requested Revision</span>
             </div>
-            <p className="text-[11px] text-stone-300">
+            <p className="text-[11px] text-stone-700 dark:text-stone-300">
               The client requested changes on this deliverable. Once adjustments
               are complete, resolve the revision flag below.
             </p>
@@ -187,9 +189,9 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                   }))
                 }
                 disabled={isPending || isArchiving}
-                className="h-4 w-4 rounded border-stone-700 bg-stone-900 text-indigo-600 focus:ring-indigo-500"
+                className="h-4 w-4 rounded border-stone-300 bg-white text-indigo-600 focus:ring-indigo-500 dark:border-stone-700 dark:bg-stone-900"
               />
-              <span className="text-xs font-medium text-stone-200">
+              <span className="text-xs font-medium text-stone-900 dark:text-stone-200">
                 Mark revision as resolved
               </span>
             </label>
@@ -199,7 +201,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
         {/* Task Title */}
         <div className="space-y-1.5">
           <Label htmlFor="edit-task-title">
-            Task Title <span className="text-red-400">*</span>
+            Task Title <span className="text-red-500">*</span>
           </Label>
           <Input
             id="edit-task-title"
@@ -212,7 +214,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
             disabled={isPending || isArchiving}
           />
           {errors.title && (
-            <p className="text-[11px] text-red-400">{errors.title}</p>
+            <p className="text-[11px] text-red-500">{errors.title}</p>
           )}
         </div>
 
@@ -237,7 +239,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                 }));
               }}
               disabled={isPending || isArchiving}
-              className="h-10 w-full rounded-xl border border-stone-800 bg-stone-900 px-3 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              className="h-10 w-full rounded-xl border border-stone-300/80 bg-white/80 px-3 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"
             >
               <option value="general">General</option>
               <option value="work">Work (Client)</option>
@@ -251,7 +253,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
           {isWorkCategory ? (
             <div className="space-y-1.5">
               <Label htmlFor="edit-task-client">
-                Assigned Client <span className="text-red-400">*</span>
+                Assigned Client <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <select
@@ -265,7 +267,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                   }
                   disabled={isPending || isArchiving || clients.length === 0}
                   className={cn(
-                    'h-10 w-full appearance-none rounded-xl border border-stone-800 bg-stone-900 pr-3 pl-8 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none',
+                    'h-10 w-full appearance-none rounded-xl border border-stone-300/80 bg-white/80 pr-3 pl-8 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200',
                     errors.clientId && 'border-red-500 focus:border-red-500',
                   )}
                 >
@@ -281,10 +283,10 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                     ))
                   )}
                 </select>
-                <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+                <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
               </div>
               {errors.clientId && (
-                <p className="text-[11px] text-red-400">{errors.clientId}</p>
+                <p className="text-[11px] text-red-500">{errors.clientId}</p>
               )}
             </div>
           ) : (
@@ -304,7 +306,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                 disabled={isPending || isArchiving}
               />
               {errors.dueDate && (
-                <p className="text-[11px] text-red-400">{errors.dueDate}</p>
+                <p className="text-[11px] text-red-500">{errors.dueDate}</p>
               )}
             </div>
           )}
@@ -325,7 +327,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
               disabled={isPending || isArchiving}
             />
             {errors.dueDate && (
-              <p className="text-[11px] text-red-400">{errors.dueDate}</p>
+              <p className="text-[11px] text-red-500">{errors.dueDate}</p>
             )}
           </div>
         )}
@@ -348,11 +350,11 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
                     'flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-medium capitalize transition-all',
                     isSelected
                       ? p === 'high'
-                        ? 'border-red-500/50 bg-red-950/40 text-red-300'
+                        ? 'border-red-300 bg-red-50 text-red-800 shadow-xs dark:border-red-500/50 dark:bg-red-950/40 dark:text-red-300'
                         : p === 'medium'
-                          ? 'border-amber-500/50 bg-amber-950/40 text-amber-300'
-                          : 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300'
-                      : 'border-stone-800 bg-stone-900/60 text-stone-400 hover:border-stone-700 hover:text-stone-200',
+                          ? 'border-amber-300 bg-amber-50 text-amber-800 shadow-xs dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-300'
+                          : 'border-emerald-300 bg-emerald-50 text-emerald-800 shadow-xs dark:border-emerald-500/50 dark:bg-emerald-950/40 dark:text-emerald-300'
+                      : 'border-stone-300/80 bg-stone-50/50 text-stone-600 hover:border-stone-400 hover:text-stone-900 dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-400 dark:hover:border-stone-700 dark:hover:text-stone-200',
                   )}
                 >
                   {isSelected && <CheckCircle2 className="h-3.5 w-3.5" />}
@@ -378,7 +380,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
             disabled={isPending || isArchiving}
           />
           {errors.notes && (
-            <p className="text-[11px] text-red-400">{errors.notes}</p>
+            <p className="text-[11px] text-red-500">{errors.notes}</p>
           )}
         </div>
 
@@ -400,22 +402,22 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
             disabled={isPending || isArchiving}
           />
           {errors.projectUrl ? (
-            <p className="text-[11px] text-red-400">{errors.projectUrl}</p>
+            <p className="text-[11px] text-red-500">{errors.projectUrl}</p>
           ) : (
-            <p className="text-[11px] text-stone-500">
+            <p className="text-[11px] text-stone-500 dark:text-stone-400">
               External URL for Figma, Google Drive, live website, or Behance.
             </p>
           )}
         </div>
 
         {/* Deliverable Attachments */}
-        <div className="rounded-xl border border-stone-800 bg-stone-950/40 p-3.5">
+        <div className="rounded-xl border border-stone-200 bg-stone-50/70 p-3.5 dark:border-stone-800 dark:bg-stone-950/40">
           <TaskAttachmentsManager taskId={task.id} canEdit={true} />
         </div>
 
         {/* Discussion / Comment Thread (for deliverables / tasks with comments or work category) */}
         {(isWorkCategory || comments.length > 0) && (
-          <div className="space-y-3 rounded-xl border border-stone-800 bg-stone-950/50 p-4 pt-3">
+          <div className="space-y-3 rounded-xl border border-stone-200 bg-stone-50/70 p-4 pt-3 dark:border-stone-800 dark:bg-stone-950/50">
             <CommentThread
               taskId={task.id}
               comments={comments}
@@ -430,7 +432,7 @@ function EditTaskForm({ task, onClose, clients }: EditTaskFormProps) {
             variant="ghost"
             onClick={handleArchive}
             disabled={isPending || isArchiving}
-            className="gap-1.5 self-start text-xs text-stone-400 hover:bg-red-950/30 hover:text-red-400 sm:self-auto"
+            className="gap-1.5 self-start text-xs text-stone-500 hover:bg-red-50 hover:text-red-600 sm:self-auto dark:text-stone-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
           >
             {isArchiving ? (
               <>

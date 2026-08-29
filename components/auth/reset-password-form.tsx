@@ -81,9 +81,9 @@ export function ResetPasswordForm() {
       {errors.general && (
         <div
           role="alert"
-          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-950/40 p-3.5 text-sm text-red-200 backdrop-blur-sm duration-200"
+          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 backdrop-blur-sm duration-200 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-200"
         >
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
           <div className="leading-relaxed">{errors.general}</div>
         </div>
       )}
@@ -96,14 +96,16 @@ export function ResetPasswordForm() {
         >
           <span className="flex items-center gap-1.5">
             <span>New Password</span>
-            <span className="text-red-400" aria-hidden="true">
+            <span className="text-red-500" aria-hidden="true">
               *
             </span>
           </span>
-          <span className="text-xs text-stone-500">Min 8 characters</span>
+          <span className="text-xs text-stone-500 dark:text-stone-400">
+            Min 8 characters
+          </span>
         </Label>
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-500">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 dark:text-stone-500">
             <Lock className="h-4 w-4" />
           </div>
           <Input
@@ -123,7 +125,7 @@ export function ResetPasswordForm() {
             className={`pr-10 pl-10 ${
               errors.password
                 ? 'border-red-500/80 focus-visible:ring-red-500/40'
-                : 'border-stone-800 focus-visible:ring-indigo-500'
+                : 'focus-visible:ring-indigo-500'
             }`}
             aria-invalid={Boolean(errors.password)}
             aria-describedby={
@@ -134,7 +136,7 @@ export function ResetPasswordForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-500 transition-colors hover:text-stone-300 focus:text-stone-300 focus:outline-none"
+            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 transition-colors hover:text-stone-700 focus:text-stone-900 focus:outline-none dark:text-stone-500 dark:hover:text-stone-300 dark:focus:text-stone-200"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
             tabIndex={0}
           >
@@ -148,7 +150,7 @@ export function ResetPasswordForm() {
         {errors.password && (
           <p
             id="new-password-error"
-            className="text-xs font-medium text-red-400"
+            className="text-xs font-medium text-red-500"
           >
             {errors.password}
           </p>
@@ -159,12 +161,12 @@ export function ResetPasswordForm() {
       <div className="space-y-2">
         <Label htmlFor="confirm-password" className="flex items-center gap-1.5">
           <span>Confirm New Password</span>
-          <span className="text-red-400" aria-hidden="true">
+          <span className="text-red-500" aria-hidden="true">
             *
           </span>
         </Label>
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-500">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 dark:text-stone-500">
             <Lock className="h-4 w-4" />
           </div>
           <Input
@@ -184,7 +186,7 @@ export function ResetPasswordForm() {
             className={`pr-10 pl-10 ${
               errors.confirmPassword
                 ? 'border-red-500/80 focus-visible:ring-red-500/40'
-                : 'border-stone-800 focus-visible:ring-indigo-500'
+                : 'focus-visible:ring-indigo-500'
             }`}
             aria-invalid={Boolean(errors.confirmPassword)}
             aria-describedby={
@@ -195,7 +197,7 @@ export function ResetPasswordForm() {
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-500 transition-colors hover:text-stone-300 focus:text-stone-300 focus:outline-none"
+            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 transition-colors hover:text-stone-700 focus:text-stone-900 focus:outline-none dark:text-stone-500 dark:hover:text-stone-300 dark:focus:text-stone-200"
             aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             tabIndex={0}
           >
@@ -209,7 +211,7 @@ export function ResetPasswordForm() {
         {errors.confirmPassword && (
           <p
             id="confirm-password-error"
-            className="text-xs font-medium text-red-400"
+            className="text-xs font-medium text-red-500"
           >
             {errors.confirmPassword}
           </p>
@@ -239,7 +241,7 @@ export function ResetPasswordForm() {
       <div className="pt-1 text-center">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-400 transition-colors hover:text-stone-200"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-500 transition-colors hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to sign in</span>

@@ -116,9 +116,9 @@ export function LoginForm() {
       {generalError && (
         <div
           role="alert"
-          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-950/40 p-3.5 text-sm text-red-200 backdrop-blur-sm duration-200"
+          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 backdrop-blur-sm duration-200 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-200"
         >
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
           <div className="leading-relaxed">{generalError}</div>
         </div>
       )}
@@ -127,9 +127,9 @@ export function LoginForm() {
       {isResetSuccess && (
         <div
           role="status"
-          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-3.5 text-sm text-emerald-200 backdrop-blur-sm duration-200"
+          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-800 backdrop-blur-sm duration-200 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-200"
         >
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <div className="leading-relaxed">
             Your password has been reset successfully. Please log in with your
             new credentials.
@@ -141,12 +141,12 @@ export function LoginForm() {
       <div className="space-y-2">
         <Label htmlFor="email" className="flex items-center gap-1.5">
           <span>Email address</span>
-          <span className="text-red-400" aria-hidden="true">
+          <span className="text-red-500" aria-hidden="true">
             *
           </span>
         </Label>
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-500">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 dark:text-stone-500">
             <Mail className="h-4 w-4" />
           </div>
           <Input
@@ -165,7 +165,7 @@ export function LoginForm() {
             className={`pl-10 ${
               errors.email
                 ? 'border-red-500/80 focus-visible:ring-red-500/40'
-                : 'border-stone-800 focus-visible:ring-indigo-500'
+                : 'focus-visible:ring-indigo-500'
             }`}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'email-error' : undefined}
@@ -173,7 +173,7 @@ export function LoginForm() {
           />
         </div>
         {errors.email && (
-          <p id="email-error" className="text-xs font-medium text-red-400">
+          <p id="email-error" className="text-xs font-medium text-red-500">
             {errors.email}
           </p>
         )}
@@ -184,20 +184,20 @@ export function LoginForm() {
         <div className="flex items-center justify-between">
           <Label htmlFor="password" className="flex items-center gap-1.5">
             <span>Password</span>
-            <span className="text-red-400" aria-hidden="true">
+            <span className="text-red-500" aria-hidden="true">
               *
             </span>
           </Label>
           <Link
             href="/forgot-password"
-            className="text-xs font-medium text-indigo-400 transition-colors hover:text-indigo-300 hover:underline"
+            className="text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-500 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
             tabIndex={0}
           >
             Forgot password?
           </Link>
         </div>
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-500">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 dark:text-stone-500">
             <Lock className="h-4 w-4" />
           </div>
           <Input
@@ -216,7 +216,7 @@ export function LoginForm() {
             className={`pr-10 pl-10 ${
               errors.password
                 ? 'border-red-500/80 focus-visible:ring-red-500/40'
-                : 'border-stone-800 focus-visible:ring-indigo-500'
+                : 'focus-visible:ring-indigo-500'
             }`}
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? 'password-error' : undefined}
@@ -225,7 +225,7 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-500 transition-colors hover:text-stone-300 focus:text-stone-200 focus:outline-none"
+            className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400 transition-colors hover:text-stone-700 focus:text-stone-900 focus:outline-none dark:text-stone-500 dark:hover:text-stone-300 dark:focus:text-stone-200"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
             tabIndex={0}
           >
@@ -237,7 +237,7 @@ export function LoginForm() {
           </button>
         </div>
         {errors.password && (
-          <p id="password-error" className="text-xs font-medium text-red-400">
+          <p id="password-error" className="text-xs font-medium text-red-500">
             {errors.password}
           </p>
         )}
@@ -265,7 +265,7 @@ export function LoginForm() {
       </Button>
 
       {/* Account Provisioning Notice */}
-      <p className="text-center text-[11px] text-stone-500">
+      <p className="text-center text-[11px] text-stone-500 dark:text-stone-400">
         Client accounts are created and provisioned by your administrator.
       </p>
     </form>

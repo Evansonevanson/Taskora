@@ -106,18 +106,18 @@ export function CreateTaskDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-indigo-400" />
+          <DialogTitle className="flex items-center gap-2 text-stone-900 dark:text-stone-100">
+            <Plus className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             <span>Create New Task</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-stone-500 dark:text-stone-400">
             Add a new deliverable or task to your sprint. Work tasks will appear
             in the assigned client’s portal once completed.
           </DialogDescription>
         </DialogHeader>
 
         {serverError && (
-          <div className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-950/40 p-3 text-xs text-red-400">
+          <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-400">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{serverError}</span>
           </div>
@@ -127,7 +127,7 @@ export function CreateTaskDialog({
           {/* Title */}
           <div className="space-y-1.5">
             <Label htmlFor="task-title">
-              Task Title <span className="text-red-400">*</span>
+              Task Title <span className="text-red-500">*</span>
             </Label>
             <Input
               id="task-title"
@@ -144,7 +144,7 @@ export function CreateTaskDialog({
               autoFocus
             />
             {errors.title && (
-              <p className="text-[11px] text-red-400">{errors.title}</p>
+              <p className="text-[11px] text-red-500">{errors.title}</p>
             )}
           </div>
 
@@ -169,7 +169,7 @@ export function CreateTaskDialog({
                   }));
                 }}
                 disabled={isPending}
-                className="h-10 w-full rounded-xl border border-stone-800 bg-stone-900 px-3 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                className="h-10 w-full rounded-xl border border-stone-300/80 bg-white/80 px-3 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"
               >
                 <option value="general">General</option>
                 <option value="work">Work (Client)</option>
@@ -183,7 +183,7 @@ export function CreateTaskDialog({
             {isWorkCategory ? (
               <div className="space-y-1.5">
                 <Label htmlFor="task-client">
-                  Assigned Client <span className="text-red-400">*</span>
+                  Assigned Client <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <select
@@ -197,7 +197,7 @@ export function CreateTaskDialog({
                     }
                     disabled={isPending || clients.length === 0}
                     className={cn(
-                      'h-10 w-full appearance-none rounded-xl border border-stone-800 bg-stone-900 pr-3 pl-8 text-xs text-stone-200 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none',
+                      'h-10 w-full appearance-none rounded-xl border border-stone-300/80 bg-white/80 pr-3 pl-8 text-xs text-stone-800 transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200',
                       errors.clientId && 'border-red-500 focus:border-red-500',
                     )}
                   >
@@ -213,10 +213,10 @@ export function CreateTaskDialog({
                       ))
                     )}
                   </select>
-                  <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+                  <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
                 </div>
                 {errors.clientId && (
-                  <p className="text-[11px] text-red-400">{errors.clientId}</p>
+                  <p className="text-[11px] text-red-500">{errors.clientId}</p>
                 )}
               </div>
             ) : (
@@ -239,7 +239,7 @@ export function CreateTaskDialog({
                   disabled={isPending}
                 />
                 {errors.dueDate && (
-                  <p className="text-[11px] text-red-400">{errors.dueDate}</p>
+                  <p className="text-[11px] text-red-500">{errors.dueDate}</p>
                 )}
               </div>
             )}
@@ -265,7 +265,7 @@ export function CreateTaskDialog({
                 disabled={isPending}
               />
               {errors.dueDate && (
-                <p className="text-[11px] text-red-400">{errors.dueDate}</p>
+                <p className="text-[11px] text-red-500">{errors.dueDate}</p>
               )}
             </div>
           )}
@@ -287,11 +287,11 @@ export function CreateTaskDialog({
                       'rounded-xl border py-2 text-xs font-medium capitalize transition-all duration-150',
                       isSelected
                         ? p === 'high'
-                          ? 'border-red-500/50 bg-red-950/60 text-red-300 shadow-sm shadow-red-900/30'
+                          ? 'border-red-300 bg-red-50 text-red-800 shadow-xs dark:border-red-500/50 dark:bg-red-950/60 dark:text-red-300'
                           : p === 'medium'
-                            ? 'border-amber-500/50 bg-amber-950/60 text-amber-300 shadow-sm shadow-amber-900/30'
-                            : 'border-slate-500/50 bg-slate-800/60 text-slate-200 shadow-sm'
-                        : 'border-stone-800 bg-stone-900/50 text-stone-400 hover:border-stone-700 hover:text-stone-200',
+                            ? 'border-amber-300 bg-amber-50 text-amber-800 shadow-xs dark:border-amber-500/50 dark:bg-amber-950/60 dark:text-amber-300'
+                            : 'border-slate-300 bg-slate-100 text-slate-800 shadow-xs dark:border-slate-500/50 dark:bg-slate-800/60 dark:text-slate-200'
+                        : 'border-stone-300/80 bg-stone-50/50 text-stone-600 hover:border-stone-400 hover:text-stone-900 dark:border-stone-800 dark:bg-stone-900/50 dark:text-stone-400 dark:hover:border-stone-700 dark:hover:text-stone-200',
                     )}
                   >
                     {p}
@@ -316,7 +316,7 @@ export function CreateTaskDialog({
               disabled={isPending}
             />
             {errors.notes && (
-              <p className="text-[11px] text-red-400">{errors.notes}</p>
+              <p className="text-[11px] text-red-500">{errors.notes}</p>
             )}
           </div>
 
@@ -338,9 +338,9 @@ export function CreateTaskDialog({
               disabled={isPending}
             />
             {errors.projectUrl ? (
-              <p className="text-[11px] text-red-400">{errors.projectUrl}</p>
+              <p className="text-[11px] text-red-500">{errors.projectUrl}</p>
             ) : (
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[11px] text-stone-500 dark:text-stone-400">
                 Direct external link for Figma, Google Drive, live website, or
                 Behance.
               </p>

@@ -15,7 +15,7 @@ export default function AdminLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="space-y-3 rounded-xl border border-stone-800 bg-stone-900/50 p-5"
+            className="space-y-3 rounded-xl border border-stone-200/80 bg-white/80 p-5 shadow-sm dark:border-stone-800 dark:bg-stone-900/50"
           >
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24" />
@@ -28,7 +28,7 @@ export default function AdminLoading() {
       </div>
 
       {/* Progress Bar Card Skeleton */}
-      <div className="space-y-3 rounded-xl border border-stone-800 bg-stone-900/50 p-5">
+      <div className="space-y-3 rounded-xl border border-stone-200/80 bg-white/80 p-5 shadow-sm dark:border-stone-800 dark:bg-stone-900/50">
         <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-4 w-12" />
@@ -37,7 +37,7 @@ export default function AdminLoading() {
       </div>
 
       {/* Table Skeleton */}
-      <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/50 p-5">
+      <div className="space-y-4 rounded-xl border border-stone-200/80 bg-white/80 p-5 shadow-sm dark:border-stone-800 dark:bg-stone-900/50">
         {/* Table Filter Bar Skeleton */}
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <Skeleton className="h-9 w-full sm:w-64" />
@@ -52,7 +52,7 @@ export default function AdminLoading() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between border-b border-stone-800/60 py-3 last:border-0"
+              className="flex items-center justify-between border-b border-stone-200/60 py-3 last:border-0 dark:border-stone-800/60"
             >
               <div className="space-y-1.5">
                 <Skeleton className="h-4 w-48 sm:w-64" />

@@ -78,7 +78,7 @@ export function DialogContent({
     >
       {/* Backdrop */}
       <div
-        className="animate-in fade-in fixed inset-0 bg-black/70 backdrop-blur-sm duration-200"
+        className="animate-in fade-in fixed inset-0 bg-black/60 backdrop-blur-sm duration-200"
         onClick={() => onOpenChange(false)}
         aria-hidden="true"
       />
@@ -88,7 +88,7 @@ export function DialogContent({
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-xl border border-stone-800 bg-stone-900/95 p-6 text-stone-100 shadow-2xl backdrop-blur-xl',
+          'relative z-50 w-full max-w-lg rounded-xl border border-stone-200/90 bg-white/95 p-6 text-stone-900 shadow-2xl backdrop-blur-xl dark:border-stone-800 dark:bg-stone-900/95 dark:text-stone-100',
           'animate-in fade-in-90 zoom-in-95 duration-200',
           className,
         )}
@@ -97,7 +97,7 @@ export function DialogContent({
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 rounded-md p-1 text-stone-400 transition-colors hover:bg-stone-800 hover:text-stone-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          className="absolute top-4 right-4 rounded-md p-1 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:hover:bg-stone-800 dark:hover:text-stone-100"
           aria-label="Close dialog"
         >
           <X className="h-4 w-4" />
@@ -127,7 +127,7 @@ export function DialogTitle({
   return (
     <h2
       className={cn(
-        'text-lg font-semibold tracking-tight text-white',
+        'text-lg font-semibold tracking-tight text-stone-900 dark:text-white',
         className,
       )}
       {...props}
@@ -139,7 +139,12 @@ export function DialogDescription({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-xs text-stone-400', className)} {...props} />;
+  return (
+    <p
+      className={cn('text-xs text-stone-500 dark:text-stone-400', className)}
+      {...props}
+    />
+  );
 }
 
 export function DialogFooter({
@@ -149,7 +154,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        'mt-6 flex flex-col-reverse border-t border-stone-800 pt-4 sm:flex-row sm:justify-end sm:space-x-2',
+        'mt-6 flex flex-col-reverse border-t border-stone-200 pt-4 sm:flex-row sm:justify-end sm:space-x-2 dark:border-stone-800',
         className,
       )}
       {...props}

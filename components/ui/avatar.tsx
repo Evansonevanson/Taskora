@@ -4,7 +4,7 @@ import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const avatarVariants = cva(
-  'relative inline-flex shrink-0 items-center justify-center rounded-full bg-stone-800 font-semibold text-stone-200 border border-stone-700/60 overflow-hidden select-none',
+  'relative inline-flex shrink-0 items-center justify-center rounded-full bg-stone-100 font-semibold text-stone-800 border border-stone-300/80 overflow-hidden select-none dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700/60',
   {
     variants: {
       size: {
@@ -61,7 +61,7 @@ export function Avatar({
       ) : initials ? (
         <span className="tracking-tight">{initials}</span>
       ) : fallbackIcon || !name ? (
-        <User className="h-1/2 w-1/2 text-stone-400" />
+        <User className="h-1/2 w-1/2 text-stone-500 dark:text-stone-400" />
       ) : null}
     </div>
   );

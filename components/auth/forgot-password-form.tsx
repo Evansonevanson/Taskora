@@ -80,9 +80,9 @@ export function ForgotPasswordForm() {
       {errorMessage && (
         <div
           role="alert"
-          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-950/40 p-3.5 text-sm text-red-200 backdrop-blur-sm duration-200"
+          className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 backdrop-blur-sm duration-200 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-200"
         >
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
           <div className="leading-relaxed">{errorMessage}</div>
         </div>
       )}
@@ -92,15 +92,15 @@ export function ForgotPasswordForm() {
         <div className="space-y-5">
           <div
             role="status"
-            className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-4 text-sm text-emerald-200 backdrop-blur-sm duration-200"
+            className="animate-in fade-in-50 flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 backdrop-blur-sm duration-200 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-200"
           >
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <div className="leading-relaxed">{successMessage}</div>
           </div>
           <div className="pt-2 text-center">
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Return to sign in</span>
@@ -113,12 +113,12 @@ export function ForgotPasswordForm() {
           <div className="space-y-2">
             <Label htmlFor="reset-email" className="flex items-center gap-1.5">
               <span>Account Email Address</span>
-              <span className="text-red-400" aria-hidden="true">
+              <span className="text-red-500" aria-hidden="true">
                 *
               </span>
             </Label>
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-500">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-400 dark:text-stone-500">
                 <Mail className="h-4 w-4" />
               </div>
               <Input
@@ -136,7 +136,7 @@ export function ForgotPasswordForm() {
                 className={`pl-10 ${
                   fieldError
                     ? 'border-red-500/80 focus-visible:ring-red-500/40'
-                    : 'border-stone-800 focus-visible:ring-indigo-500'
+                    : 'focus-visible:ring-indigo-500'
                 }`}
                 aria-invalid={Boolean(fieldError)}
                 aria-describedby={fieldError ? 'reset-email-error' : undefined}
@@ -146,7 +146,7 @@ export function ForgotPasswordForm() {
             {fieldError && (
               <p
                 id="reset-email-error"
-                className="text-xs font-medium text-red-400"
+                className="text-xs font-medium text-red-500"
               >
                 {fieldError}
               </p>
@@ -178,7 +178,7 @@ export function ForgotPasswordForm() {
           <div className="pt-1 text-center">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-400 transition-colors hover:text-stone-200"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-500 transition-colors hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to sign in</span>

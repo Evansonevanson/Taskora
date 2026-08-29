@@ -53,35 +53,35 @@ export function UserMenu({ user }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 rounded-full p-1 pl-2 text-stone-300 transition-colors hover:bg-stone-800/60 hover:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        className="flex items-center gap-2.5 rounded-full p-1 pl-2 text-stone-700 transition-colors hover:bg-stone-100 hover:text-stone-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-stone-300 dark:hover:bg-stone-800/60 dark:hover:text-white"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="User account menu"
       >
         <Avatar name={displayName} size="sm" />
         <div className="hidden flex-col text-left md:flex">
-          <span className="text-xs leading-tight font-semibold text-stone-200">
+          <span className="text-xs leading-tight font-semibold text-stone-800 dark:text-stone-200">
             {displayName}
           </span>
-          <span className="text-[10px] text-stone-400 capitalize">
+          <span className="text-[10px] text-stone-500 capitalize dark:text-stone-400">
             {user.role}
           </span>
         </div>
-        <ChevronDown className="mr-1 hidden h-3.5 w-3.5 text-stone-500 sm:block" />
+        <ChevronDown className="mr-1 hidden h-3.5 w-3.5 text-stone-400 sm:block dark:text-stone-500" />
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div
           role="menu"
-          className="animate-in fade-in-80 zoom-in-95 absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-xl border border-stone-800 bg-stone-900/95 p-1.5 text-stone-100 shadow-2xl ring-1 ring-white/5 backdrop-blur-xl duration-150"
+          className="animate-in fade-in-80 zoom-in-95 absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-xl border border-stone-200 bg-white/95 p-1.5 text-stone-900 shadow-xl ring-1 ring-black/5 backdrop-blur-xl duration-150 dark:border-stone-800 dark:bg-stone-900/95 dark:text-stone-100 dark:shadow-2xl dark:ring-white/5"
         >
           {/* User Info Header */}
-          <div className="mb-1 border-b border-stone-800/80 px-3 py-2.5">
-            <p className="truncate text-xs font-semibold text-white">
+          <div className="mb-1 border-b border-stone-200 px-3 py-2.5 dark:border-stone-800/80">
+            <p className="truncate text-xs font-semibold text-stone-900 dark:text-white">
               {displayName}
             </p>
-            <p className="mb-1.5 truncate text-[11px] text-stone-400">
+            <p className="mb-1.5 truncate text-[11px] text-stone-500 dark:text-stone-400">
               {user.email}
             </p>
             <Badge
@@ -106,7 +106,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-red-400 transition-colors hover:bg-red-950/40 hover:text-red-300"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
             role="menuitem"
           >
             <LogOut className="h-3.5 w-3.5" />

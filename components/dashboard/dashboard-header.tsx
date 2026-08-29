@@ -17,10 +17,10 @@ export function DashboardHeader({ clients }: DashboardHeaderProps) {
     <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl dark:text-white">
             Dashboard
           </h1>
-          <p className="mt-1 text-sm text-stone-400">
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
             Overview of active tasks, sprint progress, and priority assignments.
           </p>
         </div>
@@ -29,7 +29,7 @@ export function DashboardHeader({ clients }: DashboardHeaderProps) {
           <Button
             variant="primary"
             onClick={() => setIsCreateOpen(true)}
-            className="w-full gap-2 shadow-lg shadow-indigo-500/20 sm:w-auto"
+            className="w-full gap-2 shadow-sm shadow-indigo-500/20 sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             <span>New Task</span>

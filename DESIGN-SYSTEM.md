@@ -1,36 +1,48 @@
 # DESIGN-SYSTEM.md — Colors, Typography, Spacing, Components
 
-This defines the visual language for Taskora. Implement as Tailwind config tokens + CSS variables so both Admin and Client views stay visually consistent, with the Client view using a slightly quieter/lighter treatment per `UI-UX.md`.
+This defines the visual language for Taskora. Implemented as Tailwind CSS v4 custom tokens, variants, and CSS custom variables so both Admin and Client views stay visually consistent across Light, Dark, and System appearance modes.
+
+## Brand Assets & Logo
+
+Official brand assets live in `public/brand/` derived from the project's source `Logo/` directory:
+
+- **Logo Icon (`public/brand/logo-icon.png`):** Official "T / checkmark" monogram in vibrant blue/indigo gradient (`#3B82F6` / `#4F46E5`). Used in `<TaskoraLogo />` across navigation headers, authentication screens, 404 page, and app favicons.
+- **Favicons / App Icons (`app/icon.png`, `app/apple-icon.png`, `public/favicon.ico`):** Multi-resolution icons derived from the official monogram.
+- **Brand Lockups (`public/brand/logo-dark.png`, `public/brand/logo-black.png`):** Full horizontal logo lockups for dark and light presentations.
 
 ## Brand Feel
 
-Clean, modern, professional-but-approachable productivity tool — think "Linear meets a client portal," not a generic admin template. Avoid default shadcn gray-on-white monotony; commit to one confident accent color and use it consistently for primary actions and progress indicators.
+Clean, modern, professional-but-approachable productivity tool — think "Linear meets a client portal," not a generic admin template. Avoid default shadcn gray-on-white monotony; commit to one confident accent color (Indigo `#6366F1`) and use it consistently for primary actions, badges, and progress indicators.
 
 ## Color Tokens
 
-| Token                    | Usage                                          | Example value (adjust to taste) |
-| ------------------------ | ---------------------------------------------- | ------------------------------- |
-| `--color-primary`        | Primary buttons, active nav, progress bar fill | Indigo `#4F46E5`                |
-| `--color-primary-hover`  | Hover state                                    | `#4338CA`                       |
-| `--color-bg`             | App background                                 | `#FAFAFA` (light)               |
-| `--color-surface`        | Cards, modals                                  | `#FFFFFF`                       |
-| `--color-border`         | Dividers, card borders                         | `#E5E7EB`                       |
-| `--color-text-primary`   | Headings, body text                            | `#111827`                       |
-| `--color-text-secondary` | Muted labels, metadata                         | `#6B7280`                       |
-| `--color-success`        | Completed status, positive states              | `#16A34A`                       |
-| `--color-warning`        | `needs_revision` banner, medium priority       | `#D97706`                       |
-| `--color-danger`         | High priority, destructive actions             | `#DC2626`                       |
-| `--color-info`           | General/neutral badges                         | `#2563EB`                       |
+| Token                    | Usage                                      | Light Mode           | Dark Mode           |
+| :----------------------- | :----------------------------------------- | :------------------- | :------------------ |
+| `--color-primary`        | Primary buttons, active nav, progress fill | Indigo `#6366F1`     | Indigo `#6366F1`    |
+| `--color-primary-hover`  | Hover state                                | `#4F46E5`            | `#4F46E5`           |
+| `--color-primary-active` | Active state                               | `#4338CA`            | `#4338CA`           |
+| `--color-bg`             | App background                             | Stone 50 `#FAFAF9`   | Stone 950 `#0C0A09` |
+| `--color-surface`        | Cards, modals                              | Pure White `#FFFFFF` | Stone 900 `#1C1917` |
+| `--color-elevated`       | Sub-cards, nested elements                 | Stone 100 `#F5F5F4`  | Stone 800 `#292524` |
+| `--color-border`         | Dividers, card borders                     | Stone 200 `#E7E5E4`  | Stone 800 `#292524` |
+| `--color-border-subtle`  | Subtle outlines                            | Stone 100 `#F5F5F4`  | Stone 900 `#1F1D1B` |
+| `--color-text-primary`   | Headings, body text                        | Stone 900 `#1C1917`  | Stone 50 `#F5F5F4`  |
+| `--color-text-secondary` | Muted labels, metadata                     | Stone 600 `#57534E`  | Stone 400 `#A8A29E` |
+| `--color-text-muted`     | Secondary icons, subtle hints              | Stone 500 `#78716C`  | Stone 500 `#78716C` |
+| `--color-success`        | Completed status, positive states          | Emerald `#10B981`    | Emerald `#10B981`   |
+| `--color-warning`        | `needs_revision` banner, medium priority   | Amber `#F59E0B`      | Amber `#F59E0B`     |
+| `--color-danger`         | High priority, destructive actions         | Red `#EF4444`        | Red `#EF4444`       |
+| `--color-info`           | General/neutral badges                     | Indigo `#6366F1`     | Indigo `#6366F1`    |
 
 ### Priority Color Mapping
 
-- High → `--color-danger`
-- Medium → `--color-warning`
-- Low → `--color-text-secondary` (deliberately muted — don't over-color low-priority items)
+- High → `--color-danger` (`#EF4444`)
+- Medium → `--color-warning` (`#F59E0B`)
+- Low → `--color-text-secondary` (`#94A3B8` / `#57534E` — deliberately muted)
 
-### Category Badge Colors (suggested, keep distinct and consistent)
+### Category Badge Colors
 
-- General → neutral gray
+- General → neutral stone
 - Work → `--color-primary` tint
 - Personal → teal
 - Urgent → `--color-danger`
@@ -39,7 +51,7 @@ Clean, modern, professional-but-approachable productivity tool — think "Linear
 ## Typography
 
 | Role              | Font                          | Weight/Size                            |
-| ----------------- | ----------------------------- | -------------------------------------- |
+| :---------------- | :---------------------------- | :------------------------------------- |
 | Font family       | Inter (or system-ui fallback) | —                                      |
 | Page titles       | 24–28px                       | Semibold (600)                         |
 | Section headings  | 18–20px                       | Semibold (600)                         |
@@ -51,37 +63,35 @@ Clean, modern, professional-but-approachable productivity tool — think "Linear
 
 Use Tailwind's default spacing scale (4px base unit). Standard component padding: `p-4` to `p-6` for cards, `gap-4` between grid items, `gap-2` for tightly related inline elements (icon + label).
 
-## Components (via shadcn/ui, themed to tokens above)
+## Components
 
-- **Button:** primary (filled, `--color-primary`), secondary (outline), destructive (red, for delete/deactivate/archive actions), ghost (for low-emphasis actions like "Cancel").
-- **Badge:** used for category, priority, and status — pill-shaped, colored per mapping above, always paired with a text label (never color alone).
-- **Card:** used for stat cards, task cards, client cards, job cards — consistent border-radius (`rounded-lg`), subtle shadow (`shadow-sm`), `--color-surface` background.
+- **Button:** primary (filled, `--color-primary`), secondary (outline/solid tint), destructive (red, for delete/deactivate/archive actions), ghost (for low-emphasis actions like "Cancel").
+- **Badge:** used for category, priority, and status — pill-shaped, colored per mapping above, always paired with a text label.
+- **Card:** used for stat cards, task cards, client cards, job cards — consistent border-radius (`rounded-xl`), subtle shadow (`shadow-sm` / `shadow-xl`), `--color-surface` background.
 - **Modal/Dialog:** used for New Task, confirmations, client creation — centered, backdrop dim, focus-trapped.
-- **Progress bar:** rounded-full track, `--color-primary` fill, animated transition on value change, percentage label to the right or overlaid.
-- **Dropdown/Select:** used for Category, Client, Priority, Sort — consistent height/padding across all instances.
-- **Toast/inline alert:** used for Server Action success/error feedback (e.g., "Task created," "That email is already in use").
+- **Progress bar:** rounded-full track, `--color-primary` fill, animated transition on value change.
 
 ## Layout
 
-- **Admin dashboard:** max-width container (`~1200px`), stat cards in a responsive grid (4 columns desktop → 2 → 1 on mobile), task list full-width below.
-- **Client portal:** narrower max-width (`~800px`) — reinforces the simpler, focused feel described in `UI-UX.md`.
-- **Sidebar/nav:** simple top nav for MVP (Dashboard / Clients / Settings for Admin; My Jobs only, effectively, for Client) — a full sidebar is unnecessary complexity at this scope.
+- **Admin dashboard:** max-width container (`max-w-7xl`), stat cards in a responsive grid, task list full-width below.
+- **Client portal:** focused container (`max-w-4xl`) — reinforces the simpler, focused feel described in `UI-UX.md`.
+- **Top navigation:** AdminNav (Dashboard, Clients, Settings), ClientNav (My Jobs, Company badge, ThemeToggle, UserMenu).
 
-## Iconography
+## Light & Dark Appearance Modes
 
-`lucide-react` throughout, consistent stroke width (default 2px). Suggested icon mapping:
+Taskora supports three real appearance options accessible to all authenticated users:
 
-- Total tasks → `ListTodo`
-- Pending → `Clock`
-- Completed → `CheckCircle2`
-- High Priority → `AlertTriangle`
-- Comments → `MessageSquare`
-- Clients → `Users`
-- Settings → `Settings`
-- Attachments/Deliverables → `Paperclip`, `FileText`, `Image`
-- External Project Link → `ExternalLink`, `Globe`
-- Upload/Download → `UploadCloud`, `Download`
+1. **Light:** Clean, crisp stone & white palette with dark typography and soft borders.
+2. **Dark:** Deep stone-950 slate canvas with stone-900 cards and subtle ambient glows.
+3. **System:** Automatically tracks the user's OS / browser color scheme (`prefers-color-scheme: dark`).
 
-## Dark Mode
+**Controls:**
 
-Not required for MVP (see `FEATURES.md` Phase 2), but define color tokens as CSS variables now so adding a dark theme later doesn't require re-touching every component.
+- **Admin:** Configurable via `/admin/settings` Appearance section.
+- **Client:** Configurable via compact `<ThemeToggle />` popover directly in the top navigation bar.
+
+**Persistence & Anti-FOUC:**
+
+- Selection is persisted to `localStorage` under `taskora-theme`.
+- Synchronized before React hydration via an inline `<head>` script in `app/layout.tsx` to prevent theme flash (FOUC).
+- Tailwind v4 `@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, .dark, .dark *));` activates all dark styling seamlessly.

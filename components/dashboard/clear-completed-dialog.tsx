@@ -42,7 +42,7 @@ export function ClearCompletedDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-amber-500/30 bg-amber-950/50 text-amber-400">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/50 dark:text-amber-400">
             <Archive className="h-6 w-6" />
           </div>
           <DialogTitle className="text-center">

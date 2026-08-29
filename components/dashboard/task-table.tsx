@@ -225,7 +225,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
       />
 
       {/* Task Table Container */}
-      <div className="overflow-hidden rounded-xl border border-stone-800/80 bg-stone-900/40 shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-stone-200/80 bg-white/80 shadow-sm dark:border-stone-800/80 dark:bg-stone-900/40">
         {sortedTasks.length === 0 ? (
           <EmptyState
             icon={ListTodo}
@@ -244,7 +244,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-stone-800 bg-stone-900/80 hover:bg-stone-900/80">
+              <TableRow className="border-stone-200 bg-stone-50/80 hover:bg-stone-50/80 dark:border-stone-800 dark:bg-stone-900/80 dark:hover:bg-stone-900/80">
                 <TableHead className="w-12 text-center">Status</TableHead>
                 <TableHead>Task Details</TableHead>
                 <TableHead className="hidden md:table-cell">Category</TableHead>
@@ -266,8 +266,9 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                     key={task.id}
                     onClick={() => setEditingTask(task)}
                     className={cn(
-                      'group cursor-pointer border-stone-800/60 transition-colors hover:bg-stone-800/30',
-                      isCompleted && 'bg-stone-950/30 opacity-60',
+                      'group cursor-pointer border-stone-200/60 transition-colors hover:bg-stone-50/80 dark:border-stone-800/60 dark:hover:bg-stone-800/30',
+                      isCompleted &&
+                        'bg-stone-100/50 opacity-60 dark:bg-stone-950/30',
                     )}
                   >
                     {/* Status Checkbox Toggle */}
@@ -285,7 +286,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                           'mx-auto flex h-5 w-5 items-center justify-center rounded-md border transition-all duration-150',
                           isCompleted
                             ? 'border-emerald-500 bg-emerald-600 text-white'
-                            : 'border-stone-700 bg-stone-900 hover:border-indigo-500',
+                            : 'border-stone-300 bg-white hover:border-indigo-500 dark:border-stone-700 dark:bg-stone-900',
                           isToggling && 'animate-pulse opacity-50',
                         )}
                       >
@@ -299,8 +300,9 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                         <div className="flex items-center gap-2">
                           <span
                             className={cn(
-                              'text-xs leading-tight font-semibold text-stone-100 transition-colors group-hover:text-indigo-300',
-                              isCompleted && 'text-stone-400 line-through',
+                              'text-xs leading-tight font-semibold text-stone-900 transition-colors group-hover:text-indigo-600 dark:text-stone-100 dark:group-hover:text-indigo-300',
+                              isCompleted &&
+                                'text-stone-400 line-through dark:text-stone-500',
                             )}
                           >
                             {task.title}
@@ -311,7 +313,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="text-stone-400 hover:text-indigo-300"
+                              className="text-stone-400 hover:text-indigo-600 dark:text-stone-400 dark:hover:text-indigo-300"
                               title={`Project Link: ${task.projectUrl}`}
                             >
                               <Globe className="h-3 w-3" />
@@ -329,7 +331,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                         </div>
 
                         {task.notes && (
-                          <p className="line-clamp-1 text-[11px] text-stone-400">
+                          <p className="line-clamp-1 text-[11px] text-stone-600 dark:text-stone-400">
                             {task.notes}
                           </p>
                         )}
@@ -356,14 +358,16 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                     {/* Client Name (if Work) */}
                     <TableCell className="hidden p-3 sm:table-cell">
                       {task.clientName ? (
-                        <div className="inline-flex items-center gap-1.5 text-xs text-stone-300">
-                          <Building2 className="h-3 w-3 text-stone-500" />
+                        <div className="inline-flex items-center gap-1.5 text-xs text-stone-700 dark:text-stone-300">
+                          <Building2 className="h-3 w-3 text-stone-400 dark:text-stone-500" />
                           <span className="max-w-[120px] truncate">
                             {task.clientName}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-stone-600">—</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-600">
+                          —
+                        </span>
                       )}
                     </TableCell>
 
@@ -387,17 +391,19 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                           className={cn(
                             'inline-flex items-center gap-1 text-xs',
                             dueInfo.isOverdue && !isCompleted
-                              ? 'font-medium text-red-400'
+                              ? 'font-medium text-red-600 dark:text-red-400'
                               : dueInfo.isToday && !isCompleted
-                                ? 'font-medium text-amber-400'
-                                : 'text-stone-400',
+                                ? 'font-medium text-amber-600 dark:text-amber-400'
+                                : 'text-stone-600 dark:text-stone-400',
                           )}
                         >
                           <Calendar className="h-3 w-3" />
                           <span>{dueInfo.formatted}</span>
                         </div>
                       ) : (
-                        <span className="text-xs text-stone-600">No date</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-600">
+                          No date
+                        </span>
                       )}
                     </TableCell>
 
@@ -411,7 +417,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                             e.stopPropagation();
                             setEditingTask(task);
                           }}
-                          className="h-7 w-7 p-0 text-stone-400 hover:bg-stone-800/60 hover:text-stone-100"
+                          className="h-7 w-7 p-0 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800/60 dark:hover:text-stone-100"
                           aria-label={`Edit "${task.title}"`}
                         >
                           <Edit2 className="h-3.5 w-3.5" />
@@ -421,7 +427,7 @@ export function TaskTable({ tasks, clients }: TaskTableProps) {
                           size="sm"
                           onClick={(e) => handleArchiveTask(e, task.id)}
                           disabled={isArchiving}
-                          className="h-7 w-7 p-0 text-stone-400 hover:bg-red-950/30 hover:text-red-400"
+                          className="h-7 w-7 p-0 text-stone-500 hover:bg-red-50 hover:text-red-600 dark:text-stone-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                           aria-label={`Archive "${task.title}"`}
                         >
                           {isArchiving ? (

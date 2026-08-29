@@ -15,7 +15,7 @@ export default function PortalLoading() {
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/50 p-6"
+            className="space-y-4 rounded-xl border border-stone-200/80 bg-white/80 p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900/50"
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
@@ -27,7 +27,7 @@ export default function PortalLoading() {
 
             <Skeleton className="h-12 w-full rounded-lg" />
 
-            <div className="flex items-center justify-between border-t border-stone-800/60 pt-2">
+            <div className="flex items-center justify-between border-t border-stone-200/60 pt-2 dark:border-stone-800/60">
               <Skeleton className="h-3.5 w-28" />
               <Skeleton className="h-8 w-24 rounded-lg" />
             </div>

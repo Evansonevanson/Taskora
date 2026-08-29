@@ -58,21 +58,25 @@ function CompleteTaskContent({ task, onClose }: CompleteTaskContentProps) {
   return (
     <>
       <DialogHeader>
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-950/50 text-emerald-400">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/50 dark:text-emerald-400">
           <CheckCircle2 className="h-6 w-6" />
         </div>
-        <DialogTitle className="text-center">Complete Deliverable</DialogTitle>
-        <DialogDescription className="text-center">
+        <DialogTitle className="text-center text-stone-900 dark:text-stone-100">
+          Complete Deliverable
+        </DialogTitle>
+        <DialogDescription className="text-center text-stone-500 dark:text-stone-400">
           Mark &ldquo;{task.title}&rdquo; as completed in your active sprint.
         </DialogDescription>
       </DialogHeader>
 
       {/* Task & Client Info Card */}
-      <div className="my-2 space-y-2 rounded-xl border border-stone-800 bg-stone-900/60 p-3.5">
-        <div className="text-xs font-semibold text-stone-200">{task.title}</div>
+      <div className="my-2 space-y-2 rounded-xl border border-stone-200 bg-stone-50/70 p-3.5 dark:border-stone-800 dark:bg-stone-900/60">
+        <div className="text-xs font-semibold text-stone-900 dark:text-stone-200">
+          {task.title}
+        </div>
         {task.clientName && (
-          <div className="flex items-center gap-1.5 text-xs text-stone-400">
-            <Building2 className="h-3.5 w-3.5 text-stone-500" />
+          <div className="flex items-center gap-1.5 text-xs text-stone-600 dark:text-stone-400">
+            <Building2 className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
             <span>Assigned Client: {task.clientName}</span>
           </div>
         )}
@@ -80,20 +84,20 @@ function CompleteTaskContent({ task, onClose }: CompleteTaskContentProps) {
 
       {/* Notify Client Option */}
       {task.category === 'work' && task.clientId && (
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-stone-800/80 bg-stone-900/40 p-3 transition-colors hover:border-stone-700">
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-stone-200 bg-stone-50/70 p-3 transition-colors hover:border-stone-300 dark:border-stone-800/80 dark:bg-stone-900/40 dark:hover:border-stone-700">
           <input
             type="checkbox"
             checked={notifyClient}
             onChange={(e) => setNotifyClient(e.target.checked)}
             disabled={isPending}
-            className="mt-0.5 h-4 w-4 rounded border-stone-700 bg-stone-900 text-indigo-600 focus:ring-indigo-500"
+            className="mt-0.5 h-4 w-4 rounded border-stone-300 bg-white text-indigo-600 focus:ring-indigo-500 dark:border-stone-700 dark:bg-stone-900"
           />
           <div className="space-y-0.5">
-            <span className="flex items-center gap-1.5 text-xs font-medium text-stone-200">
-              <Mail className="h-3.5 w-3.5 text-indigo-400" />
+            <span className="flex items-center gap-1.5 text-xs font-medium text-stone-900 dark:text-stone-200">
+              <Mail className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
               Notify client via email
             </span>
-            <p className="text-[11px] leading-normal text-stone-400">
+            <p className="text-[11px] leading-normal text-stone-600 dark:text-stone-400">
               Sends a branded delivery notification with a direct link to review
               the deliverable in their portal.
             </p>

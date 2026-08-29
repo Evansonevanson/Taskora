@@ -12,9 +12,9 @@ Do not guess project progress from filenames or partial code when this file exis
 
 ## Project Status
 
-**Stage:** Phase 13 Complete — Project Link & Deliverable Attachments (MVP Feature)  
-**Current Phase:** Phase 13 Complete (MVP Feature Set Fully Implemented)  
-**Current Task:** Feature Complete & Verified  
+**Stage:** Phase 13 Complete — Light Mode Design Audit & Harmonization Complete  
+**Current Phase:** Phase 13 Complete (MVP Feature Set & Theme Polish Fully Verified)  
+**Current Task:** Light Mode Audit & Fix Across All Views (Verified: Types, Lints, Tests, Build)  
 **MVP Status:** Complete (14 Phases — Phase 0 through Phase 13)
 
 ---
@@ -1259,6 +1259,8 @@ All 14 phases (Phase 0 through Phase 13) have been implemented and verified:
 - **Phase 12:** Production Deployment Readiness (security headers, secret isolation audit, clean production build).
 - **Phase 13:** Project Link & Deliverable Attachments (promoted MVP deliverable outputs: safe external links, Supabase Storage attachments with 20MB limit and 300s signed URLs, full Admin and Client Portal integration, 140/140 tests passing).
 - **Post-Phase 13 Stabilization:** 404 and Route Navigation Synchronization (Added dedicated `/portal/jobs` My Jobs route for Clients, redirecting `/portal` to `/portal/jobs`, safe Admin redirect from `/portal/jobs` and `/portal/jobs/[id]` to `/admin/dashboard`, simplified professional 404 page with "Go to Dashboard" CTA pointing to `/`, LoginForm administrator provisioning notice without signup buttons, synchronized `ROUTES.md`, `AUTH.md`, `RBAC.md`, and `CURRENT-STATE.md`).
+- **Official Branding, Theming & Favicon System:** Integrated official Taskora brand assets from `Logo/` into `public/brand/` and `<TaskoraLogo />`, added multi-resolution Next.js 16 favicons and Apple touch icons (`app/icon.png`, `app/apple-icon.png`, `public/favicon.ico`), implemented real Light / Dark / System appearance mode with `ThemeProvider`, anti-FOUC initialization script, CSS token maps, and Appearance settings card in `/admin/settings` (154/154 tests passing across 22 test suites).
+- **Client Portal Theme Switcher:** Added compact, accessible `<ThemeToggle />` popover directly in `components/layout/client-nav.tsx` allowing clients to toggle between Light, Dark, and System appearance modes immediately across `/portal/jobs` and `/portal/jobs/[id]` with persistent `taskora-theme` storage (158/158 tests passing across 22 test suites).
 
 ---
 

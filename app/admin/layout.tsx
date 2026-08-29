@@ -42,7 +42,7 @@ export default async function AdminLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
+    <div className="flex min-h-screen flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)] transition-colors duration-150">
       <AdminNav user={userData} />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
         {children}

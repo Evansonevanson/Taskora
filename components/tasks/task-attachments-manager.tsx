@@ -164,39 +164,43 @@ export function TaskAttachmentsManager({
 
   const getFileIcon = (mime: string) => {
     if (mime.startsWith('image/')) {
-      return <ImageIcon className="h-4 w-4 text-emerald-400" />;
+      return (
+        <ImageIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+      );
     }
     if (mime === 'application/pdf') {
-      return <FileText className="h-4 w-4 text-rose-400" />;
+      return <FileText className="h-4 w-4 text-rose-600 dark:text-rose-400" />;
     }
-    return <Paperclip className="h-4 w-4 text-indigo-400" />;
+    return (
+      <Paperclip className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+    );
   };
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-semibold text-stone-300">
-          <Paperclip className="h-3.5 w-3.5 text-indigo-400" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-stone-800 dark:text-stone-300">
+          <Paperclip className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
           <span>Deliverable Files</span>
-          <span className="rounded-md bg-stone-800 px-1.5 py-0.5 text-[10px] text-stone-400">
+          <span className="rounded-md bg-stone-200 px-1.5 py-0.5 text-[10px] text-stone-700 dark:bg-stone-800 dark:text-stone-400">
             {attachments.length}
           </span>
         </div>
-        <span className="text-[11px] text-stone-500">
+        <span className="text-[11px] text-stone-500 dark:text-stone-400">
           Max 20MB (JPG, PNG, WEBP, PDF)
         </span>
       </div>
 
       {errorMsg && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-950/40 p-2.5 text-xs text-red-300">
-          <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+        <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-300">
+          <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-950/40 p-2.5 text-xs text-emerald-300">
-          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{successMsg}</span>
         </div>
       )}
@@ -218,8 +222,8 @@ export function TaskAttachmentsManager({
           className={cn(
             'group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed p-4 text-center transition-colors duration-150',
             isDragging
-              ? 'border-indigo-500 bg-indigo-950/30'
-              : 'border-stone-800 bg-stone-900/30 hover:border-stone-700 hover:bg-stone-900/50',
+              ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30'
+              : 'border-stone-300 bg-stone-50/50 hover:border-stone-400 hover:bg-stone-100/50 dark:border-stone-800 dark:bg-stone-900/30 dark:hover:border-stone-700 dark:hover:bg-stone-900/50',
             isUploading && 'pointer-events-none opacity-60',
           )}
         >
@@ -232,17 +236,17 @@ export function TaskAttachmentsManager({
             disabled={isUploading}
           />
           {isUploading ? (
-            <div className="flex items-center gap-2 text-xs text-indigo-300">
+            <div className="flex items-center gap-2 text-xs text-indigo-700 dark:text-indigo-300">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Uploading deliverable...</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-950/40 text-indigo-400 transition-transform group-hover:scale-105">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700 transition-transform group-hover:scale-105 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-400">
                 <UploadCloud className="h-4 w-4" />
               </div>
-              <p className="text-xs text-stone-300">
-                <span className="font-medium text-indigo-400">
+              <p className="text-xs text-stone-700 dark:text-stone-300">
+                <span className="font-medium text-indigo-600 dark:text-indigo-400">
                   Click to upload
                 </span>{' '}
                 or drag and drop deliverable
@@ -262,20 +266,20 @@ export function TaskAttachmentsManager({
             return (
               <div
                 key={file.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-stone-800 bg-stone-900/60 p-2.5 text-xs transition-colors hover:border-stone-700"
+                className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-white/80 p-2.5 text-xs transition-colors hover:border-stone-300 dark:border-stone-800 dark:bg-stone-900/60 dark:hover:border-stone-700"
               >
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-stone-800 bg-stone-950">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-950">
                     {getFileIcon(file.mime_type)}
                   </div>
                   <div className="min-w-0">
                     <p
-                      className="truncate font-medium text-stone-200"
+                      className="truncate font-medium text-stone-900 dark:text-stone-200"
                       title={file.file_name}
                     >
                       {file.file_name}
                     </p>
-                    <p className="text-[10px] text-stone-500">
+                    <p className="text-[10px] text-stone-500 dark:text-stone-400">
                       {formatBytes(file.file_size)} •{' '}
                       {new Date(file.created_at).toLocaleDateString()}
                     </p>
@@ -289,11 +293,11 @@ export function TaskAttachmentsManager({
                     size="sm"
                     onClick={() => handlePreviewOrDownload(file.id, 'preview')}
                     disabled={isDownloading || isDeleting}
-                    className="h-7 w-7 p-0 text-stone-400 hover:text-stone-100"
+                    className="h-7 w-7 p-0 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
                     title="Preview file"
                   >
                     {isDownloading ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-400" />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-600 dark:text-indigo-400" />
                     ) : (
                       <ExternalLink className="h-3.5 w-3.5" />
                     )}
@@ -305,7 +309,7 @@ export function TaskAttachmentsManager({
                     size="sm"
                     onClick={() => handlePreviewOrDownload(file.id, 'download')}
                     disabled={isDownloading || isDeleting}
-                    className="h-7 w-7 p-0 text-stone-400 hover:text-stone-100"
+                    className="h-7 w-7 p-0 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
                     title="Download file"
                   >
                     <Download className="h-3.5 w-3.5" />
@@ -318,11 +322,11 @@ export function TaskAttachmentsManager({
                       size="sm"
                       onClick={() => handleDelete(file.id, file.file_name)}
                       disabled={isDeleting || isDownloading}
-                      className="h-7 w-7 p-0 text-stone-400 hover:text-red-400"
+                      className="h-7 w-7 p-0 text-stone-500 hover:bg-red-50 hover:text-red-600 dark:text-stone-400 dark:hover:text-red-400"
                       title="Remove deliverable"
                     >
                       {isDeleting ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-red-400" />
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-red-600 dark:text-red-400" />
                       ) : (
                         <Trash2 className="h-3.5 w-3.5" />
                       )}

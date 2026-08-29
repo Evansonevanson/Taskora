@@ -118,7 +118,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
     return (
       <div className="space-y-4">
         <DialogHeader>
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-950/50 text-emerald-400">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/50 dark:text-emerald-400">
             <CheckCircle2 className="h-6 w-6" />
           </div>
           <DialogTitle className="text-center">
@@ -130,37 +130,41 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
         </DialogHeader>
 
         {/* Credentials Box */}
-        <div className="space-y-3 rounded-xl border border-stone-800 bg-stone-900/80 p-4">
-          <div className="text-xs font-semibold text-stone-300">
+        <div className="space-y-3 rounded-xl border border-stone-200 bg-stone-50/80 p-4 dark:border-stone-800 dark:bg-stone-900/80">
+          <div className="text-xs font-semibold text-stone-800 dark:text-stone-300">
             Portal Access Credentials
           </div>
 
           <div className="space-y-1.5 text-xs">
-            <div className="flex justify-between border-b border-stone-800 py-1">
-              <span className="text-stone-400">Login Email:</span>
-              <span className="font-mono text-stone-100">
+            <div className="flex justify-between border-b border-stone-200 py-1 dark:border-stone-800">
+              <span className="text-stone-500 dark:text-stone-400">
+                Login Email:
+              </span>
+              <span className="font-mono font-medium text-stone-900 dark:text-stone-100">
                 {createdResult.email}
               </span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-stone-400">Temporary Password:</span>
-              <span className="font-mono text-indigo-300">
+              <span className="text-stone-500 dark:text-stone-400">
+                Temporary Password:
+              </span>
+              <span className="font-mono font-semibold text-indigo-700 dark:text-indigo-300">
                 {createdResult.temporaryPassword}
               </span>
             </div>
           </div>
 
           {createdResult.emailSent ? (
-            <p className="flex items-center gap-1.5 pt-1 text-xs text-emerald-400">
+            <p className="flex items-center gap-1.5 pt-1 text-xs text-emerald-700 dark:text-emerald-400">
               <Check className="h-3.5 w-3.5 shrink-0" />
               <span>Welcome email with credentials dispatched to client.</span>
             </p>
           ) : (
             <div
               role="status"
-              className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-950/30 p-2.5 text-xs text-amber-200"
+              className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-200"
             >
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400" />
               <span className="leading-relaxed">
                 Automated invite email could not be delivered. Please copy and
                 manually share the temporary credentials with the client.
@@ -180,11 +184,11 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
           <Button
             variant="primary"
             onClick={handleCopyCredentials}
-            className="w-full gap-1.5 bg-indigo-600 hover:bg-indigo-700 sm:w-auto"
+            className="w-full gap-1.5 sm:w-auto"
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4 text-emerald-300" />
+                <Check className="h-4 w-4" />
                 <span>Copied to Clipboard!</span>
               </>
             ) : (
@@ -203,7 +207,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
     <>
       <DialogHeader>
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-950/40 text-indigo-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-400">
             <UserPlus className="h-4 w-4" />
           </div>
           <div>
@@ -220,7 +224,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
         {generalError && (
           <div
             role="alert"
-            className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-400"
+            className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-500/20 dark:bg-red-950/30 dark:text-red-400"
           >
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{generalError}</span>
@@ -231,7 +235,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="client-display-name">
-              Display Name <span className="text-red-400">*</span>
+              Display Name <span className="text-red-500">*</span>
             </Label>
             <Input
               id="client-display-name"
@@ -250,7 +254,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
               disabled={isPending}
             />
             {errors.displayName && (
-              <p className="text-[11px] text-red-400">{errors.displayName}</p>
+              <p className="text-[11px] text-red-500">{errors.displayName}</p>
             )}
           </div>
 
@@ -273,10 +277,10 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
                 )}
                 disabled={isPending}
               />
-              <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+              <Building2 className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
             </div>
             {errors.companyName && (
-              <p className="text-[11px] text-red-400">{errors.companyName}</p>
+              <p className="text-[11px] text-red-500">{errors.companyName}</p>
             )}
           </div>
         </div>
@@ -302,13 +306,13 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
               disabled={isPending}
             />
             {errors.fullName && (
-              <p className="text-[11px] text-red-400">{errors.fullName}</p>
+              <p className="text-[11px] text-red-500">{errors.fullName}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="client-email">
-              Email Address <span className="text-red-400">*</span>
+              Email Address <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <Input
@@ -328,10 +332,10 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
                 )}
                 disabled={isPending}
               />
-              <Mail className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+              <Mail className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
             </div>
             {errors.email && (
-              <p className="text-[11px] text-red-400">{errors.email}</p>
+              <p className="text-[11px] text-red-500">{errors.email}</p>
             )}
           </div>
         </div>
@@ -340,7 +344,7 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
         <div className="space-y-1.5">
           <Label htmlFor="client-password">
             Temporary Password{' '}
-            <span className="font-normal text-stone-500">
+            <span className="font-normal text-stone-500 dark:text-stone-400">
               (Optional — auto-generated if blank)
             </span>
           </Label>
@@ -362,17 +366,17 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
               )}
               disabled={isPending}
             />
-            <Lock className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+            <Lock className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
           </div>
           {errors.temporaryPassword && (
-            <p className="text-[11px] text-red-400">
+            <p className="text-[11px] text-red-500">
               {errors.temporaryPassword}
             </p>
           )}
         </div>
 
         {/* Send Email Checkbox */}
-        <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-stone-800/80 bg-stone-900/40 p-3 transition-colors hover:border-stone-700">
+        <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50/70 p-3 transition-colors hover:border-stone-300 dark:border-stone-800/80 dark:bg-stone-900/40 dark:hover:border-stone-700">
           <input
             type="checkbox"
             checked={formData.sendInviteEmail}
@@ -383,13 +387,13 @@ function CreateClientForm({ onClose }: CreateClientFormProps) {
               }))
             }
             disabled={isPending}
-            className="mt-0.5 h-4 w-4 rounded border-stone-700 bg-stone-900 text-indigo-600 focus:ring-indigo-500"
+            className="mt-0.5 h-4 w-4 rounded border-stone-300 bg-white text-indigo-600 focus:ring-indigo-500 dark:border-stone-700 dark:bg-stone-900"
           />
           <div className="space-y-0.5">
-            <span className="text-xs font-medium text-stone-200">
+            <span className="text-xs font-medium text-stone-900 dark:text-stone-200">
               Send welcome email with portal credentials
             </span>
-            <p className="text-[11px] leading-normal text-stone-400">
+            <p className="text-[11px] leading-normal text-stone-600 dark:text-stone-400">
               Sends an invitation email with their temporary password and portal
               sign in link.
             </p>

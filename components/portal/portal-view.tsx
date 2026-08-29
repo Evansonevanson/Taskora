@@ -54,17 +54,17 @@ export function PortalView({ initialData }: PortalViewProps) {
         {/* Toolbar: Segmented Tabs & Search */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {/* Tabs */}
-          <div className="inline-flex rounded-xl border border-stone-800 bg-stone-900/80 p-1">
+          <div className="inline-flex rounded-xl border border-stone-200 bg-stone-100/80 p-1 dark:border-stone-800 dark:bg-stone-900/80">
             <button
               onClick={() => setActiveTab('all')}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activeTab === 'all'
-                  ? 'bg-stone-800 text-stone-100 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
               }`}
             >
               <span>All Deliverables</span>
-              <span className="py-0.2 ml-1 rounded-full bg-stone-800 px-1.5 text-[10px] text-stone-300">
+              <span className="py-0.2 ml-1 rounded-full bg-stone-200 px-1.5 text-[10px] text-stone-700 dark:bg-stone-800 dark:text-stone-300">
                 {stats.totalDelivered}
               </span>
             </button>
@@ -74,12 +74,12 @@ export function PortalView({ initialData }: PortalViewProps) {
                 onClick={() => setActiveTab('revision')}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                   activeTab === 'revision'
-                    ? 'bg-stone-800 text-stone-100 shadow-sm'
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                    : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
                 }`}
               >
                 <span>In Revision</span>
-                <span className="py-0.2 ml-1 rounded-full border border-amber-800/40 bg-amber-950/80 px-1.5 text-[10px] text-amber-300">
+                <span className="py-0.2 ml-1 rounded-full border border-amber-200 bg-amber-50 px-1.5 text-[10px] text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/80 dark:text-amber-300">
                   {stats.inRevision}
                 </span>
               </button>
@@ -89,12 +89,12 @@ export function PortalView({ initialData }: PortalViewProps) {
               onClick={() => setActiveTab('ready')}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activeTab === 'ready'
-                  ? 'bg-stone-800 text-stone-100 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
               }`}
             >
               <span>Ready</span>
-              <span className="py-0.2 ml-1 rounded-full border border-emerald-800/40 bg-emerald-950/80 px-1.5 text-[10px] text-emerald-300">
+              <span className="py-0.2 ml-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 text-[10px] text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/80 dark:text-emerald-300">
                 {stats.completed}
               </span>
             </button>
@@ -108,7 +108,7 @@ export function PortalView({ initialData }: PortalViewProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-9 pl-8 text-xs"
             />
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
           </div>
         </div>
 

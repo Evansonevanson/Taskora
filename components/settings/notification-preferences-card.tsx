@@ -24,17 +24,17 @@ export function NotificationPreferencesCard({
   onConfirmBeforeCompletingChange,
 }: NotificationPreferencesCardProps) {
   return (
-    <Card className="border-stone-800 bg-stone-900/40">
+    <Card className="border-stone-200/80 bg-white/80 shadow-sm dark:border-stone-800 dark:bg-stone-900/40">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-950/40 text-indigo-400">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-950/40 dark:text-indigo-400">
             <Bell className="h-4 w-4" />
           </div>
           <div>
-            <CardTitle className="text-base text-stone-100">
+            <CardTitle className="text-base text-stone-900 dark:text-stone-100">
               Notification Preferences
             </CardTitle>
-            <CardDescription className="text-xs text-stone-400">
+            <CardDescription className="text-xs text-stone-500 dark:text-stone-400">
               Control automated email delivery behavior for work deliverables.
             </CardDescription>
           </div>
@@ -43,13 +43,13 @@ export function NotificationPreferencesCard({
 
       <CardContent className="space-y-4">
         {/* Preference 1: Default Notify Client */}
-        <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-stone-800 bg-stone-950/40 p-4 transition-colors hover:border-stone-700">
+        <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-stone-200 bg-stone-50/70 p-4 transition-colors hover:border-stone-300 dark:border-stone-800 dark:bg-stone-950/40 dark:hover:border-stone-700">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-stone-200">
-              <Mail className="h-3.5 w-3.5 text-indigo-400" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-stone-900 dark:text-stone-200">
+              <Mail className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
               <span>Default &ldquo;Notify Client&rdquo; on completion</span>
             </div>
-            <p className="text-[11px] leading-relaxed text-stone-400">
+            <p className="text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
               When marking a client deliverable completed, pre-check the
               &ldquo;Notify Client via Email&rdquo; option in the completion
               dialog.
@@ -62,7 +62,9 @@ export function NotificationPreferencesCard({
               onDefaultNotifyClientChange(!defaultNotifyClient);
             }}
             className={`relative mt-1 inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              defaultNotifyClient ? 'bg-indigo-600' : 'bg-stone-800'
+              defaultNotifyClient
+                ? 'bg-indigo-600'
+                : 'bg-stone-300 dark:bg-stone-800'
             }`}
           >
             <span
@@ -74,15 +76,15 @@ export function NotificationPreferencesCard({
         </label>
 
         {/* Preference 2: Confirmation Dialog */}
-        <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-stone-800 bg-stone-950/40 p-4 transition-colors hover:border-stone-700">
+        <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-stone-200 bg-stone-50/70 p-4 transition-colors hover:border-stone-300 dark:border-stone-800 dark:bg-stone-950/40 dark:hover:border-stone-700">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold text-stone-200">
-              <Check className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-stone-900 dark:text-stone-200">
+              <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>
                 Show confirmation modal before completing deliverables
               </span>
             </div>
-            <p className="text-[11px] leading-relaxed text-stone-400">
+            <p className="text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
               Displays a modal summarizing task deliverables and client email
               preferences before finalizing completion.
             </p>
@@ -94,7 +96,9 @@ export function NotificationPreferencesCard({
               onConfirmBeforeCompletingChange(!confirmBeforeCompleting);
             }}
             className={`relative mt-1 inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              confirmBeforeCompleting ? 'bg-indigo-600' : 'bg-stone-800'
+              confirmBeforeCompleting
+                ? 'bg-indigo-600'
+                : 'bg-stone-300 dark:bg-stone-800'
             }`}
           >
             <span

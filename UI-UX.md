@@ -52,6 +52,13 @@
 - **Deliverable Upload Dropzone:** Drag-and-drop or file selector supporting allowed types (JPG, PNG, WEBP, PDF) up to 20MB.
 - **Attachment List:** shows uploaded deliverables with file size, uploaded date, and a safe "Remove" action (which cleans up both database metadata and storage object).
 
+## Appearance & Theme Settings (UX)
+
+- **Admin Appearance Control:** Located in `/admin/settings` under a dedicated "Appearance" section with segmented card controls for `[ Light ]`, `[ Dark ]`, and `[ System ]` with dedicated Lucide iconography (`Sun`, `Moon`, `Monitor`).
+- **Client Portal Theme Switcher:** Located directly in the top navigation bar of the Client Portal next to the avatar/profile menu (`components/layout/client-nav.tsx`), rendering an accessible icon popover allowing instant selection between Light, Dark, and System modes without requiring a dedicated settings page.
+- **Real-Time Responsiveness:** Theme changes apply immediately across all portal and dashboard views without full page reload.
+- **Device Persistence:** Setting is persisted locally to `taskora-theme` without requiring server mutations.
+
 ## Loading & Empty States
 
 - Every list view (dashboard task list, client list, my-jobs list) needs a defined empty state and a loading skeleton — never a blank white screen during data fetch.
@@ -71,4 +78,4 @@
 
 - All interactive elements keyboard-navigable (modals trap focus, dropdowns operable via arrow keys — shadcn/ui primitives handle most of this by default, don't fight them with custom re-implementations).
 - Color is never the only signal for priority/status — pair color with a text label or icon (see `DESIGN-SYSTEM.md`).
-- Sufficient contrast ratios per WCAG AA at minimum.
+- Sufficient contrast ratios per WCAG AA at minimum in both Light and Dark modes.

@@ -8,7 +8,10 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn('w-full caption-bottom text-sm text-stone-200', className)}
+      className={cn(
+        'w-full caption-bottom text-sm text-stone-800 dark:text-stone-200',
+        className,
+      )}
       {...props}
     />
   </div>
@@ -22,7 +25,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      'border-stone-800 bg-stone-900/40 [&_tr]:border-b',
+      'border-stone-200 bg-stone-50/80 dark:border-stone-800 dark:bg-stone-900/40 [&_tr]:border-b',
       className,
     )}
     {...props}
@@ -49,7 +52,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-t border-stone-800 bg-stone-900/50 font-medium [&>tr]:last:border-b-0',
+      'border-t border-stone-200 bg-stone-50/80 font-medium dark:border-stone-800 dark:bg-stone-900/50 [&>tr]:last:border-b-0',
       className,
     )}
     {...props}
@@ -64,7 +67,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b border-stone-800/80 transition-colors hover:bg-stone-800/40 data-[state=selected]:bg-stone-800',
+      'border-b border-stone-200/80 transition-colors hover:bg-stone-50/80 data-[state=selected]:bg-stone-100 dark:border-stone-800/80 dark:hover:bg-stone-800/40 dark:data-[state=selected]:bg-stone-800',
       className,
     )}
     {...props}
@@ -79,7 +82,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-11 px-4 text-left align-middle text-xs font-medium tracking-wider text-stone-400 uppercase [&:has([role=checkbox])]:pr-0',
+      'h-11 px-4 text-left align-middle text-xs font-medium tracking-wider text-stone-500 uppercase dark:text-stone-400 [&:has([role=checkbox])]:pr-0',
       className,
     )}
     {...props}
@@ -105,7 +108,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-xs text-stone-500', className)}
+    className={cn('mt-4 text-xs text-stone-500 dark:text-stone-400', className)}
     {...props}
   />
 ));

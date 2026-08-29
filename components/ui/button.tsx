@@ -12,14 +12,14 @@ const buttonVariants = cva(
         primary:
           'bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus-visible:ring-indigo-500 shadow-indigo-500/10',
         secondary:
-          'bg-stone-800/80 text-stone-100 hover:bg-stone-700/80 border border-stone-700/80 focus-visible:ring-stone-400',
+          'bg-stone-100 text-stone-900 hover:bg-stone-200 border border-stone-300/80 dark:bg-stone-800/80 dark:text-stone-100 dark:hover:bg-stone-700/80 dark:border-stone-700/80 focus-visible:ring-stone-400',
         outline:
-          'border border-stone-700 bg-transparent text-stone-200 hover:bg-stone-800/60 hover:text-white focus-visible:ring-indigo-500',
+          'border border-stone-300 bg-transparent text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800/60 dark:hover:text-white focus-visible:ring-indigo-500',
         ghost:
-          'text-stone-300 hover:bg-stone-800/50 hover:text-white focus-visible:ring-stone-500',
+          'text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800/50 dark:hover:text-white focus-visible:ring-stone-500',
         destructive:
           'bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:ring-red-500',
-        link: 'text-indigo-400 underline-offset-4 hover:underline p-0 h-auto font-normal',
+        link: 'text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline p-0 h-auto font-normal',
       },
       size: {
         default: 'h-10 px-4 py-2',

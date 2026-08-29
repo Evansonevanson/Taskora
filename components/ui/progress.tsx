@@ -22,18 +22,20 @@ export function Progress({
   );
 
   const colorStyles = {
-    primary: 'bg-indigo-500 shadow-indigo-500/30',
-    success: 'bg-emerald-500 shadow-emerald-500/30',
-    warning: 'bg-amber-500 shadow-amber-500/30',
-    danger: 'bg-red-500 shadow-red-500/30',
+    primary: 'bg-indigo-600 dark:bg-indigo-500 shadow-indigo-500/30',
+    success: 'bg-emerald-600 dark:bg-emerald-500 shadow-emerald-500/30',
+    warning: 'bg-amber-600 dark:bg-amber-500 shadow-amber-500/30',
+    danger: 'bg-red-600 dark:bg-red-500 shadow-red-500/30',
   };
 
   return (
     <div className={cn('w-full space-y-1.5', className)} {...props}>
       {showLabel && (
-        <div className="flex items-center justify-between text-xs font-medium text-stone-400">
+        <div className="flex items-center justify-between text-xs font-medium text-stone-600 dark:text-stone-400">
           <span>Progress</span>
-          <span className="text-stone-200">{percentage}%</span>
+          <span className="text-stone-900 dark:text-stone-200">
+            {percentage}%
+          </span>
         </div>
       )}
       <div
@@ -41,7 +43,7 @@ export function Progress({
         aria-valuenow={value}
         aria-valuemin={0}
         aria-valuemax={max}
-        className="relative h-2 w-full overflow-hidden rounded-full bg-stone-800"
+        className="relative h-2 w-full overflow-hidden rounded-full bg-stone-200 dark:bg-stone-800"
       >
         <div
           className={cn(

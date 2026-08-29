@@ -17,12 +17,14 @@ export default function AdminError({
   }, [error]);
 
   return (
-    <div className="animate-in fade-in-50 flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-stone-800 bg-stone-900/40 p-8 text-center duration-200">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-500/30 bg-red-950/50 text-red-400">
+    <div className="animate-in fade-in-50 flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-stone-200/80 bg-white/80 p-8 text-center shadow-sm duration-200 dark:border-stone-800 dark:bg-stone-900/40">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-950/50 dark:text-red-400">
         <AlertTriangle className="h-6 w-6" />
       </div>
-      <h2 className="text-lg font-semibold text-white">Something went wrong</h2>
-      <p className="mt-1.5 max-w-md text-xs text-stone-400">
+      <h2 className="text-lg font-semibold text-stone-900 dark:text-white">
+        Something went wrong
+      </h2>
+      <p className="mt-1.5 max-w-md text-xs text-stone-600 dark:text-stone-400">
         An error occurred while loading administrative dashboard data. You can
         try refreshing the view.
       </p>

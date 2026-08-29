@@ -33,7 +33,7 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
   return (
     <Link
       href={`/portal/jobs/${task.id}`}
-      className="group relative flex flex-col justify-between rounded-2xl border border-stone-800 bg-stone-900/60 p-5 transition-all duration-200 hover:border-indigo-500/40 hover:bg-stone-900 hover:shadow-lg hover:shadow-indigo-950/20"
+      className="group relative flex flex-col justify-between rounded-2xl border border-stone-200/80 bg-white/80 p-5 shadow-sm transition-all duration-200 hover:border-indigo-500/40 hover:bg-white hover:shadow-md dark:border-stone-800 dark:bg-stone-900/60 dark:hover:border-indigo-500/40 dark:hover:bg-stone-900 dark:hover:shadow-lg dark:hover:shadow-indigo-950/20"
     >
       <div className="space-y-3">
         {/* Top Badges Bar */}
@@ -51,7 +51,7 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
             {task.projectUrl && (
               <Badge
                 variant="outline"
-                className="border-indigo-500/30 bg-indigo-950/30 text-[10px] text-indigo-300"
+                className="border-indigo-200 bg-indigo-50 text-[10px] text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-950/30 dark:text-indigo-300"
               >
                 Link
               </Badge>
@@ -61,7 +61,7 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
           {task.needsRevision ? (
             <Badge
               variant="urgent"
-              className="flex items-center gap-1 border-amber-500/40 bg-amber-950/60 text-[10px] text-amber-300"
+              className="flex items-center gap-1 border-amber-300 bg-amber-50 text-[10px] text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/60 dark:text-amber-300"
             >
               <AlertCircle className="h-3 w-3" />
               <span>Revision Requested</span>
@@ -79,11 +79,11 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
 
         {/* Title & Notes Preview */}
         <div className="space-y-1">
-          <h3 className="text-base font-semibold tracking-tight text-stone-100 transition-colors group-hover:text-indigo-200">
+          <h3 className="text-base font-semibold tracking-tight text-stone-900 transition-colors group-hover:text-indigo-600 dark:text-stone-100 dark:group-hover:text-indigo-200">
             {task.title}
           </h3>
           {task.notes && (
-            <p className="line-clamp-2 text-xs leading-relaxed text-stone-400">
+            <p className="line-clamp-2 text-xs leading-relaxed text-stone-600 dark:text-stone-400">
               {task.notes}
             </p>
           )}
@@ -91,9 +91,9 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
       </div>
 
       {/* Footer / Dates & Arrow */}
-      <div className="mt-4 flex items-center justify-between border-t border-stone-800/80 pt-3 text-xs text-stone-400">
-        <div className="flex items-center gap-1.5 text-[11px] text-stone-400">
-          <Calendar className="h-3.5 w-3.5 text-stone-500" />
+      <div className="mt-4 flex items-center justify-between border-t border-stone-200/80 pt-3 text-xs text-stone-600 dark:border-stone-800/80 dark:text-stone-400">
+        <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400">
+          <Calendar className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
           <span>
             {formattedCompletedDate
               ? `Delivered on ${formattedCompletedDate}`
@@ -101,7 +101,7 @@ export function PortalDeliverableCard({ task }: PortalDeliverableCardProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-xs font-medium text-indigo-400 transition-transform group-hover:translate-x-0.5">
+        <div className="flex items-center gap-1 text-xs font-medium text-indigo-600 transition-transform group-hover:translate-x-0.5 dark:text-indigo-400">
           <span>View Details</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </div>

@@ -58,8 +58,8 @@ export function DeactivateClientDialog({
             <div
               className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
                 isDeactivating
-                  ? 'border-amber-500/20 bg-amber-950/40 text-amber-400'
-                  : 'border-emerald-500/20 bg-emerald-950/40 text-emerald-400'
+                  ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-950/40 dark:text-amber-400'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-400'
               }`}
             >
               {isDeactivating ? (
@@ -79,30 +79,30 @@ export function DeactivateClientDialog({
           </div>
         </DialogHeader>
 
-        <div className="space-y-3 py-2 text-xs text-stone-300">
+        <div className="space-y-3 py-2 text-xs text-stone-700 dark:text-stone-300">
           {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-950/40 p-2.5 text-xs text-red-400">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs text-red-700 dark:border-red-500/20 dark:bg-red-950/40 dark:text-red-400">
               {error}
             </div>
           )}
 
           {isDeactivating ? (
-            <div className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-950/20 p-3.5">
-              <p className="font-medium text-amber-300">
+            <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 dark:border-amber-500/20 dark:bg-amber-950/20">
+              <p className="font-semibold text-amber-800 dark:text-amber-300">
                 Are you sure you want to deactivate this client?
               </p>
-              <p className="text-[11px] leading-relaxed text-stone-400">
+              <p className="text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
                 Deactivating immediately revokes portal access. The client will
                 be unable to log in to review deliverables or leave comments
                 until reactivated. Existing tasks and history remain intact.
               </p>
             </div>
           ) : (
-            <div className="space-y-2 rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3.5">
-              <p className="font-medium text-emerald-300">
+            <div className="space-y-2 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 dark:border-emerald-500/20 dark:bg-emerald-950/20">
+              <p className="font-semibold text-emerald-800 dark:text-emerald-300">
                 Reactivate client portal access?
               </p>
-              <p className="text-[11px] leading-relaxed text-stone-400">
+              <p className="text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
                 Reactivating will restore portal access, allowing{' '}
                 {client.displayName} to sign in, view their completed
                 deliverables, and post feedback.

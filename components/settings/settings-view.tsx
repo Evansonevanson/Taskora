@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { SettingsHeader } from './settings-header';
 import { AdminProfileCard } from './admin-profile-card';
+import { AppearanceSettingsCard } from './appearance-settings-card';
 import { NotificationPreferencesCard } from './notification-preferences-card';
 import { CategoryManagementCard } from './category-management-card';
 import {
@@ -139,6 +140,8 @@ export function SettingsView({ userEmail, userName }: SettingsViewProps) {
 
       <AdminProfileCard userEmail={userEmail} userName={userName} />
 
+      <AppearanceSettingsCard onThemeChange={triggerSavedFeedback} />
+
       <NotificationPreferencesCard
         defaultNotifyClient={defaultNotifyClient}
         onDefaultNotifyClientChange={handleNotifyChange}
@@ -152,7 +155,7 @@ export function SettingsView({ userEmail, userName }: SettingsViewProps) {
         onRemoveCategory={handleRemoveCategory}
       />
 
-      <div className="flex items-center justify-between border-t border-stone-800/80 pt-6">
+      <div className="flex items-center justify-between border-t border-stone-200/80 pt-6 dark:border-stone-800/80">
         <div className="text-xs text-stone-500">
           Taskora Admin Configuration &bull; v1.0.0
         </div>
@@ -160,7 +163,7 @@ export function SettingsView({ userEmail, userName }: SettingsViewProps) {
           type="button"
           variant="ghost"
           onClick={handleResetDefaults}
-          className="gap-1.5 text-xs text-stone-400 hover:text-stone-200"
+          className="gap-1.5 text-xs text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           <span>Reset All Defaults</span>

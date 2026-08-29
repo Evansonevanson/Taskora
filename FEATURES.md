@@ -5,7 +5,7 @@ Scope markers: **[MVP]** must ship. **[P2]** Phase 2 — do not build unless exp
 ## 1. Authentication — [MVP]
 
 - Single `/login` page, email + password.
-- Role-based redirect after login (`admin` → `/dashboard`, `client` → `/my-jobs`).
+- Role-based redirect after login (`admin` → `/admin/dashboard`, `client` → `/portal/jobs`).
 - Forgot-password flow.
 - Rate-limited login attempts (see `SECURITY.md`).
 
@@ -46,14 +46,14 @@ Applies to the Admin task list (and optionally the Client's job list):
 
 ## 7. Email Notifications — [MVP]
 
-- **Trigger A — Task completed:** When Admin marks a Work-category task Completed, show a confirmation prompt: "Notify [Client Name] by email?" If confirmed, send email to the client with task title and a deep link to `/my-jobs/[task_id]`.
+- **Trigger A — Task completed:** When Admin marks a Work-category task Completed, show a confirmation prompt: "Notify [Client Name] by email?" If confirmed, send email to the client with task title and a deep link to `/portal/jobs/[task_id]`.
 - **Trigger B — Comment submitted:** When a Client submits a comment on a task, immediately email the Admin with the client's name, task title, a preview of the comment (first ~150 chars), and a deep link to the Admin's task detail view.
 - No email digesting/batching in MVP — each event sends immediately.
 - See `API.md` §Email for exact payload/idempotency handling (avoid duplicate sends on double-submit).
 
 ## 8. Client Portal — [MVP]
 
-- **My Jobs:** list of the Client's own Completed tasks, including archived delivered-work history. Cards show title, category tag, completed date, and a `needs_revision` indicator if applicable.
+- **My Jobs:** list of the Client's own Completed tasks (`/portal/jobs`), including archived delivered-work history. Cards show title, category tag, completed date, and a `needs_revision` indicator if applicable.
 - **Job Detail:** full task info (title, notes, due date, completed date) + comment thread (their own comments + any Admin replies) + a comment/correction textbox with a Send button.
 - No access to any Admin-only screens, other clients, or Pending/In-Progress tasks.
 
@@ -65,9 +65,10 @@ Applies to the Admin task list (and optionally the Client's job list):
 - Admin can reply on any task's comment thread (reply does not change `needs_revision`; Admin manually clears the flag once resolved, e.g., via a "Mark resolved" toggle on the task).
 - Comments are immutable once posted (no edit/delete) in MVP.
 
-## 10. Settings — [MVP, minimal]
+## 10. Settings — [MVP]
 
 - Manage the category list (add a new category beyond the default five) — Admin only.
+- Configure notification preferences (default notify client, confirm before completion).
 
 ## 11. Deliverables & Project Links — [MVP]
 
@@ -80,6 +81,12 @@ Applies to the Admin task list (and optionally the Client's job list):
   - Admin can upload, list, preview, and remove attachments (which safely cleans up both metadata and storage objects).
   - Client detail view on Completed tasks displays a dedicated "Deliverables" section with "View Project", "Preview", and "Download" actions.
 
+## 12. Appearance & Theming — [MVP]
+
+- **Light / Dark / System Mode:** Admin can configure device appearance in `/admin/settings` (`[ Light ]`, `[ Dark ]`, `[ System ]`).
+- **Persistence:** Locally persisted under `taskora-theme` with anti-FOUC initialization script.
+- **Official Branding:** Integrated official Taskora logo assets and multi-resolution favicons across all auth screens, admin views, client portals, and 404 pages.
+
 ---
 
 ## Phase 2 (not to be built without explicit request)
@@ -90,7 +97,6 @@ Applies to the Admin task list (and optionally the Client's job list):
 - Recurring tasks.
 - Multi-admin / team seats with per-admin scoping.
 - Client-side mini dashboard (their own progress bar across their tasks).
-- Dark mode.
 - Full audit log per task (who changed what, when).
 - Magic-link login for clients.
 

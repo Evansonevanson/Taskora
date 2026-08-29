@@ -140,21 +140,21 @@ export function ClientDetailView({
       <ClientDetailStats stats={stats} />
 
       {/* Assigned Deliverables Section */}
-      <div className="space-y-4 rounded-2xl border border-stone-800 bg-stone-900/40 p-5">
+      <div className="space-y-4 rounded-2xl border border-stone-200/80 bg-white/80 p-5 shadow-sm dark:border-stone-800 dark:bg-stone-900/40">
         {/* Toolbar: Tabs & Search */}
-        <div className="flex flex-col gap-3 border-b border-stone-800/80 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-stone-200/80 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800/80">
           {/* Segmented Filter Tabs */}
-          <div className="inline-flex rounded-xl border border-stone-800 bg-stone-950/80 p-1">
+          <div className="inline-flex rounded-xl border border-stone-200 bg-stone-100/80 p-1 dark:border-stone-800 dark:bg-stone-950/80">
             <button
               onClick={() => setActiveTab('active')}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activeTab === 'active'
-                  ? 'bg-stone-800 text-stone-100 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
               }`}
             >
               <span>Active Jobs</span>
-              <span className="py-0.2 ml-1 rounded-full border border-amber-800/40 bg-amber-950/80 px-1.5 text-[10px] text-amber-300">
+              <span className="py-0.2 ml-1 rounded-full border border-amber-200 bg-amber-50 px-1.5 text-[10px] text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/80 dark:text-amber-300">
                 {stats.activeTasks}
               </span>
             </button>
@@ -163,12 +163,12 @@ export function ClientDetailView({
               onClick={() => setActiveTab('completed')}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activeTab === 'completed'
-                  ? 'bg-stone-800 text-stone-100 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
               }`}
             >
               <span>Completed</span>
-              <span className="py-0.2 ml-1 rounded-full border border-emerald-800/40 bg-emerald-950/80 px-1.5 text-[10px] text-emerald-300">
+              <span className="py-0.2 ml-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 text-[10px] text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/80 dark:text-emerald-300">
                 {stats.completedTasks}
               </span>
             </button>
@@ -177,12 +177,12 @@ export function ClientDetailView({
               onClick={() => setActiveTab('all')}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                 activeTab === 'all'
-                  ? 'bg-stone-800 text-stone-100 shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-800 dark:text-stone-100'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
               }`}
             >
               <span>All History</span>
-              <span className="py-0.2 ml-1 rounded-full bg-stone-800 px-1.5 text-[10px] text-stone-300">
+              <span className="py-0.2 ml-1 rounded-full bg-stone-200 px-1.5 text-[10px] text-stone-700 dark:bg-stone-800 dark:text-stone-300">
                 {stats.totalTasks}
               </span>
             </button>
@@ -196,7 +196,7 @@ export function ClientDetailView({
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-9 pl-8 text-xs"
             />
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-500" />
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
           </div>
         </div>
 
@@ -217,7 +217,7 @@ export function ClientDetailView({
                 variant="primary"
                 size="sm"
                 onClick={() => setIsNewTaskOpen(true)}
-                className="gap-1.5 bg-indigo-600 text-xs hover:bg-indigo-700"
+                className="gap-1.5 text-xs shadow-sm shadow-indigo-500/20"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Create Deliverable</span>
@@ -225,10 +225,10 @@ export function ClientDetailView({
             }
           />
         ) : (
-          <div className="overflow-hidden rounded-xl border border-stone-800/80 bg-stone-900/60">
+          <div className="overflow-hidden rounded-xl border border-stone-200/80 bg-white/80 shadow-sm dark:border-stone-800/80 dark:bg-stone-900/60">
             <Table>
               <TableHeader>
-                <TableRow className="border-stone-800 bg-stone-950/40 hover:bg-stone-950/40">
+                <TableRow className="border-stone-200 bg-stone-50/80 hover:bg-stone-50/80 dark:border-stone-800 dark:bg-stone-950/40 dark:hover:bg-stone-950/40">
                   <TableHead className="w-10 text-center"></TableHead>
                   <TableHead>Deliverable</TableHead>
                   <TableHead className="w-28 text-center">Status</TableHead>
@@ -260,7 +260,7 @@ export function ClientDetailView({
                     <TableRow
                       key={task.id}
                       onClick={() => setSelectedEditTask(task)}
-                      className="cursor-pointer border-stone-800/80 transition-colors hover:bg-stone-800/40"
+                      className="cursor-pointer border-stone-200/60 transition-colors hover:bg-stone-50/80 dark:border-stone-800/80 dark:hover:bg-stone-800/40"
                     >
                       {/* Checkbox Toggle */}
                       <TableCell
@@ -273,9 +273,9 @@ export function ClientDetailView({
                           className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:opacity-80"
                         >
                           {isCompleted ? (
-                            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                           ) : (
-                            <Circle className="h-4 w-4 text-stone-500 hover:text-indigo-400" />
+                            <Circle className="h-4 w-4 text-stone-400 hover:text-indigo-600 dark:text-stone-500 dark:hover:text-indigo-400" />
                           )}
                         </button>
                       </TableCell>
@@ -287,8 +287,8 @@ export function ClientDetailView({
                             <span
                               className={`text-xs font-semibold ${
                                 isCompleted
-                                  ? 'text-stone-500 line-through'
-                                  : 'text-stone-100'
+                                  ? 'text-stone-400 line-through dark:text-stone-500'
+                                  : 'text-stone-900 dark:text-stone-100'
                               }`}
                             >
                               {task.title}
@@ -304,7 +304,7 @@ export function ClientDetailView({
                             )}
                           </div>
                           {task.notes && (
-                            <p className="line-clamp-1 text-[11px] text-stone-400">
+                            <p className="line-clamp-1 text-[11px] text-stone-600 dark:text-stone-400">
                               {task.notes}
                             </p>
                           )}
@@ -332,9 +332,9 @@ export function ClientDetailView({
                       </TableCell>
 
                       {/* Due Date */}
-                      <TableCell className="text-center text-xs text-stone-400">
+                      <TableCell className="text-center text-xs text-stone-600 dark:text-stone-400">
                         <div className="flex items-center justify-center gap-1">
-                          <Calendar className="h-3 w-3 text-stone-500" />
+                          <Calendar className="h-3 w-3 text-stone-400 dark:text-stone-500" />
                           <span>{formattedDueDate}</span>
                         </div>
                       </TableCell>
@@ -349,7 +349,7 @@ export function ClientDetailView({
                             variant="ghost"
                             size="sm"
                             onClick={() => setSelectedEditTask(task)}
-                            className="h-7 w-7 p-0 text-stone-400 hover:text-stone-200"
+                            className="h-7 w-7 p-0 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
                             title="Edit task"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -360,7 +360,7 @@ export function ClientDetailView({
                               size="sm"
                               disabled={pendingActionTaskId === task.id}
                               onClick={(e) => handleArchive(task.id, e)}
-                              className="h-7 w-7 p-0 text-stone-400 hover:text-stone-200"
+                              className="h-7 w-7 p-0 text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
                               title="Archive deliverable"
                             >
                               <Archive className="h-3.5 w-3.5" />
