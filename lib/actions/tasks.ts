@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -43,21 +44,46 @@ export async function createTask(
       return { success: false, error: 'Unauthorized' };
     }
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    // Resolve authenticated workspace admin context
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
-    const clientId = input.category === 'work' ? input.clientId || null : null;
+    let clientId: string | null = null;
+    if (input.category === 'work') {
+      if (!input.clientId) {
+        return {
+          success: false,
+          error: 'Client is required for Work category tasks',
+        };
+      }
+
+      // Verify client belongs to current admin's workspace
+      const { data: clientRecord, error: clientErr } = await supabase
+        .from('clients')
+        .select('id, workspace_id')
+        .eq('id', input.clientId)
+        .eq('workspace_id', workspaceCtx.workspaceId)
+        .maybeSingle();
+
+      const typedClient = clientRecord as {
+        id: string;
+        workspace_id: string;
+      } | null;
+
+      if (clientErr || !typedClient) {
+        return {
+          success: false,
+          error: 'Selected client does not belong to this workspace',
+        };
+      }
+      clientId = typedClient.id;
+    }
+
     const dueDate =
       input.dueDate && input.dueDate.trim() !== '' ? input.dueDate : null;
     const projectUrl =
@@ -68,6 +94,7 @@ export async function createTask(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.from('tasks') as any)
       .insert({
+        workspace_id: workspaceCtx.workspaceId,
         title: input.title,
         category: input.category,
         client_id: clientId,
@@ -122,21 +149,40 @@ export async function updateTask(
       return { success: false, error: 'Unauthorized' };
     }
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
-    const clientId = input.category === 'work' ? input.clientId || null : null;
+    let clientId: string | null = null;
+    if (input.category === 'work') {
+      if (!input.clientId) {
+        return {
+          success: false,
+          error: 'Client is required for Work category tasks',
+        };
+      }
+
+      const { data: clientRecord } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('id', input.clientId)
+        .eq('workspace_id', workspaceCtx.workspaceId)
+        .maybeSingle();
+
+      const typedClient = clientRecord as { id: string } | null;
+      if (!typedClient) {
+        return {
+          success: false,
+          error: 'Selected client does not belong to this workspace',
+        };
+      }
+      clientId = typedClient.id;
+    }
+
     const dueDate =
       input.dueDate && input.dueDate.trim() !== '' ? input.dueDate : null;
     const projectUrl =
@@ -162,7 +208,8 @@ export async function updateTask(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.from('tasks') as any)
       .update(updatePayload)
-      .eq('id', taskId);
+      .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (error) {
       console.error('Error updating task:', error);
@@ -192,7 +239,15 @@ export async function completeTask(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Fetch existing task with client details
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
+    }
+
+    // Fetch existing task with client details scoped to workspace
     const { data: existingTaskData, error: fetchError } = await supabase
       .from('tasks')
       .select(
@@ -201,6 +256,7 @@ export async function completeTask(
         title,
         category,
         client_id,
+        workspace_id,
         status,
         completed_at,
         client_notified_at,
@@ -218,6 +274,7 @@ export async function completeTask(
       `,
       )
       .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId)
       .maybeSingle();
 
     if (fetchError || !existingTaskData) {
@@ -229,6 +286,7 @@ export async function completeTask(
       title: string;
       category: string;
       client_id: string | null;
+      workspace_id: string;
       status: string;
       completed_at: string | null;
       client_notified_at: string | null;
@@ -256,7 +314,8 @@ export async function completeTask(
         completed_at: task.completed_at || nowIso,
         updated_at: nowIso,
       })
-      .eq('id', taskId);
+      .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (updateError) {
       console.error('Error completing task:', updateError);
@@ -272,7 +331,6 @@ export async function completeTask(
       task.client_id &&
       task.clients?.profiles?.email
     ) {
-      // Idempotency Check: only send if client_notified_at is null
       if (!task.client_notified_at) {
         const appUrl =
           process.env.APP_URL ||
@@ -299,11 +357,11 @@ export async function completeTask(
 
         if (emailResult.success) {
           notified = true;
-          // Set client_notified_at only on successful send
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (supabase.from('tasks') as any)
             .update({ client_notified_at: new Date().toISOString() })
-            .eq('id', taskId);
+            .eq('id', taskId)
+            .eq('workspace_id', workspaceCtx.workspaceId);
         } else {
           console.warn(
             `Failed to send completion email for task ${taskId}:`,
@@ -311,7 +369,7 @@ export async function completeTask(
           );
         }
       } else {
-        notified = true; // Already notified previously
+        notified = true;
       }
     }
 
@@ -338,6 +396,14 @@ export async function toggleTaskStatus(
       return { success: false, error: 'Unauthorized' };
     }
 
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
+    }
+
     const nextStatus: Database['public']['Tables']['tasks']['Row']['status'] =
       currentStatus.toLowerCase() === 'completed' ? 'pending' : 'completed';
 
@@ -354,7 +420,8 @@ export async function toggleTaskStatus(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.from('tasks') as any)
       .update(updatePayload)
-      .eq('id', taskId);
+      .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (error) {
       console.error('Error toggling task status:', error);
@@ -383,24 +450,18 @@ export async function archiveCompletedTasks(): Promise<
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Verify admin role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden' };
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.from('tasks') as any)
       .update({ archived: true })
+      .eq('workspace_id', workspaceCtx.workspaceId)
       .eq('status', 'completed')
       .eq('archived', false)
       .select('id');
@@ -433,25 +494,19 @@ export async function archiveTask(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Verify admin role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.from('tasks') as any)
       .update({ archived: true, updated_at: new Date().toISOString() })
-      .eq('id', taskId);
+      .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (error) {
       console.error('Error archiving task:', error);

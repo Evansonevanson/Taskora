@@ -93,6 +93,21 @@ Applies to the Admin task list (and optionally the Client's job list):
 - **Role Redirection Entrypoint:** Authenticated users hitting `/` are immediately routed to `/admin/dashboard` (Admin) or `/portal/jobs` (Client).
 - **Public CTAs:** Links to `/login` for sign-in without exposing public signup or registration routes.
 
+## 14. Multi-Tenant Workspace Foundation — [MVP]
+
+- **Isolated Workspaces:** Every organization/business operates in its own `workspaces` boundary with membership governed by `workspace_members`.
+- **Tenant Scoping:** All clients, tasks, and task attachments are strictly bound to a `workspace_id`.
+- **Zero Cross-Tenant Leakage:** PostgreSQL RLS and Supabase Storage policies prevent any workspace owner or client from viewing, editing, or downloading another workspace's records or files.
+
+## 15. Public Workspace Owner Registration — [MVP]
+
+- **Self-Service Owner Signup:** Public `/signup` route for new freelancers and agency owners to register an account and initialize their independent workspace in an atomic transaction.
+- **Form Fields:** Full name, work email, workspace/business name, password (min. 10 chars), confirm password.
+- **Automatic Role Assignment:** User becomes `role = 'owner'` in `workspace_members` for their newly created workspace.
+- **Unique Workspace Slug:** Collision-safe slug generated from the workspace name.
+- **Strict Invariant on Clients:** Client accounts are never self-registered and remain invitation-only through `/admin/clients`.
+- **Rate Limiting:** 5 signup attempts per hour per IP/email.
+
 ---
 
 ## Phase 2 (not to be built without explicit request)

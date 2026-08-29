@@ -29,10 +29,19 @@ export function LandingCta() {
               size="lg"
               className="w-full shadow-md shadow-indigo-600/20 sm:w-auto"
             >
-              <Link href="/login" className="flex items-center gap-2">
-                <span>Sign in to Taskora</span>
+              <Link href="/signup" className="flex items-center gap-2">
+                <span>Create your workspace</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
+            </Button>
+
+            <Button
+              asChild
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              <Link href="/login">Sign in</Link>
             </Button>
           </div>
 

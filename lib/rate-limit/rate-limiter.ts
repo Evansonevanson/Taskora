@@ -43,6 +43,7 @@ function memoryRateLimit(
 }
 
 let authRateLimiter: Ratelimit | undefined;
+let signupRateLimiter: Ratelimit | undefined;
 let commentRateLimiter: Ratelimit | undefined;
 let taskRateLimiter: Ratelimit | undefined;
 let clientRateLimiter: Ratelimit | undefined;
@@ -83,6 +84,35 @@ export async function checkLoginRateLimit(identifier: string): Promise<{
   }
 
   const result = await authRateLimiter.limit(identifier);
+  return {
+    success: result.success,
+    remaining: result.remaining,
+    reset: result.reset,
+  };
+}
+
+/**
+ * 5 signup attempts per 1 hour per IP or email
+ */
+export async function checkSignupRateLimit(identifier: string): Promise<{
+  success: boolean;
+  remaining: number;
+  reset: number;
+}> {
+  const redis = getUpstashRedis();
+  if (!redis) {
+    return memoryRateLimit(`signup:${identifier}`, 5, 60 * 60);
+  }
+
+  if (!signupRateLimiter) {
+    signupRateLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '1 h'),
+      prefix: 'taskora:ratelimit:signup',
+    });
+  }
+
+  const result = await signupRateLimiter.limit(identifier);
   return {
     success: result.success,
     remaining: result.remaining,

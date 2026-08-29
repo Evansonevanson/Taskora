@@ -13,27 +13,47 @@ Given the core trust promise of Taskora (clients can never see each other's data
 | Integration | Vitest + a test Supabase project (or local Supabase via CLI) | Server Actions against a real Postgres instance with RLS enabled — this is where access-control correctness is actually proven |
 | End-to-End  | Playwright                                                   | Full user journeys: Admin creates + completes a task, Client receives notification and comments, Admin resolves revision       |
 
-## Mandatory Access-Control Test Suite
+## Mandatory Access-Control & Multi-Tenant Test Suite
 
 These tests must exist and pass before any release, and must be re-run (or extended) whenever `RBAC.md` or `DATABASE.md` policies change:
 
-1. **Client cannot read another client's tasks** — seed two clients with tasks each; authenticate as Client A; assert querying Client B's task id returns no row.
-2. **Client cannot read Pending tasks, even their own** — seed a Pending task for Client A; authenticate as Client A; assert it does not appear in their query results.
-3. **Client cannot insert/update/delete a task** — authenticate as Client; attempt a direct task mutation; assert rejection (RLS denial), not just a UI-hidden button.
-4. **Client cannot comment on a task that isn't theirs** — authenticate as Client A; attempt to insert a comment on Client B's task; assert rejection.
-5. **Client cannot comment on their own Pending task** — assert rejection (comments only allowed on Completed tasks).
-6. **Deactivated client is denied access** — set `active = false`; assert both middleware redirect and RLS denial on any query.
-7. **Admin can read/write across all clients** — sanity check that Admin's broad access still works (regression guard against an overly-restrictive policy change).
-8. **Direct URL access to unauthorized task/client id returns a 404-style not-found**, not a 403 revealing existence (see `SECURITY.md` §7).
-9. **Client can read their own archived Completed task** — seed a Completed task for Client A with `archived = true`; authenticate as Client A; assert it remains queryable/visible.
-10. **Client cannot read another Client's archived Completed task** — seed an archived Completed task for Client B; authenticate as Client A; assert querying it returns no row.
-11. **Client A can access attachments on own Completed task** — assert signed URL can be generated for Client A's completed task attachment.
-12. **Client A cannot access Client B's attachments** — assert signed URL request / query for Client B's attachment is rejected.
-13. **Client cannot access attachments on own Pending task** — assert attachment query / signed URL generation is denied while task status is pending.
-14. **Client cannot upload or delete attachments** — assert direct insert/delete attempts on `task_attachments` or Storage are rejected.
-15. **Unsafe Project URL schemes are rejected** — assert `javascript:`, `data:`, `file:`, etc. fail server validation.
-16. **Invalid file types and oversized files (>20MB) are rejected** — assert non-whitelisted MIME types and files > 20MB are rejected.
-17. **Removing attachment cleans up DB and Storage** — assert deleting attachment removes `task_attachments` row and deletes object from `task-deliverables` bucket.
+### A. Multi-Tenant Workspace Isolation Tests
+
+1. **Workspace A Owner cannot read Workspace B data** — seed Workspace A (Owner A, Client A, Task A, Comment A, Attachment A) and Workspace B (Owner B, Client B, Task B, Comment B, Attachment B). Assert Owner A querying Workspace B's tasks, clients, comments, attachments, or storage objects returns **0 rows** and mutations are denied at DB layer.
+2. **Workspace A Owner cannot update or delete Workspace B tasks/clients** — assert direct mutation on Workspace B rows fails with RLS denial.
+3. **Workspace A Owner cannot generate signed URLs for Workspace B attachments** — assert signed URL request for Workspace B attachment fails with 403 / access denied.
+4. **Workspace A Owner cannot see Owner B's profile** — assert cross-workspace profiles are invisible.
+5. **Client in Workspace A cannot access Workspace B data** — assert cross-workspace access is completely blocked.
+
+### B. Client Scoping & Deliverable Tests
+
+### C. Public Owner Registration & Workspace Initialization Tests
+
+28. **Successful Owner signup provisions profile, workspace, and owner membership** — assert atomic creation.
+29. **Unique workspace slug generated with collision resolution** — assert `my-workspace-2` on duplicate name.
+30. **Invalid registration payload rejected** — assert password < 10 chars, password mismatch, invalid email fail validation.
+31. **Signup rate limiting enforced** — assert 5 attempts / hour limit triggers.
+32. **Atomic rollback on initialization failure** — assert failure during workspace creation cleans up auth state.
+33. **Newly registered Owner has 0 visibility into existing workspaces** — assert complete cross-tenant isolation.
+34. **Authenticated users visiting `/signup` are redirected** — Admin → `/admin/dashboard`, Client → `/portal/jobs`.
+
+35. **Client cannot read another client's tasks** — seed two clients in same workspace with tasks each; authenticate as Client A; assert querying Client B's task id returns no row.
+36. **Client cannot read Pending tasks, even their own** — seed a Pending task for Client A; authenticate as Client A; assert it does not appear in their query results.
+37. **Client cannot insert/update/delete a task** — authenticate as Client; attempt a direct task mutation; assert rejection (RLS denial).
+38. **Client cannot comment on a task that isn't theirs** — authenticate as Client A; attempt to insert a comment on Client B's task; assert rejection.
+39. **Client cannot comment on their own Pending task** — assert rejection (comments only allowed on Completed tasks).
+40. **Deactivated client is denied access** — set `active = false`; assert both middleware redirect and RLS denial on any query.
+41. **Workspace Admin can read/write across own workspace clients** — sanity check that Admin access within their own workspace still works.
+42. **Direct URL access to unauthorized task/client id returns a 404-style not-found**, not a 403 revealing existence.
+43. **Client can read their own archived Completed task** — seed a Completed task for Client A with `archived = true`; authenticate as Client A; assert it remains queryable/visible.
+44. **Client cannot read another Client's archived Completed task** — seed an archived Completed task for Client B; authenticate as Client A; assert querying it returns no row.
+45. **Client A can access attachments on own Completed task** — assert signed URL can be generated for Client A's completed task attachment.
+46. **Client A cannot access Client B's attachments** — assert signed URL request / query for Client B's attachment is rejected.
+47. **Client cannot access attachments on own Pending task** — assert attachment query / signed URL generation is denied while task status is pending.
+48. **Client cannot upload or delete attachments** — assert direct insert/delete attempts on `task_attachments` or Storage are rejected.
+49. **Unsafe Project URL schemes are rejected** — assert `javascript:`, `data:`, `file:`, etc. fail server validation.
+50. **Invalid file types and oversized files (>20MB) are rejected** — assert non-whitelisted MIME types and files > 20MB are rejected.
+51. **Removing attachment cleans up DB and Storage** — assert deleting attachment removes `task_attachments` row and deletes object from `task-deliverables` bucket.
 
 ## Feature Acceptance Criteria (examples — extend per feature as built)
 

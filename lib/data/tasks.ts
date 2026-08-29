@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 
 export interface AdminDashboardStats {
   total: number;
@@ -38,9 +39,35 @@ export function calculateProgressPercentage(
 export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      total: 0,
+      pending: 0,
+      completed: 0,
+      highPriority: 0,
+      percentage: 0,
+    };
+  }
+
+  const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+  if (!workspaceCtx) {
+    return {
+      total: 0,
+      pending: 0,
+      completed: 0,
+      highPriority: 0,
+      percentage: 0,
+    };
+  }
+
   const { data, error } = await supabase
     .from('tasks')
     .select('id, status, priority, archived')
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .eq('archived', false);
 
   if (error) {
@@ -87,6 +114,19 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
 export async function getAdminTasks(): Promise<AdminTaskItem[]> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+  if (!workspaceCtx) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('tasks')
     .select(
@@ -111,6 +151,7 @@ export async function getAdminTasks(): Promise<AdminTaskItem[]> {
       )
     `,
     )
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .eq('archived', false)
     .order('created_at', { ascending: false });
 

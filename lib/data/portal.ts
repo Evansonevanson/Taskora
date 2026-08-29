@@ -56,6 +56,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
       `
       id,
       profile_id,
+      workspace_id,
       display_name,
       company_name,
       active,
@@ -76,6 +77,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
   type RawClientRecord = {
     id: string;
     profile_id: string;
+    workspace_id: string;
     display_name: string;
     company_name: string | null;
     active: boolean;
@@ -91,8 +93,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
     return null;
   }
 
-  // 2. Fetch Client's Completed deliverables (including archived delivered-work)
-  // Strict RBAC enforcement: client_id = client.id AND status = 'completed'
+  // 2. Fetch Client's Completed deliverables in their workspace (including archived delivered-work)
   const { data: taskData, error: taskError } = await supabase
     .from('tasks')
     .select(
@@ -112,6 +113,7 @@ export async function getClientPortalData(): Promise<PortalData | null> {
     `,
     )
     .eq('client_id', client.id)
+    .eq('workspace_id', client.workspace_id)
     .eq('status', 'completed')
     .order('completed_at', { ascending: false, nullsFirst: false });
 
@@ -195,6 +197,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
       `
       id,
       profile_id,
+      workspace_id,
       display_name,
       company_name,
       active,
@@ -214,6 +217,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
   type RawClientRecord = {
     id: string;
     profile_id: string;
+    workspace_id: string;
     display_name: string;
     company_name: string | null;
     active: boolean;
@@ -229,7 +233,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
     return null;
   }
 
-  // 2. Fetch specific deliverable enforcing client_id and status = completed
+  // 2. Fetch specific deliverable enforcing workspace, client_id, and status = completed
   const { data: taskData, error: taskError } = await supabase
     .from('tasks')
     .select(
@@ -249,6 +253,7 @@ export async function getClientPortalJobDetail(taskId: string): Promise<{
     `,
     )
     .eq('id', taskId)
+    .eq('workspace_id', client.workspace_id)
     .eq('client_id', client.id)
     .eq('status', 'completed')
     .maybeSingle();

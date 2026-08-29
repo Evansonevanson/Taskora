@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import type { Database } from '@/lib/supabase/database.types';
 
 export interface CommentItem {
@@ -42,32 +43,49 @@ export async function getTaskComments(taskId: string): Promise<CommentItem[]> {
   // 2. Fetch task details to verify access control
   const { data: taskData, error: taskError } = await supabase
     .from('tasks')
-    .select('id, client_id, status')
+    .select('id, client_id, workspace_id, status')
     .eq('id', taskId)
     .maybeSingle();
 
-  const task = taskData as Pick<TaskRow, 'id' | 'client_id' | 'status'> | null;
+  const task = taskData as Pick<
+    TaskRow,
+    'id' | 'client_id' | 'workspace_id' | 'status'
+  > | null;
   if (taskError || !task) {
     return [];
   }
 
   // 3. RBAC Enforcement:
-  // If user is client, task must belong to them and be status = 'completed'
+  // If user is client, task must belong to them, share their workspace, and be status = 'completed'
   if (profile.role === 'client') {
     const { data: clientData } = await supabase
       .from('clients')
-      .select('id, active')
+      .select('id, active, workspace_id')
       .eq('profile_id', user.id)
       .maybeSingle();
 
-    const client = clientData as Pick<ClientRow, 'id' | 'active'> | null;
+    const client = clientData as Pick<
+      ClientRow,
+      'id' | 'active' | 'workspace_id'
+    > | null;
 
     if (
       !client ||
       !client.active ||
       client.id !== task.client_id ||
+      client.workspace_id !== task.workspace_id ||
       task.status !== 'completed'
     ) {
+      return [];
+    }
+  } else {
+    // If admin, verify membership in the task's workspace
+    const workspaceCtx = await requireWorkspaceAdmin(
+      supabase,
+      user.id,
+      task.workspace_id,
+    );
+    if (!workspaceCtx) {
       return [];
     }
   }

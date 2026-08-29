@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import {
   createClientSchema,
   updateClientSchema,
@@ -13,7 +14,6 @@ import {
 import { checkClientCreationRateLimit } from '@/lib/rate-limit/rate-limiter';
 import { sendEmail } from '@/lib/email/client';
 import { generateClientInviteEmailHtml } from '@/lib/email/templates/client-invite';
-import type { Database } from '@/lib/supabase/database.types';
 
 export interface ActionResponse<T = unknown> {
   success: boolean;
@@ -44,24 +44,17 @@ export async function createClient(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // 1. Verify Admin Role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    // 1. Verify Workspace Admin Context
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
     // 2. Rate Limiting: 20 per hour per admin
     const rateLimit = await checkClientCreationRateLimit(user.id);
-
     if (!rateLimit.success) {
       return {
         success: false,
@@ -120,7 +113,7 @@ export async function createClient(
 
     const authUserId = authData.user.id;
 
-    // 5. Insert Profiles record
+    // 5. Upsert Profile record
     const { error: profileError } = await adminClient.from('profiles').upsert({
       id: authUserId,
       role: 'client',
@@ -133,10 +126,11 @@ export async function createClient(
       return { success: false, error: 'Failed to create client profile' };
     }
 
-    // 6. Insert Clients record
+    // 6. Insert Client record bound to admin's workspace
     const { data: clientRecord, error: clientError } = await adminClient
       .from('clients')
       .insert({
+        workspace_id: workspaceCtx.workspaceId,
         profile_id: authUserId,
         display_name: input.displayName,
         company_name: input.companyName || null,
@@ -150,10 +144,23 @@ export async function createClient(
       return { success: false, error: 'Failed to create client record' };
     }
 
+    // 7. Add workspace membership for client
+    const { error: memberError } = await adminClient
+      .from('workspace_members')
+      .insert({
+        workspace_id: workspaceCtx.workspaceId,
+        profile_id: authUserId,
+        role: 'client',
+      });
+
+    if (memberError) {
+      console.error('Error adding client to workspace members:', memberError);
+    }
+
     const clientId = (clientRecord as { id: string }).id;
     let emailSent = false;
 
-    // 7. Send Invite Email if requested
+    // 8. Send Invite Email if requested
     if (input.sendInviteEmail) {
       const appUrl =
         process.env.APP_URL ||
@@ -211,19 +218,12 @@ export async function updateClient(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Verify Admin Role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
     // Validate input
@@ -238,19 +238,19 @@ export async function updateClient(
 
     const input = parseResult.data;
 
-    // Fetch existing client to retrieve profile_id
+    // Fetch existing client within admin's workspace
     const { data: clientData, error: clientFetchError } = await supabase
       .from('clients')
       .select('id, profile_id')
       .eq('id', clientId)
+      .eq('workspace_id', workspaceCtx.workspaceId)
       .maybeSingle();
 
     if (clientFetchError || !clientData) {
-      return { success: false, error: 'Client not found' };
+      return { success: false, error: 'Client not found in this workspace' };
     }
 
     const typedClient = clientData as { id: string; profile_id: string };
-
     const adminClient = createAdminClient();
 
     // Update clients record
@@ -260,7 +260,8 @@ export async function updateClient(
         display_name: input.displayName,
         company_name: input.companyName || null,
       })
-      .eq('id', clientId);
+      .eq('id', clientId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (clientUpdateError) {
       console.error('Error updating client record:', clientUpdateError);
@@ -307,19 +308,24 @@ export async function toggleClientStatus(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // Verify Admin Role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
+    }
+
+    // Verify client belongs to admin's workspace
+    const { data: clientData, error: clientFetchError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('id', clientId)
+      .eq('workspace_id', workspaceCtx.workspaceId)
       .maybeSingle();
 
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    if (clientFetchError || !clientData) {
+      return { success: false, error: 'Client not found in this workspace' };
     }
 
     const adminClient = createAdminClient();
@@ -328,7 +334,8 @@ export async function toggleClientStatus(
     const { error } = await adminClient
       .from('clients')
       .update({ active })
-      .eq('id', clientId);
+      .eq('id', clientId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
     if (error) {
       console.error('Error toggling client status:', error);

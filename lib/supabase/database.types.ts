@@ -7,6 +7,7 @@ export type Json =
   | Json[];
 
 export type UserRole = 'admin' | 'client';
+export type WorkspaceMemberRole = 'owner' | 'admin' | 'client';
 export type TaskCategory =
   'general' | 'work' | 'personal' | 'urgent' | 'shopping';
 export type TaskPriority = 'low' | 'medium' | 'high';
@@ -15,6 +16,69 @@ export type TaskStatus = 'pending' | 'completed';
 export interface Database {
   public: {
     Tables: {
+      workspaces: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_members: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          profile_id: string;
+          role: WorkspaceMemberRole;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          profile_id: string;
+          role: WorkspaceMemberRole;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          profile_id?: string;
+          role?: WorkspaceMemberRole;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'workspace_members_workspace_id_fkey';
+            columns: ['workspace_id'];
+            isOneToOne: false;
+            referencedRelation: 'workspaces';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'workspace_members_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           id: string;
@@ -42,6 +106,7 @@ export interface Database {
       clients: {
         Row: {
           id: string;
+          workspace_id: string;
           profile_id: string;
           display_name: string;
           company_name: string | null;
@@ -50,6 +115,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          workspace_id: string;
           profile_id: string;
           display_name: string;
           company_name?: string | null;
@@ -58,6 +124,7 @@ export interface Database {
         };
         Update: {
           id?: string;
+          workspace_id?: string;
           profile_id?: string;
           display_name?: string;
           company_name?: string | null;
@@ -65,6 +132,13 @@ export interface Database {
           created_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'clients_workspace_id_fkey';
+            columns: ['workspace_id'];
+            isOneToOne: false;
+            referencedRelation: 'workspaces';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'clients_profile_id_fkey';
             columns: ['profile_id'];
@@ -77,6 +151,7 @@ export interface Database {
       tasks: {
         Row: {
           id: string;
+          workspace_id: string;
           title: string;
           category: TaskCategory;
           client_id: string | null;
@@ -95,6 +170,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          workspace_id: string;
           title: string;
           category: TaskCategory;
           client_id?: string | null;
@@ -113,6 +189,7 @@ export interface Database {
         };
         Update: {
           id?: string;
+          workspace_id?: string;
           title?: string;
           category?: TaskCategory;
           client_id?: string | null;
@@ -130,6 +207,13 @@ export interface Database {
           client_notified_at?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: 'tasks_workspace_id_fkey';
+            columns: ['workspace_id'];
+            isOneToOne: false;
+            referencedRelation: 'workspaces';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'tasks_client_id_fkey';
             columns: ['client_id'];
@@ -188,6 +272,7 @@ export interface Database {
       task_attachments: {
         Row: {
           id: string;
+          workspace_id: string;
           task_id: string;
           file_name: string;
           storage_path: string;
@@ -198,6 +283,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          workspace_id: string;
           task_id: string;
           file_name: string;
           storage_path: string;
@@ -208,6 +294,7 @@ export interface Database {
         };
         Update: {
           id?: string;
+          workspace_id?: string;
           task_id?: string;
           file_name?: string;
           storage_path?: string;
@@ -217,6 +304,13 @@ export interface Database {
           created_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'task_attachments_workspace_id_fkey';
+            columns: ['workspace_id'];
+            isOneToOne: false;
+            referencedRelation: 'workspaces';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'task_attachments_task_id_fkey';
             columns: ['task_id'];
@@ -244,9 +338,26 @@ export interface Database {
         Args: Record<PropertyKey, never>;
         Returns: string | null;
       };
+      is_workspace_member: {
+        Args: { target_workspace_id: string };
+        Returns: boolean;
+      };
+      is_workspace_admin: {
+        Args: { target_workspace_id: string };
+        Returns: boolean;
+      };
+      is_workspace_owner: {
+        Args: { target_workspace_id: string };
+        Returns: boolean;
+      };
+      get_user_workspace_ids: {
+        Args: Record<PropertyKey, never>;
+        Returns: string[];
+      };
     };
     Enums: {
       user_role: UserRole;
+      workspace_member_role: WorkspaceMemberRole;
       task_category: TaskCategory;
       task_priority: TaskPriority;
       task_status: TaskStatus;

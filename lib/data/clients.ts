@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import type { AdminTaskItem } from './tasks';
 
 export interface ActiveClientOption {
@@ -47,9 +48,23 @@ export interface ClientDetailData {
 export async function getActiveClients(): Promise<ActiveClientOption[]> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+  if (!workspaceCtx) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('clients')
     .select('id, display_name, company_name')
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .eq('active', true)
     .order('company_name', { ascending: true, nullsFirst: false });
 
@@ -84,6 +99,11 @@ export async function getClientsOverview(): Promise<ClientOverviewItem[]> {
     return [];
   }
 
+  const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+  if (!workspaceCtx) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('clients')
     .select(
@@ -105,6 +125,7 @@ export async function getClientsOverview(): Promise<ClientOverviewItem[]> {
       )
     `,
     )
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -170,7 +191,12 @@ export async function getClientDetail(
     return null;
   }
 
-  // 1. Fetch Client with Profile
+  const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+  if (!workspaceCtx) {
+    return null;
+  }
+
+  // 1. Fetch Client with Profile scoped to workspace
   const { data: clientData, error: clientError } = await supabase
     .from('clients')
     .select(
@@ -188,6 +214,7 @@ export async function getClientDetail(
     `,
     )
     .eq('id', clientId)
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .maybeSingle();
 
   if (clientError || !clientData) {
@@ -210,7 +237,7 @@ export async function getClientDetail(
 
   const rawClient = clientData as unknown as RawClientDetail;
 
-  // 2. Fetch Tasks assigned to this client
+  // 2. Fetch Tasks assigned to this client in this workspace
   const { data: taskData, error: taskError } = await supabase
     .from('tasks')
     .select(
@@ -231,6 +258,7 @@ export async function getClientDetail(
     `,
     )
     .eq('client_id', clientId)
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .order('created_at', { ascending: false });
 
   if (taskError) {

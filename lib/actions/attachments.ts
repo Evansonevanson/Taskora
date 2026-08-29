@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE_BYTES,
@@ -34,7 +35,7 @@ function sanitizeFileName(name: string): string {
 }
 
 /**
- * Uploads a deliverable attachment for a task (Admin-only).
+ * Uploads a deliverable attachment for a task (Workspace Admin-only).
  */
 export async function uploadTaskAttachment(
   taskId: string,
@@ -51,22 +52,34 @@ export async function uploadTaskAttachment(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // 1. Verify Admin Role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    // 1. Verify Workspace Admin Context
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
-    // 2. Rate Limiting: 30 uploads / 10 min
+    // 2. Verify task belongs to admin's workspace
+    const { data: taskData, error: taskFetchError } = await supabase
+      .from('tasks')
+      .select('id, client_id, workspace_id')
+      .eq('id', taskId)
+      .eq('workspace_id', workspaceCtx.workspaceId)
+      .maybeSingle();
+
+    const taskRecord = taskData as {
+      id: string;
+      client_id: string | null;
+      workspace_id: string;
+    } | null;
+
+    if (taskFetchError || !taskRecord) {
+      return { success: false, error: 'Task not found in this workspace' };
+    }
+
+    // 3. Rate Limiting: 30 uploads / 10 min
     const rateLimit = await checkAttachmentUploadRateLimit(user.id);
     if (!rateLimit.success) {
       return {
@@ -76,7 +89,7 @@ export async function uploadTaskAttachment(
       };
     }
 
-    // 3. Extract and validate file
+    // 4. Extract and validate file
     const file = formData.get('file') as File | null;
     if (!file || !(file instanceof File)) {
       return { success: false, error: 'No file provided' };
@@ -101,26 +114,15 @@ export async function uploadTaskAttachment(
       };
     }
 
-    // 4. Verify Task exists
-    const { data: taskData, error: taskFetchError } = await supabase
-      .from('tasks')
-      .select('id, client_id')
-      .eq('id', taskId)
-      .maybeSingle();
-
-    if (taskFetchError || !taskData) {
-      return { success: false, error: 'Task not found' };
-    }
-
-    // 5. Generate secure storage path
+    // 5. Generate secure storage path with workspace prefix
     const attachmentId = crypto.randomUUID();
-    const sanitizedName = sanitizeFileName(file.name || 'deliverable');
-    const storagePath = `tasks/${taskId}/${attachmentId}-${sanitizedName}`;
+    const safeFileName = sanitizeFileName(file.name);
+    const storagePath = `workspaces/${workspaceCtx.workspaceId}/tasks/${taskId}/${attachmentId}-${safeFileName}`;
 
     const adminClient = createAdminClient();
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // 6. Upload to private Supabase Storage bucket
+    // 6. Upload file buffer to Supabase Storage private bucket
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
     const { error: uploadError } = await adminClient.storage
       .from('task-deliverables')
       .upload(storagePath, fileBuffer, {
@@ -130,14 +132,15 @@ export async function uploadTaskAttachment(
 
     if (uploadError) {
       console.error('[Storage Upload Error]', uploadError);
-      return { success: false, error: 'Failed to upload deliverable file' };
+      return { success: false, error: 'Failed to store deliverable file' };
     }
 
-    // 7. Insert metadata into public.task_attachments
+    // 7. Insert task_attachment record
     const { data: attachmentRecord, error: dbError } = await adminClient
       .from('task_attachments')
       .insert({
         id: attachmentId,
+        workspace_id: workspaceCtx.workspaceId,
         task_id: taskId,
         file_name: file.name,
         storage_path: storagePath,
@@ -145,40 +148,41 @@ export async function uploadTaskAttachment(
         file_size: file.size,
         uploaded_by: user.id,
       })
-      .select()
+      .select('*')
       .single();
 
     if (dbError || !attachmentRecord) {
-      console.error('[DB Attachment Insert Error]', dbError);
-      // Clean up orphaned storage object
+      console.error('[Attachment DB Error]', dbError);
+      // Cleanup storage object if DB insert fails
       await adminClient.storage.from('task-deliverables').remove([storagePath]);
-      return { success: false, error: 'Failed to record attachment metadata' };
+      return {
+        success: false,
+        error: 'Failed to record attachment metadata',
+      };
     }
 
     revalidatePath('/admin/dashboard');
+    if (taskRecord.client_id) {
+      revalidatePath(`/admin/clients/${taskRecord.client_id}`);
+    }
     revalidatePath(`/portal/jobs/${taskId}`);
-    revalidatePath('/portal/jobs');
-    revalidatePath('/portal');
 
     return {
       success: true,
       data: attachmentRecord as TaskAttachmentRow,
     };
   } catch (err) {
-    console.error('Unexpected error in uploadTaskAttachment action:', err);
-    return {
-      success: false,
-      error: 'An unexpected error occurred during upload',
-    };
+    console.error('Unexpected error in uploadTaskAttachment:', err);
+    return { success: false, error: 'Failed to upload attachment' };
   }
 }
 
 /**
- * Deletes a deliverable attachment and cleans up its storage object (Admin-only).
+ * Deletes a deliverable attachment (Workspace Admin-only).
  */
 export async function deleteTaskAttachment(
   attachmentId: string,
-): Promise<ActionResponse<void>> {
+): Promise<ActionResponse<{ id: string }>> {
   try {
     const supabase = await createServerClient();
 
@@ -190,71 +194,82 @@ export async function deleteTaskAttachment(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // 1. Verify Admin Role
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const profile = profileData as {
-      role: Database['public']['Tables']['profiles']['Row']['role'];
-    } | null;
-
-    if (!profile || profile.role !== 'admin') {
-      return { success: false, error: 'Forbidden: Admin access required' };
+    const workspaceCtx = await requireWorkspaceAdmin(supabase, user.id);
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error: 'Forbidden: Workspace Admin access required',
+      };
     }
 
     const adminClient = createAdminClient();
 
-    // 2. Fetch attachment metadata to locate storage path
-    const { data: attachmentData, error: fetchError } = await adminClient
+    // 1. Fetch attachment details verifying workspace ownership
+    const { data: attachment, error: fetchError } = await adminClient
       .from('task_attachments')
-      .select('id, task_id, storage_path')
+      .select(
+        'id, storage_path, task_id, workspace_id, tasks:task_id(client_id)',
+      )
       .eq('id', attachmentId)
+      .eq('workspace_id', workspaceCtx.workspaceId)
       .maybeSingle();
 
-    if (fetchError || !attachmentData) {
-      return { success: false, error: 'Attachment not found' };
+    if (fetchError || !attachment) {
+      return {
+        success: false,
+        error: 'Attachment not found in this workspace',
+      };
     }
 
-    // 3. Remove storage object
+    // 2. Remove file from storage
     const { error: storageError } = await adminClient.storage
       .from('task-deliverables')
-      .remove([attachmentData.storage_path]);
+      .remove([attachment.storage_path]);
 
     if (storageError) {
-      console.warn('[Storage Delete Warning]', storageError);
+      console.warn('[Storage Cleanup Warning]', storageError);
     }
 
-    // 4. Delete database metadata
-    const { error: dbDeleteError } = await adminClient
+    // 3. Delete row from task_attachments
+    const { error: deleteError } = await adminClient
       .from('task_attachments')
       .delete()
-      .eq('id', attachmentId);
+      .eq('id', attachmentId)
+      .eq('workspace_id', workspaceCtx.workspaceId);
 
-    if (dbDeleteError) {
-      console.error('[DB Delete Error]', dbDeleteError);
-      return { success: false, error: 'Failed to delete attachment record' };
+    if (deleteError) {
+      console.error('[Attachment Delete DB Error]', deleteError);
+      return {
+        success: false,
+        error: 'Failed to remove attachment record',
+      };
     }
 
-    revalidatePath('/admin/dashboard');
-    revalidatePath(`/portal/jobs/${attachmentData.task_id}`);
-    revalidatePath('/portal/jobs');
-    revalidatePath('/portal');
+    const associatedClientId = (
+      attachment.tasks as unknown as { client_id: string | null } | null
+    )?.client_id;
 
-    return { success: true };
+    revalidatePath('/admin/dashboard');
+    if (associatedClientId) {
+      revalidatePath(`/admin/clients/${associatedClientId}`);
+    }
+    revalidatePath(`/portal/jobs/${attachment.task_id}`);
+
+    return {
+      success: true,
+      data: { id: attachmentId },
+    };
   } catch (err) {
-    console.error('Unexpected error in deleteTaskAttachment action:', err);
+    console.error('Unexpected error in deleteTaskAttachment:', err);
     return { success: false, error: 'Failed to delete attachment' };
   }
 }
 
 /**
  * Generates a short-lived signed download URL (300s TTL) for an attachment.
- * Strict authorization:
- * - Admin: can access any attachment.
- * - Client: can access ONLY attachments for their own Completed tasks.
+ * Strict multi-tenant authorization:
+ * - Admin: can access attachments in workspaces they administer.
+ * - Client: can access ONLY attachments for their own Completed tasks in their workspace.
  */
 export async function getAttachmentSignedUrl(
   attachmentId: string,
@@ -270,7 +285,7 @@ export async function getAttachmentSignedUrl(
       return { success: false, error: 'Unauthorized' };
     }
 
-    // 1. Fetch user role
+    // 1. Fetch user profile
     const { data: profileData } = await supabase
       .from('profiles')
       .select('role')
@@ -296,9 +311,11 @@ export async function getAttachmentSignedUrl(
         file_name,
         storage_path,
         task_id,
+        workspace_id,
         tasks:task_id (
           id,
           client_id,
+          workspace_id,
           status
         )
       `,
@@ -313,6 +330,7 @@ export async function getAttachmentSignedUrl(
     const associatedTask = attachmentData.tasks as unknown as {
       id: string;
       client_id: string | null;
+      workspace_id: string;
       status: string;
     } | null;
 
@@ -320,29 +338,48 @@ export async function getAttachmentSignedUrl(
       return { success: false, error: 'Associated task not found' };
     }
 
-    // 3. Enforce Access Rules
+    // 3. Enforce Multi-Tenant Access Rules
     if (profile.role === 'client') {
       // Find client record for current user
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: clientRecord } = await (supabase.from('clients') as any)
-        .select('id, active')
+      const { data: clientRecord } = await supabase
+        .from('clients')
+        .select('id, active, workspace_id')
         .eq('profile_id', user.id)
         .maybeSingle();
 
-      const client = clientRecord as { id: string; active: boolean } | null;
+      const client = clientRecord as {
+        id: string;
+        active: boolean;
+        workspace_id: string;
+      } | null;
 
       if (!client || !client.active) {
         return { success: false, error: 'Forbidden' };
       }
 
-      // Check task ownership and completed status
+      // Check workspace isolation, task ownership, and completed status
       if (
+        client.workspace_id !== attachmentData.workspace_id ||
         associatedTask.client_id !== client.id ||
         associatedTask.status !== 'completed'
       ) {
         return {
           success: false,
           error: 'Forbidden: Access to this deliverable is restricted.',
+        };
+      }
+    } else {
+      // Admin Access: Ensure calling user is an admin/owner of the attachment's workspace
+      const workspaceCtx = await requireWorkspaceAdmin(
+        supabase,
+        user.id,
+        attachmentData.workspace_id,
+      );
+
+      if (!workspaceCtx) {
+        return {
+          success: false,
+          error: 'Forbidden: You do not have admin access to this workspace.',
         };
       }
     }

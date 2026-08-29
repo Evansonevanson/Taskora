@@ -110,6 +110,7 @@ describe('Mandatory Access-Control & RLS Policy Invariant Tests', () => {
   // Test tasks
   const clientAPendingTask: TaskRow = {
     id: 'task-a-pending-1',
+    workspace_id: 'default-workspace-uuid',
     title: 'Client A Pending Design Work',
     category: 'work',
     client_id: 'client-a-org-uuid',
@@ -129,6 +130,7 @@ describe('Mandatory Access-Control & RLS Policy Invariant Tests', () => {
 
   const clientACompletedTask: TaskRow = {
     id: 'task-a-completed-1',
+    workspace_id: 'default-workspace-uuid',
     title: 'Client A Completed Deliverable',
     category: 'work',
     client_id: 'client-a-org-uuid',
@@ -148,6 +150,7 @@ describe('Mandatory Access-Control & RLS Policy Invariant Tests', () => {
 
   const clientAArchivedCompletedTask: TaskRow = {
     id: 'task-a-archived-1',
+    workspace_id: 'default-workspace-uuid',
     title: 'Client A Past Completed Work (Archived)',
     category: 'work',
     client_id: 'client-a-org-uuid',
@@ -167,6 +170,7 @@ describe('Mandatory Access-Control & RLS Policy Invariant Tests', () => {
 
   const clientBCompletedTask: TaskRow = {
     id: 'task-b-completed-1',
+    workspace_id: 'default-workspace-uuid',
     title: 'Client B Completed Work',
     category: 'work',
     client_id: 'client-b-org-uuid',
@@ -186,6 +190,7 @@ describe('Mandatory Access-Control & RLS Policy Invariant Tests', () => {
 
   const clientBArchivedCompletedTask: TaskRow = {
     id: 'task-b-archived-1',
+    workspace_id: 'default-workspace-uuid',
     title: 'Client B Past Completed Work (Archived)',
     category: 'work',
     client_id: 'client-b-org-uuid',

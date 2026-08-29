@@ -46,8 +46,8 @@ export function LandingHero() {
               size="lg"
               className="w-full shadow-md shadow-indigo-600/20 sm:w-auto"
             >
-              <Link href="/login" className="flex items-center gap-2">
-                <span>Sign in to Taskora</span>
+              <Link href="/signup" className="flex items-center gap-2">
+                <span>Get started free</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -58,7 +58,7 @@ export function LandingHero() {
               size="lg"
               className="w-full sm:w-auto"
             >
-              <a href="#how-it-works">See how it works</a>
+              <Link href="/login">Sign in</Link>
             </Button>
           </div>
 

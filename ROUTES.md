@@ -7,6 +7,7 @@ Framework: Next.js App Router. Two protected route groups (`app/admin`, `app/por
 | Route              | Purpose                                                                                                                                       | Auth required    |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | `/`                | Public SaaS Landing Page for unauthenticated visitors; redirects authenticated users to `/admin/dashboard` (Admin) or `/portal/jobs` (Client) | No               |
+| `/signup`          | Public Workspace Owner registration; redirects authenticated users to `/admin/dashboard` (Admin) or `/portal/jobs` (Client)                   | No               |
 | `/login`           | Single login page, role-based redirect after success                                                                                          | No               |
 | `/forgot-password` | Request password reset email                                                                                                                  | No               |
 | `/reset-password`  | Set new password from reset link (token/session exchange)                                                                                     | No (token-gated) |

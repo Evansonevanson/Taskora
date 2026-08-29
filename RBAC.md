@@ -1,77 +1,59 @@
-# RBAC.md — Admin/Client Permissions and Access Rules
+# RBAC.md — Workspace-Scoped Permissions and Access Rules
 
 This is the single source of truth for "who can do what." When in doubt, this document + `DATABASE.md` §RLS govern behavior — the UI must never be the only thing enforcing a rule stated here.
 
-## Roles
+## Workspace Roles
 
-- `admin` — exactly one active user in MVP.
-- `client` — many users, each tied to exactly one `clients` row.
+Permissions in Taskora are evaluated within the context of a **Workspace** via `workspace_members`:
+
+- `owner` — creator/owner of the workspace. Full administration of workspace settings, members, clients, tasks, attachments, and data.
+- `admin` — administrator within the workspace. Full CRUD on workspace clients, tasks, deliverables, and comments.
+- `client` — external client invited to the workspace. Access is restricted strictly to their own completed deliverables and discussions.
+
+A user may belong to a workspace as an `owner`/`admin` or as a `client`. **An Admin/Owner of Workspace A has zero permissions, visibility, or access in Workspace B.**
 
 ## Permission Matrix
 
-| Action                                                              | Admin                         | Client                               |
-| ------------------------------------------------------------------- | ----------------------------- | ------------------------------------ |
-| View all tasks (any category/client)                                | ✅                            | ❌                                   |
-| View own completed tasks, including archived delivered-work history | ✅ (as subset)                | ✅                                   |
-| View own pending/in-progress tasks                                  | ✅                            | ❌ (MVP decision — see `PRODUCT.md`) |
-| View another client's tasks                                         | ✅ (as Admin, sees all)       | ❌ never                             |
-| Create task                                                         | ✅                            | ❌                                   |
-| Edit task (any field, including Project Link)                       | ✅                            | ❌                                   |
-| Mark task complete                                                  | ✅                            | ❌                                   |
-| Delete/archive task                                                 | ✅                            | ❌                                   |
-| Bulk "clear completed"                                              | ✅                            | ❌                                   |
-| Upload task deliverable attachments                                 | ✅                            | ❌                                   |
-| View/Download attachments on own completed tasks (signed URLs)      | ✅                            | ✅                                   |
-| View/Download attachments on pending tasks                          | ✅                            | ❌                                   |
-| View/Download another client's attachments                          | ✅ (as Admin, sees all)       | ❌ never                             |
-| Delete task deliverable attachments                                 | ✅                            | ❌                                   |
-| Comment on a task                                                   | ✅ (reply)                    | ✅ (only on own completed tasks)     |
-| View comments on a task                                             | ✅ (all)                      | ✅ (only own task's comments)        |
-| Edit/delete a comment                                               | ❌                            | ❌ (comments immutable in MVP)       |
-| Create/manage client accounts                                       | ✅                            | ❌                                   |
-| Deactivate a client account                                         | ✅                            | ❌                                   |
-| Access Settings (categories, notification prefs)                    | ✅                            | ❌                                   |
-| Receive "task completed" email                                      | n/a                           | ✅ (for own tasks)                   |
-| Receive "comment submitted" email                                   | ✅ (for any client's comment) | ❌                                   |
+| Action                                                       | Workspace Admin / Owner  | Workspace Client                 | Non-Member / Cross-Tenant |
+| :----------------------------------------------------------- | :----------------------- | :------------------------------- | :------------------------ |
+| View tasks in own workspace                                  | ✅                       | ❌ (Only own completed tasks)    | ❌ never                  |
+| View own completed tasks (including archived delivered work) | ✅ (all workspace tasks) | ✅ (own client tasks only)       | ❌ never                  |
+| View pending/in-progress tasks                               | ✅                       | ❌                               | ❌ never                  |
+| View another client's tasks within same workspace            | ✅                       | ❌ never                         | ❌ never                  |
+| View tasks in another workspace                              | ❌ never                 | ❌ never                         | ❌ never                  |
+| Create/Edit tasks in workspace                               | ✅                       | ❌                               | ❌ never                  |
+| Mark task complete / Archive task                            | ✅                       | ❌                               | ❌ never                  |
+| Upload task attachments to workspace                         | ✅                       | ❌                               | ❌ never                  |
+| Download attachments on own completed tasks (signed URLs)    | ✅                       | ✅                               | ❌ never                  |
+| Download attachments on another workspace's tasks            | ❌ never                 | ❌ never                         | ❌ never                  |
+| Delete task attachments                                      | ✅                       | ❌                               | ❌ never                  |
+| Comment on a task                                            | ✅ (in own workspace)    | ✅ (only on own completed tasks) | ❌ never                  |
+| View comments on a task                                      | ✅ (in own workspace)    | ✅ (only own task's comments)    | ❌ never                  |
+| Provision/Manage clients in workspace                        | ✅                       | ❌                               | ❌ never                  |
+| Deactivate a client in workspace                             | ✅                       | ❌                               | ❌ never                  |
+| Access Settings (categories, notification prefs)             | ✅                       | ❌                               | ❌ never                  |
+| View profiles in other workspaces                            | ❌ never                 | ❌ never                         | ❌ never                  |
 
 ## Enforcement Layers (defense in depth)
 
-1. **Middleware** — redirects based on `profiles.role` before a mismatched-role request even reaches page code. E.g., a Client hitting `/admin/dashboard` is redirected to `/portal/jobs`, and an Admin hitting `/portal` or `/portal/jobs` is redirected to `/admin/dashboard`.
-2. **Server Actions** — every action re-checks role server-side (`current_role()` equivalent) before performing a mutation. Never trust a role claim passed from the client.
-3. **RLS (Postgres)** — the actual, unbypassable boundary. Even if middleware or a Server Action had a bug, RLS policies in `DATABASE.md` prevent a Client's session from reading/writing rows outside their scope. **This is the layer that must never be weakened, disabled "temporarily," or bypassed for convenience.**
+1. **Middleware** — Enforces authentication and base role routing.
+2. **Server Actions** — Every mutation and query resolves the authenticated user's workspace context and verifies workspace membership/role before executing.
+3. **RLS (Postgres)** — The unbypassable database boundary. Enforces `is_workspace_admin(workspace_id)` and `workspace_members` relationships on every table and storage object.
 
-## Client Visibility Rule (restated precisely)
+## Client Visibility Rule
 
 A Client may see a task **if and only if**:
 
 ```
 task.client_id == current_user's client.id
+AND task.workspace_id in current_user's workspace_members
 AND task.status == 'completed'
 ```
 
-The task's `archived` value does **not** remove Client access. `archived` is an Admin-side organizational flag used to hide old completed tasks from the Admin's default active-task view while preserving the Client's delivered-work history.
+The task's `archived` value does **not** remove Client access. `archived` is an Admin-side organizational flag to unclutter active sprint views.
 
-No other condition grants visibility. If a new feature seems to require broader Client visibility (e.g., showing Pending tasks), that is a product decision — flag it, don't implement it unilaterally, and update this file plus the RLS policy in the same change.
+## Cross-Tenant Isolation Guarantee
 
-## Comment Authorship Rule
-
-A Client may insert a comment **if and only if**:
-
-```
-comment.author_id == current_user.id
-AND comment.task_id references a task where task.client_id == current_user's client.id
-AND that task.status == 'completed'
-```
-
-## Admin Scope
-
-Admin has unrestricted read/write on `tasks`, `comments`, `clients`. There is no partial-admin or sub-role in MVP. If multi-admin is added later (see `PRODUCT.md` non-goals), this file must be revised before implementation — do not assume all admins should have identical access without re-confirming.
-
-## Testing Requirement
-
-Every PR touching `tasks`, `comments`, `clients`, or `profiles` queries must include or update a test (see `TESTING.md`) that attempts a cross-client read/write and asserts it is rejected. This is not optional — it is the core trust guarantee of the product.
-
-For task visibility changes, tests must also confirm that:
-
-- a Client can still read their own completed task after it is archived; and
-- a Client still cannot read another Client's archived completed task.
+- **Workspace A Owner** cannot read, update, or delete Workspace B's clients, tasks, comments, attachments, or storage objects.
+- **Client A** cannot read, update, or access Workspace B's tasks or deliverables.
+- Knowing a UUID from another workspace (task ID, client ID, storage path) **fails unconditionally at the PostgreSQL RLS layer**.

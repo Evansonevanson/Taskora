@@ -264,10 +264,22 @@ export function LoginForm() {
         )}
       </Button>
 
-      {/* Account Provisioning Notice */}
-      <p className="text-center text-[11px] text-stone-500 dark:text-stone-400">
-        Client accounts are created and provisioned by your administrator.
-      </p>
+      {/* Account Provisioning Notice & Distinction */}
+      <div className="space-y-1 text-center text-[11px] text-stone-500 dark:text-stone-400">
+        <p>
+          New to Taskora?{' '}
+          <Link
+            href="/signup"
+            className="font-medium text-indigo-600 transition-colors hover:text-indigo-500 hover:underline dark:text-indigo-400 dark:hover:text-indigo-300"
+          >
+            Create a workspace
+          </Link>
+        </p>
+        <p className="text-[10px] text-stone-400 dark:text-stone-500">
+          Client accounts are provisioned exclusively by your workspace
+          administrator.
+        </p>
+      </div>
     </form>
   );
 }

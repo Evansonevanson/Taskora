@@ -20,7 +20,10 @@ function evaluateMiddlewareRoute(
   pathname: string,
   user: MiddlewareUser | null,
 ): MiddlewareRouteDecision {
-  const isAuthRoute = pathname === '/login' || pathname === '/forgot-password';
+  const isAuthRoute =
+    pathname === '/login' ||
+    pathname === '/forgot-password' ||
+    pathname === '/signup';
   const isAdminRoute = pathname.startsWith('/admin');
   const isPortalRoute = pathname.startsWith('/portal');
 
@@ -125,6 +128,11 @@ describe('Protected Route Middleware Invariant Tests', () => {
       const decision = evaluateMiddlewareRoute('/forgot-password', null);
       expect(decision.action).toBe('next');
     });
+
+    it('allows unauthenticated user to access /signup', () => {
+      const decision = evaluateMiddlewareRoute('/signup', null);
+      expect(decision.action).toBe('next');
+    });
   });
 
   describe('Client Role Routing', () => {
@@ -160,6 +168,12 @@ describe('Protected Route Middleware Invariant Tests', () => {
 
     it('redirects authenticated client visiting /login to /portal/jobs', () => {
       const decision = evaluateMiddlewareRoute('/login', activeClientUser);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/portal/jobs');
+    });
+
+    it('redirects authenticated client visiting /signup to /portal/jobs', () => {
+      const decision = evaluateMiddlewareRoute('/signup', activeClientUser);
       expect(decision.action).toBe('redirect');
       expect(decision.redirectUrl).toBe('/portal/jobs');
     });
@@ -221,6 +235,12 @@ describe('Protected Route Middleware Invariant Tests', () => {
 
     it('redirects authenticated admin visiting /login to /admin/dashboard', () => {
       const decision = evaluateMiddlewareRoute('/login', adminUser);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/admin/dashboard');
+    });
+
+    it('redirects authenticated admin visiting /signup to /admin/dashboard', () => {
+      const decision = evaluateMiddlewareRoute('/signup', adminUser);
       expect(decision.action).toBe('redirect');
       expect(decision.redirectUrl).toBe('/admin/dashboard');
     });

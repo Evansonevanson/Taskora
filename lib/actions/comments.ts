@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireWorkspaceAdmin } from '@/lib/supabase/workspace';
 import {
   createCommentSchema,
   resolveRevisionSchema,
@@ -89,13 +90,13 @@ export async function createComment(
   // 5. Fetch task details to verify permissions
   const { data: taskData, error: taskError } = await supabase
     .from('tasks')
-    .select('id, title, client_id, status, needs_revision')
+    .select('id, title, client_id, workspace_id, status, needs_revision')
     .eq('id', taskId)
     .maybeSingle();
 
   const task = taskData as Pick<
     TaskRow,
-    'id' | 'title' | 'client_id' | 'status' | 'needs_revision'
+    'id' | 'title' | 'client_id' | 'workspace_id' | 'status' | 'needs_revision'
   > | null;
 
   if (taskError || !task) {
@@ -104,33 +105,48 @@ export async function createComment(
 
   let clientDisplayName = profile.full_name || 'Client';
 
-  // 6. RBAC Check for Client
+  // 6. Access Check
   if (isClient) {
     const { data: clientData } = await supabase
       .from('clients')
-      .select('id, display_name, active')
+      .select('id, display_name, active, workspace_id')
       .eq('profile_id', user.id)
       .maybeSingle();
 
     const client = clientData as Pick<
       ClientRow,
-      'id' | 'display_name' | 'active'
+      'id' | 'display_name' | 'active' | 'workspace_id'
     > | null;
 
     if (
       !client ||
       !client.active ||
       client.id !== task.client_id ||
+      client.workspace_id !== task.workspace_id ||
       task.status !== 'completed'
     ) {
       return {
         success: false,
         error:
-          'Unauthorized: You can only comment on deliverables assigned to you.',
+          'Unauthorized: You can only comment on deliverables assigned to you in your workspace.',
       };
     }
 
     clientDisplayName = client.display_name || clientDisplayName;
+  } else {
+    // Admin check: ensure admin has membership in task's workspace
+    const workspaceCtx = await requireWorkspaceAdmin(
+      supabase,
+      user.id,
+      task.workspace_id,
+    );
+    if (!workspaceCtx) {
+      return {
+        success: false,
+        error:
+          'Forbidden: You do not have admin access to this task workspace.',
+      };
+    }
   }
 
   // 7. Insert comment (using server Supabase client enforcing RLS)
@@ -238,23 +254,7 @@ export async function resolveRevision(
     return { success: false, error: 'Unauthorized. Please sign in.' };
   }
 
-  // 2. Ensure user is Admin
-  const { data: profileData } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  const profile = profileData as Pick<ProfileRow, 'role'> | null;
-
-  if (!profile || profile.role !== 'admin') {
-    return {
-      success: false,
-      error: 'Unauthorized: Only admins can resolve revisions.',
-    };
-  }
-
-  // 3. Validate input
+  // 2. Validate input
   const parsed = resolveRevisionSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: 'Invalid task ID.' };
@@ -262,26 +262,60 @@ export async function resolveRevision(
 
   const { taskId } = parsed.data;
 
-  // 4. Update task needs_revision = false
+  // 3. Fetch task to identify its workspace
+  const { data: taskData, error: taskFetchError } = await supabase
+    .from('tasks')
+    .select('id, client_id, workspace_id')
+    .eq('id', taskId)
+    .maybeSingle();
+
+  const task = taskData as {
+    id: string;
+    client_id: string | null;
+    workspace_id: string;
+  } | null;
+
+  if (taskFetchError || !task) {
+    return { success: false, error: 'Task not found.' };
+  }
+
+  // 4. Verify admin access in task workspace
+  const workspaceCtx = await requireWorkspaceAdmin(
+    supabase,
+    user.id,
+    task.workspace_id,
+  );
+  if (!workspaceCtx) {
+    return {
+      success: false,
+      error: 'Unauthorized: Only workspace admins can resolve revisions.',
+    };
+  }
+
+  // 5. Update task needs_revision = false
   const adminClient = createAdminClient();
-  const { data: taskData, error: updateError } = await adminClient
+  const { data: updatedTaskData, error: updateError } = await adminClient
     .from('tasks')
     .update({
       needs_revision: false,
       updated_at: new Date().toISOString(),
     })
     .eq('id', taskId)
+    .eq('workspace_id', workspaceCtx.workspaceId)
     .select('id, client_id')
     .single();
 
-  const updatedTask = taskData as Pick<TaskRow, 'id' | 'client_id'> | null;
+  const updatedTask = updatedTaskData as Pick<
+    TaskRow,
+    'id' | 'client_id'
+  > | null;
 
   if (updateError || !updatedTask) {
     console.error('Error resolving revision:', updateError);
     return { success: false, error: 'Failed to resolve revision.' };
   }
 
-  // 5. Revalidate paths
+  // 6. Revalidate paths
   revalidatePath(`/portal/jobs/${taskId}`);
   revalidatePath('/portal/jobs');
   revalidatePath('/portal');

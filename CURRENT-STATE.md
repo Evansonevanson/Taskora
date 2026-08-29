@@ -12,10 +12,10 @@ Do not guess project progress from filenames or partial code when this file exis
 
 ## Project Status
 
-**Stage:** Phase 13 Complete — Public Landing Page & Branding Complete  
-**Current Phase:** Phase 13 Complete (MVP Feature Set & Public Landing Page Fully Verified)  
-**Current Task:** Public Landing Page at `/` (Verified: Types, Lints, Tests, Build)  
-**MVP Status:** Complete (14 Phases — Phase 0 through Phase 13)
+**Stage:** Phase 15 Complete — Public Workspace Owner Signup Implemented  
+**Current Phase:** Phase 15 Complete (Owner Signup, Collision-Safe Slugs, Rate Limiting, Transactional RPC)  
+**Current Task:** Production Pre-Flight Review & Verification  
+**MVP Status:** Complete (15 Phases — Multi-Tenant Architecture & Public Owner Signup Ready)
 
 ---
 

@@ -3,15 +3,21 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  signupSchema,
   type LoginInput,
   type ForgotPasswordInput,
   type ResetPasswordInput,
+  type SignupInput,
 } from '@/lib/validation/auth';
-import { checkLoginRateLimit } from '@/lib/rate-limit/rate-limiter';
+import {
+  checkLoginRateLimit,
+  checkSignupRateLimit,
+} from '@/lib/rate-limit/rate-limiter';
 import type { Database } from '@/lib/supabase/database.types';
 
 export interface ActionResult<T = unknown> {
@@ -19,6 +25,151 @@ export interface ActionResult<T = unknown> {
   data?: T;
   error?: string;
   rateLimited?: boolean;
+}
+
+export interface SignupResultData {
+  redirectTo?: string;
+  requiresVerification: boolean;
+  email?: string;
+}
+
+/**
+ * Public registration for new Taskora Workspace Owners.
+ * Provisions Auth user, Profile, Workspace, and Owner Membership in an atomic transaction.
+ */
+export async function registerOwner(
+  input: SignupInput,
+): Promise<ActionResult<SignupResultData>> {
+  // 1. Input Validation
+  const validation = signupSchema.safeParse(input);
+  if (!validation.success) {
+    return {
+      success: false,
+      error:
+        validation.error.issues[0]?.message || 'Invalid registration data.',
+    };
+  }
+
+  const { fullName, email, workspaceName, password } = validation.data;
+
+  // 2. Rate Limiting Check (5 attempts / 1 hour per IP + email)
+  const headerList = await headers();
+  const forwardedFor = headerList.get('x-forwarded-for');
+  const clientIp = forwardedFor
+    ? forwardedFor.split(',')[0].trim()
+    : '127.0.0.1';
+  const rateLimitKey = `${clientIp}:${email.toLowerCase()}`;
+
+  const rateLimitResult = await checkSignupRateLimit(rateLimitKey);
+  if (!rateLimitResult.success) {
+    return {
+      success: false,
+      error:
+        'Too many registration attempts. Please wait 1 hour before trying again.',
+      rateLimited: true,
+    };
+  }
+
+  // 3. Generate base slug candidate
+  const baseSlug =
+    workspaceName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'workspace';
+
+  const origin =
+    process.env.APP_URL || headerList.get('origin') || 'http://localhost:3000';
+
+  const supabase = await createClient();
+
+  // 4. Create Supabase Auth User
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        workspace_name: workspaceName,
+      },
+      emailRedirectTo: `${origin}/auth/callback?next=/admin/dashboard`,
+    },
+  });
+
+  if (authError || !authData.user) {
+    const errorMsg = authError?.message || 'Failed to create account.';
+    // Standardize duplicate email error without exposing sensitive user state
+    if (errorMsg.toLowerCase().includes('already registered')) {
+      return {
+        success: false,
+        error:
+          'An account with this email address already exists. Please log in.',
+      };
+    }
+    return {
+      success: false,
+      error: errorMsg,
+    };
+  }
+
+  const userId = authData.user.id;
+  const adminClient = createAdminClient();
+
+  // 5. Atomic Workspace Initialization via Postgres RPC
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: rpcData, error: rpcError } = await (adminClient.rpc as any)(
+      'create_workspace_for_owner',
+      {
+        p_user_id: userId,
+        p_full_name: fullName,
+        p_email: email,
+        p_workspace_name: workspaceName,
+        p_workspace_slug: baseSlug,
+      },
+    );
+
+    if (rpcError || !rpcData) {
+      console.error('[Signup Workspace RPC Error]', rpcError);
+      // Cleanup created auth user to avoid partial state
+      await adminClient.auth.admin.deleteUser(userId);
+      return {
+        success: false,
+        error: 'Failed to initialize workspace. Please try registering again.',
+      };
+    }
+  } catch (err) {
+    console.error('[Signup Exception]', err);
+    // Cleanup created auth user on exception
+    try {
+      await adminClient.auth.admin.deleteUser(userId);
+    } catch {
+      // Ignore cleanup error
+    }
+    return {
+      success: false,
+      error: 'An unexpected error occurred during workspace setup.',
+    };
+  }
+
+  // 6. Check if email verification is required
+  if (!authData.session) {
+    return {
+      success: true,
+      data: {
+        requiresVerification: true,
+        email,
+      },
+    };
+  }
+
+  return {
+    success: true,
+    data: {
+      requiresVerification: false,
+      redirectTo: '/admin/dashboard',
+    },
+  };
 }
 
 export async function loginUser(

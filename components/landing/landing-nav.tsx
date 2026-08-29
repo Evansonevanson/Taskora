@@ -47,8 +47,19 @@ export function LandingNav() {
         </nav>
 
         {/* Right CTA & Theme */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
+
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="hidden text-xs font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 sm:inline-flex dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white"
+          >
+            <Link href="/login">
+              <span>Sign in</span>
+            </Link>
+          </Button>
 
           <Button
             asChild
@@ -56,8 +67,8 @@ export function LandingNav() {
             size="sm"
             className="gap-1.5 shadow-sm shadow-indigo-500/20"
           >
-            <Link href="/login">
-              <span>Sign in</span>
+            <Link href="/signup">
+              <span>Get started</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </Button>
@@ -93,15 +104,24 @@ export function LandingNav() {
                 {link.label}
               </a>
             ))}
-            <div className="pt-2">
+            <div className="space-y-2 pt-2">
               <Button asChild variant="primary" size="sm" className="w-full">
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <span>Get started with Taskora</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="w-full">
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2"
                 >
-                  <span>Sign in to Taskora</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <span>Sign in</span>
                 </Link>
               </Button>
             </div>

@@ -732,11 +732,53 @@ Verify in production/staging:
 
 ### Phase 13 Checkpoint
 
-- [ ] Documentation updated.
-- [ ] Database migration and storage policies created.
-- [ ] Admin & Client UI functional.
-- [ ] Access control & signed URL tests pass.
-- [ ] `CURRENT-STATE.md` updated.
+- [x] Documentation updated.
+- [x] Database migration and storage policies created.
+- [x] Admin & Client UI functional.
+- [x] Access control & signed URL tests pass.
+- [x] `CURRENT-STATE.md` updated.
+
+---
+
+## Phase 14 — Multi-Tenant Workspace Foundation (Pre-Public Signup)
+
+### 14.1 Documentation & Schema Design
+
+- [ ] Update `DATABASE.md`, `RBAC.md`, `AUTH.md`, `API.md`, `SECURITY.md`, `TESTING.md`, `FEATURES.md`, `CURRENT-STATE.md`.
+- [ ] Design `workspaces` and `workspace_members` tables.
+- [ ] Add `workspace_id` foreign keys to `clients`, `tasks`, `task_attachments`.
+
+### 14.2 Database Migration & Existing Data Backfill
+
+- [ ] Create migration script `20260829100000_multi_tenant_workspaces.sql`.
+- [ ] Create initial default workspace for existing primary Admin and assign `owner` membership.
+- [ ] Backfill all existing `clients`, `tasks`, and `task_attachments` with initial `workspace_id`.
+- [ ] Alter `workspace_id` columns to `NOT NULL` with indexes and foreign key constraints.
+
+### 14.3 Workspace-Scoped RLS & Storage Rewrite
+
+- [ ] Implement `is_workspace_admin()`, `is_workspace_member()`, `is_workspace_owner()`, `get_user_workspace_ids()`.
+- [ ] Rewrite RLS policies for `workspaces`, `workspace_members`, `profiles`, `clients`, `tasks`, `comments`, `task_attachments`.
+- [ ] Update Supabase Storage RLS policies for `task-deliverables` bucket.
+
+### 14.4 Server-Side Workspace Context & Actions
+
+- [ ] Implement server-side workspace resolution helper (`lib/supabase/workspace.ts`).
+- [ ] Update TypeScript database types.
+- [ ] Update all data loaders (`tasks`, `clients`, `portal`, `settings`).
+- [ ] Update all Server Actions to enforce workspace ownership and bind new records to active workspace.
+
+### 14.5 Multi-Tenant Isolation Testing
+
+- [ ] Add comprehensive test suites verifying cross-tenant read, write, signed URL, and storage denial.
+- [ ] Verify existing single-tenant features and portal flows remain 100% operational.
+
+### Phase 14 Checkpoint
+
+- [ ] All multi-tenant RLS and storage policies active.
+- [ ] Backfill strategy preserves existing production records with zero data loss.
+- [ ] Zero cross-tenant data leakage possible.
+- [ ] All tests pass cleanly.
 
 ---
 

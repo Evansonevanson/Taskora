@@ -40,13 +40,15 @@ Required verification before release:
 
 ---
 
-### 0.2 Missing, Broken, or Bypassed Row-Level Security (RLS)
+### 0.2 Missing, Broken, or Bypassed Row-Level Security (RLS) & Multi-Tenant Isolation
 
 RLS is mandatory and is the primary data-isolation boundary for Taskora.
 
 The following tables must have RLS enabled from the migration that creates them:
 
 ```text
+workspaces
+workspace_members
 profiles
 clients
 tasks
@@ -56,27 +58,30 @@ task_attachments
 
 Rules:
 
+- **Strict Tenant Isolation:** Workspace A (Owner, Admin, Clients) must have **zero** access to Workspace B data (tasks, clients, comments, attachments, profiles, storage objects).
+- Knowing an ID or UUID from another workspace (task ID, client ID, storage path) must fail unconditionally at the PostgreSQL RLS layer.
 - A Client must never be able to read another Client's task, comment, client row, or protected profile data.
 - A Client must never be able to read Pending tasks in MVP.
 - A Client must never directly insert, update, archive, or delete tasks.
 - A Client may comment only on their own Completed tasks.
-- Archived Completed tasks remain visible only to their assigned Client and Admin.
+- Archived Completed tasks remain visible only to their assigned Client and Workspace Admin.
 - Never disable RLS to make development or testing easier.
 - Never replace an RLS failure with the service-role key as a shortcut.
 - Never rely on route middleware, hidden buttons, or frontend filtering as the primary security boundary.
-- Every new table containing user/client/task/comment data must ship with explicit RLS policies in the same migration.
+- Every new table containing user/client/task/comment data must ship with explicit workspace-scoped RLS policies in the same migration.
 
 Required verification before release:
 
 - [ ] RLS is enabled on every protected table.
+- [ ] Workspace A Owner/Admin cannot read, update, or delete Workspace B records.
 - [ ] Client A cannot read Client B's records.
 - [ ] Client cannot read their own Pending task.
 - [ ] Client cannot mutate tasks directly.
 - [ ] Client cannot comment on another Client's task.
 - [ ] Client can read their own archived Completed task.
 - [ ] Client cannot read another Client's archived Completed task.
-- [ ] Admin access still works.
-- [ ] Tests perform direct database/API attempts, not only UI checks.
+- [ ] Workspace Admin access within their own workspace still works.
+- [ ] Tests perform direct database/API attempts across tenants, not only UI checks.
 
 If an RLS test fails, the release is blocked.
 
@@ -230,6 +235,7 @@ Rate limiting is mandatory on every endpoint that is a plausible abuse or brute-
 
 | Endpoint               | Limit               | Key          |
 | ---------------------- | ------------------- | ------------ |
+| `registerOwner`        | 5 attempts / 1 hour | `email + IP` |
 | `login`                | 5 attempts / 15 min | `email + IP` |
 | `requestPasswordReset` | 3 / hour            | `email`      |
 | `addComment`           | 10 / 10 min         | `user id`    |

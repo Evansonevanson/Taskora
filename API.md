@@ -1,145 +1,101 @@
 # API.md — Server Actions and Expected Behavior
 
-Taskora uses Next.js **Server Actions** as its primary API surface (not a separate REST/GraphQL API). Each action below runs server-side, re-validates role/ownership, applies rate limiting where noted, and uses the session-scoped Supabase client (so RLS still applies) — never the service-role client, except where explicitly stated.
+Taskora uses Next.js **Server Actions** as its primary API surface. Each action runs server-side, derives and validates the authenticated user's workspace context, enforces rate limiting, and executes through the session-scoped Supabase client (so RLS is strictly enforced) — never the service-role client, except for administrative user provisioning.
 
 ## Conventions
 
-- All inputs validated with a shared Zod schema (defined once in `/lib/validation`, imported by both the form component and the Server Action — never trust client-side validation alone).
-- All actions return a discriminated result: `{ success: true, data }` or `{ success: false, error: string }`. Never throw raw errors to the client.
-- Every action logs (server-side only) the acting user's id and role for audit purposes — never log full task/comment content in plaintext logs if avoidable, to limit exposure in log aggregators.
+- **Server-Side Workspace Context:** Every mutation and query resolves the user's active workspace membership (`public.workspace_members`) server-side. Never trust an unverified `workspace_id` passed from the client bundle.
+- **Input Validation:** All inputs are validated with shared Zod schemas (in `/lib/validation`).
+- **Discriminated Results:** All actions return `{ success: true, data }` or `{ success: false, error: string }`.
 
 ---
 
 ## Auth Actions
 
-### `login(email, password)`
+### `registerOwner(input)`
 
-- Rate limited: 5 attempts / 15 min per (email + IP) — see `SECURITY.md`.
-- On success: establishes session, returns role for client-side redirect.
+- Input: `fullName`, `email`, `workspaceName`, `password`, `confirmPassword`.
+- Validates: `signupSchema` (email, names >= 2 chars, password >= 10 chars, password match).
+- Rate limited: 5 attempts / 1 hour per (email + IP).
+- Flow: Creates Auth user, calls transactional RPC `create_workspace_for_owner` to provision profile, workspace, and owner membership atomically.
+- Returns `{ success: true, data: { requiresVerification, redirectTo } }` or `{ success: false, error: string }`.
+
+### `loginUser(input)`
+
+- Rate limited: 5 attempts / 15 min per (email + IP).
+- On success: establishes session, returns role and redirect target.
 - On failure: generic error, no user-enumeration hints.
 
-### `requestPasswordReset(email)`
+### `requestPasswordReset(input)`
 
 - Rate limited: 3 requests / hour per email.
-- Always returns a generic success message regardless of whether the email exists.
+- Returns generic success message regardless of whether the email exists.
 
 ---
 
-## Task Actions (Admin only — role checked first line of every action)
+## Task Actions (Workspace Admin / Owner)
 
 ### `createTask(input)`
 
-- Validates: `title` non-empty, `category` in enum, `client_id` required if `category === 'work'`, `priority` in enum, `project_url` optional safe http/https URL.
-- Rate limited: 30 creates / 10 min (guards against runaway scripts/misclicks, generous for legitimate use).
-- Inserts row with `created_by = current admin id`.
+- Resolves active `workspace_id` from user's `workspace_members` record.
+- Validates: `title`, `category`, `client_id` (required if `category === 'work'` and must belong to same workspace), `priority`, `project_url` (optional safe http/https link).
+- Rate limited: 30 creates / 10 min.
+- Inserts row with `workspace_id` and `created_by = current user.id`.
 
 ### `updateTask(id, patch)`
 
-- Validates ownership implicitly via RLS (Admin-scoped policy covers all rows) but still explicitly checks `current_role() === 'admin'` before calling.
-- If `patch.status` transitions `pending → completed`: sets `completed_at = now()`.
-- Supports updating `project_url` (validated safe http/https URL).
-- If the task has a `client_id` and the Admin confirmed the notify prompt, dispatch `notifyClientTaskCompleted(id)` after the database update succeeds.
-- Completing a task must **not** set `client_notified_at`; that field is set only after the email provider successfully accepts the completion email.
+- Validates task belongs to the user's active workspace.
+- If `status` transitions to `completed`: sets `completed_at = now()`.
+- Dispatches `notifyClientTaskCompleted(id)` if confirmed.
 
-### `archiveTask(id)` / `archiveCompletedTasks()`
+### `archiveTask(id)` / `clearCompletedTasks()`
 
-- Sets `archived = true` on one task or on all `status = 'completed' AND archived = false` tasks respectively.
-- `archiveCompletedTasks` is the "Clear completed" bulk action — requires confirmation on the client before calling (see `UI-UX.md`).
-
-### `resolveRevision(id)`
-
-- Sets `needs_revision = false`. Admin-only. Used after addressing a client's correction request.
+- Scoped strictly to `workspace_id`. Sets `archived = true`.
 
 ---
 
-## Attachment Actions
-
-### `uploadTaskAttachment(taskId, formData)` (Admin only)
-
-- Validates caller role `current_role() === 'admin'`.
-- Validates file: MIME type in `image/jpeg`, `image/png`, `image/webp`, `application/pdf`; max size <= 20MB (20,971,520 bytes). Executables and script files are strictly rejected.
-- Sanitizes file name and generates unique storage path: `tasks/${taskId}/${attachmentId}-${sanitizedFileName}`.
-- Uploads file buffer to private Supabase Storage bucket `task-deliverables`.
-- Inserts row in `public.task_attachments` (`task_id`, `file_name`, `storage_path`, `mime_type`, `file_size`, `uploaded_by`).
-- Rate limited: 30 uploads / 10 min per admin.
-
-### `deleteTaskAttachment(attachmentId)` (Admin only)
-
-- Validates caller role `current_role() === 'admin'`.
-- Fetches attachment metadata from `public.task_attachments`.
-- Deletes storage file object from `task-deliverables` bucket.
-- Deletes row from `public.task_attachments`.
-
-### `getAttachmentSignedUrl(attachmentId)` (Admin or Client)
-
-- Re-verifies role and access permission:
-  - If **Admin**: allowed for any attachment.
-  - If **Client**: verifies related `task.client_id === current_client_id()` AND `task.status === 'completed'`. Requests for Pending tasks or other clients' tasks are rejected with `403 Forbidden`.
-- Generates a short-lived signed URL (300 seconds TTL) using Supabase Storage API.
-
----
-
-## Client Management Actions (Admin only)
+## Client Actions (Workspace Admin / Owner)
 
 ### `createClient(input)`
 
-- Validates: `display_name` non-empty, `email` valid + unique.
-- Uses the **service-role** Supabase client server-side (the one legitimate case) to call `supabase.auth.admin.createUser()` + insert `profiles`/`clients` rows in one flow.
-- Sends an invite email via Supabase Auth's invite mechanism (or a custom Resend template — pick one and document it in code comments).
-- Rate limited: 20 / hour (Admin-only action, generous limit mainly to catch accidental loops, not abuse).
+- Resolves active `workspace_id` from user's `workspace_members` record.
+- Rate limited: 20 creations / hour per admin.
+- Creates auth user via service-role client.
+- Atomically creates `profiles`, `clients`, and `workspace_members` (`role = 'client'`) records bound to the inviting workspace.
+- Sends welcome/invitation email.
 
-### `deactivateClient(clientId)`
+### `updateClient(id, patch)` / `toggleClientStatus(id, active)`
 
-- Sets `clients.active = false`. Does not delete the account or their historical tasks/comments.
+- Validates client record belongs to the caller's active workspace before mutating.
+
+---
+
+## Deliverable & Attachment Actions
+
+### `uploadTaskAttachment(taskId, formData)` (Workspace Admin)
+
+- Validates `taskId` belongs to caller's active workspace.
+- Validates MIME type and max size (<= 20MB).
+- Uploads to `workspaces/{workspace_id}/tasks/{task_id}/{attachment_id}-{sanitized_file_name}` in private bucket `task-deliverables`.
+- Inserts metadata row with `workspace_id` and `uploaded_by`.
+
+### `deleteTaskAttachment(attachmentId)` (Workspace Admin)
+
+- Validates attachment belongs to caller's active workspace.
+- Removes storage object and deletes database metadata row.
+
+### `getAttachmentSignedUrl(attachmentId)` (Admin & Client)
+
+- **Admin:** Verifies attachment belongs to a workspace the admin manages.
+- **Client:** Verifies attachment belongs to their own completed task.
+- Generates 300s TTL signed URL.
 
 ---
 
 ## Comment Actions
 
-### `addComment(taskId, body)` — callable by Admin or Client
+### `createComment(input)`
 
-- Validates: `body` non-empty, reasonable max length (e.g., 2000 chars).
-- **If caller is Client:** RLS + explicit server check enforce the task belongs to them and is `completed`. On success, also sets `tasks.needs_revision = true` and triggers Trigger B email (see below).
-- **If caller is Admin:** no ownership restriction (Admin can reply to any task's thread); does not alter `needs_revision`.
-- Rate limited: 10 comments / 10 min per user — prevents comment-spam either direction.
-
----
-
-## Email Actions
-
-Email sends are dispatched from within the relevant Server Action, after the database write succeeds (never before — avoid notifying about a state change that failed to persist).
-
-### `notifyClientTaskCompleted(taskId)`
-
-- Triggered only when: task has `client_id`, `status = 'completed'`, the Admin confirmed the notify prompt, and `client_notified_at IS NULL`.
-- Payload: client email, task title, deep link to `${APP_URL}/my-jobs/${taskId}`.
-- **Idempotency:** `tasks.client_notified_at` is the authoritative duplicate-send guard. Before sending, the action must confirm the field is `NULL`. After a successful email send, set `client_notified_at = now()`. If the email send fails, leave it `NULL` so the notification can be retried safely.
-- Repeated or double-submitted notification requests must return success/no-op once `client_notified_at` is already set and must not send another email.
-
-### `notifyAdminNewComment(commentId)`
-
-- Triggered every time a **Client** (not Admin) successfully inserts a comment.
-- Payload: Admin email, client display name, task title, first ~150 chars of comment body, deep link to `${APP_URL}/dashboard/tasks/${taskId}`.
-- No idempotency concern here since each comment is a distinct row/event by nature — but ensure the action isn't called twice for the same comment id.
-
-### Failure Handling
-
-- If Resend's API call fails, the database mutation must **not** be rolled back — the task/comment state change is the source of truth; the email is a best-effort side effect.
-- For task-completion emails, leave `client_notified_at = NULL` when the send fails so a retry remains possible.
-- Log the failure server-side and consider (Phase 2) a retry queue.
-- Never roll back the task/comment mutation because an email failed.
-
----
-
-## Rate Limiting Summary Table
-
-| Action                 | Limit                      |
-| ---------------------- | -------------------------- |
-| `login`                | 5 / 15 min per (email, IP) |
-| `requestPasswordReset` | 3 / hour per email         |
-| `createTask`           | 30 / 10 min per admin      |
-| `createClient`         | 20 / hour per admin        |
-| `addComment`           | 10 / 10 min per user       |
-| `uploadTaskAttachment` | 30 / 10 min per admin      |
-
-See `SECURITY.md` §Rate Limiting for implementation details (Upstash + `@upstash/ratelimit`).
+- **Client:** Validates task belongs to their workspace, is assigned to them, and is completed. Automatically sets `tasks.needs_revision = true`.
+- **Admin:** Validates task belongs to their active workspace.
+- Inserts comment record.
