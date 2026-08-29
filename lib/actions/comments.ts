@@ -214,6 +214,7 @@ export async function createComment(
 
   // 10. Revalidate paths
   revalidatePath(`/portal/jobs/${taskId}`);
+  revalidatePath('/portal/jobs');
   revalidatePath('/portal');
   revalidatePath('/admin/dashboard');
   if (task.client_id) {
@@ -282,6 +283,7 @@ export async function resolveRevision(
 
   // 5. Revalidate paths
   revalidatePath(`/portal/jobs/${taskId}`);
+  revalidatePath('/portal/jobs');
   revalidatePath('/portal');
   revalidatePath('/admin/dashboard');
   if (updatedTask.client_id) {

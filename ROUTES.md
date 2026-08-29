@@ -4,17 +4,17 @@ Framework: Next.js App Router. Two protected route groups (`app/admin`, `app/por
 
 ## Public Routes
 
-| Route              | Purpose                                                                                                   | Auth required    |
-| ------------------ | --------------------------------------------------------------------------------------------------------- | ---------------- |
-| `/`                | Root entry: redirects authenticated users to `/admin/dashboard` or `/portal`; unauthenticated to `/login` | No               |
-| `/login`           | Single login page, role-based redirect after success                                                      | No               |
-| `/forgot-password` | Request password reset email                                                                              | No               |
-| `/reset-password`  | Set new password from reset link (token/session exchange)                                                 | No (token-gated) |
-| `/auth/callback`   | Auth callback handler for password recovery and invitation exchanges                                      | No               |
+| Route              | Purpose                                                                                                        | Auth required    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `/`                | Root entry: redirects authenticated users to `/admin/dashboard` or `/portal/jobs`; unauthenticated to `/login` | No               |
+| `/login`           | Single login page, role-based redirect after success                                                           | No               |
+| `/forgot-password` | Request password reset email                                                                                   | No               |
+| `/reset-password`  | Set new password from reset link (token/session exchange)                                                      | No (token-gated) |
+| `/auth/callback`   | Auth callback handler for password recovery and invitation exchanges                                           | No               |
 
 ## Admin Routes — `app/admin` group
 
-All require `role = 'admin'`. A Client hitting any of these is redirected to `/portal`.
+All require `role = 'admin'`. A Client hitting any of these is redirected to `/portal/jobs`.
 
 | Route                 | Purpose                                                                                                        |
 | --------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -29,14 +29,15 @@ All require `role = 'client'` and `clients.active = true`. An Admin hitting any 
 
 | Route               | Purpose                                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `/portal`           | My Jobs view: list of the Client's own Completed deliverables, deliverable cards, and revision indicators           |
+| `/portal`           | Client overview: redirects to `/portal/jobs`                                                                        |
+| `/portal/jobs`      | My Jobs view: list of the Client's own Completed deliverables, deliverable cards, and revision indicators           |
 | `/portal/jobs/[id]` | Job detail view: deliverable info, Project Link button, file attachments (signed URLs), and feedback comment thread |
 
 ## Route Guard Behavior (Proxy / Middleware)
 
 - **Unauthenticated request** to any Admin/Client route → redirect to `/login?next=<path>`.
 - **Authenticated Admin** hitting any Client route (`/portal`, `/portal/*`) → redirect to `/admin/dashboard`.
-- **Authenticated Client** hitting any Admin route (`/admin`, `/admin/*`) → redirect to `/portal`.
+- **Authenticated Client** hitting any Admin route (`/admin`, `/admin/*`) → redirect to `/portal/jobs`.
 - **Authenticated Client with `active = false`** → force sign-out, redirect to `/login?error=deactivated` with clear notification.
 - **Direct URL entry to `/portal/jobs/[id]` or `/admin/clients/[id]`** for a row the user is not authorized to see: RLS returns no row → render 404-style "not found" page without leaking record existence.
 

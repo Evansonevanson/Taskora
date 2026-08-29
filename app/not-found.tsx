@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
-import { Layers, ArrowLeft, Home, UserCheck } from 'lucide-react';
+import { Layers, ArrowLeft, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
@@ -27,12 +27,12 @@ export default function NotFound() {
           </div>
 
           <h1 className="text-2xl font-bold tracking-tight text-white">
-            Page does not exist
+            Page not found
           </h1>
 
           <p className="mx-auto max-w-xs text-xs leading-relaxed text-stone-400">
-            The page you are looking for might have been removed, had its name
-            changed, or is temporarily unavailable.
+            The page you&apos;re looking for doesn&apos;t exist or may have been
+            moved.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-2.5 pt-4 sm:flex-row">
@@ -42,21 +42,9 @@ export default function NotFound() {
               size="sm"
               className="w-full gap-2 sm:w-auto"
             >
-              <Link href="/admin/dashboard">
-                <Home className="h-3.5 w-3.5" />
-                <span>Admin Dashboard</span>
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="secondary"
-              size="sm"
-              className="w-full gap-2 sm:w-auto"
-            >
-              <Link href="/portal">
-                <UserCheck className="h-3.5 w-3.5" />
-                <span>Client Portal</span>
+              <Link href="/">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span>Go to Dashboard</span>
               </Link>
             </Button>
           </div>

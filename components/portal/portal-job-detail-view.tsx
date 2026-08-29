@@ -129,7 +129,7 @@ export function PortalJobDetailView({
       {/* Back Navigation Link */}
       <div className="flex items-center justify-between">
         <Link
-          href="/portal"
+          href="/portal/jobs"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-400 transition-colors hover:text-stone-200"
         >
           <ArrowLeft className="h-3.5 w-3.5" />

@@ -128,7 +128,7 @@ export async function loginUser(
 
     return {
       success: true,
-      data: { redirectTo: '/portal' },
+      data: { redirectTo: '/portal/jobs' },
     };
   }
 

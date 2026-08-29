@@ -157,6 +157,8 @@ export async function uploadTaskAttachment(
 
     revalidatePath('/admin/dashboard');
     revalidatePath(`/portal/jobs/${taskId}`);
+    revalidatePath('/portal/jobs');
+    revalidatePath('/portal');
 
     return {
       success: true,
@@ -238,6 +240,8 @@ export async function deleteTaskAttachment(
 
     revalidatePath('/admin/dashboard');
     revalidatePath(`/portal/jobs/${attachmentData.task_id}`);
+    revalidatePath('/portal/jobs');
+    revalidatePath('/portal');
 
     return { success: true };
   } catch (err) {

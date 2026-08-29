@@ -47,13 +47,13 @@ function evaluateMiddlewareRoute(
     if (isAdminRoute) {
       return {
         action: 'redirect',
-        redirectUrl: '/portal',
+        redirectUrl: '/portal/jobs',
       };
     }
     if (isAuthRoute || pathname === '/') {
       return {
         action: 'redirect',
-        redirectUrl: '/portal',
+        redirectUrl: '/portal/jobs',
       };
     }
     return { action: 'next' };
@@ -110,6 +110,12 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.redirectUrl).toBe('/login?next=%2Fportal');
     });
 
+    it('redirects unauthenticated user from /portal/jobs to /login with next param', () => {
+      const decision = evaluateMiddlewareRoute('/portal/jobs', null);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/login?next=%2Fportal%2Fjobs');
+    });
+
     it('allows unauthenticated user to access /login', () => {
       const decision = evaluateMiddlewareRoute('/login', null);
       expect(decision.action).toBe('next');
@@ -127,6 +133,14 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.action).toBe('next');
     });
 
+    it('allows active client to access /portal/jobs', () => {
+      const decision = evaluateMiddlewareRoute(
+        '/portal/jobs',
+        activeClientUser,
+      );
+      expect(decision.action).toBe('next');
+    });
+
     it('allows active client to access /portal/jobs/job-123', () => {
       const decision = evaluateMiddlewareRoute(
         '/portal/jobs/job-123',
@@ -135,24 +149,24 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.action).toBe('next');
     });
 
-    it('redirects client attempting to access /admin/dashboard to /portal', () => {
+    it('redirects client attempting to access /admin/dashboard to /portal/jobs', () => {
       const decision = evaluateMiddlewareRoute(
         '/admin/dashboard',
         activeClientUser,
       );
       expect(decision.action).toBe('redirect');
-      expect(decision.redirectUrl).toBe('/portal');
+      expect(decision.redirectUrl).toBe('/portal/jobs');
     });
 
-    it('redirects authenticated client visiting /login to /portal', () => {
+    it('redirects authenticated client visiting /login to /portal/jobs', () => {
       const decision = evaluateMiddlewareRoute('/login', activeClientUser);
       expect(decision.action).toBe('redirect');
-      expect(decision.redirectUrl).toBe('/portal');
+      expect(decision.redirectUrl).toBe('/portal/jobs');
     });
 
     it('clears session and redirects deactivated client to /login?error=deactivated', () => {
       const decision = evaluateMiddlewareRoute(
-        '/portal',
+        '/portal/jobs',
         deactivatedClientUser,
       );
       expect(decision.action).toBe('redirect');
@@ -178,6 +192,12 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.redirectUrl).toBe('/admin/dashboard');
     });
 
+    it('redirects admin attempting to access /portal/jobs to /admin/dashboard', () => {
+      const decision = evaluateMiddlewareRoute('/portal/jobs', adminUser);
+      expect(decision.action).toBe('redirect');
+      expect(decision.redirectUrl).toBe('/admin/dashboard');
+    });
+
     it('redirects admin attempting to access /portal/jobs/job-123 to /admin/dashboard', () => {
       const decision = evaluateMiddlewareRoute(
         '/portal/jobs/job-123',
@@ -193,10 +213,10 @@ describe('Protected Route Middleware Invariant Tests', () => {
       expect(decision.redirectUrl).toBe('/admin/dashboard');
     });
 
-    it('redirects authenticated client visiting / to /portal', () => {
+    it('redirects authenticated client visiting / to /portal/jobs', () => {
       const decision = evaluateMiddlewareRoute('/', activeClientUser);
       expect(decision.action).toBe('redirect');
-      expect(decision.redirectUrl).toBe('/portal');
+      expect(decision.redirectUrl).toBe('/portal/jobs');
     });
 
     it('redirects authenticated admin visiting /login to /admin/dashboard', () => {

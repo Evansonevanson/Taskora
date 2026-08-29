@@ -116,12 +116,12 @@ export async function updateSession(
 
     // Client attempting to access Admin route -> redirect to portal
     if (isAdminRoute) {
-      return createRedirect('/portal');
+      return createRedirect('/portal/jobs');
     }
 
     // Authenticated client visiting auth page or root -> redirect to portal
     if (isAuthRoute || pathname === '/') {
-      return createRedirect('/portal');
+      return createRedirect('/portal/jobs');
     }
 
     return supabaseResponse;

@@ -90,4 +90,87 @@ describe('Client Portal Data & Minimization Logic', () => {
     expect(copyMatches).toHaveLength(1);
     expect(copyMatches[0].id).toBe('task-3');
   });
+
+  describe('Client Portal Isolation & Visibility Rules', () => {
+    interface DatabaseTaskRow {
+      id: string;
+      title: string;
+      client_id: string;
+      status: 'pending' | 'completed';
+      archived: boolean;
+    }
+
+    const allDatabaseTasks: DatabaseTaskRow[] = [
+      {
+        id: 't-clientA-completed-active',
+        title: 'Client A Delivered Feature',
+        client_id: 'client-A',
+        status: 'completed',
+        archived: false,
+      },
+      {
+        id: 't-clientA-completed-archived',
+        title: 'Client A Archived Delivered Work',
+        client_id: 'client-A',
+        status: 'completed',
+        archived: true,
+      },
+      {
+        id: 't-clientA-pending',
+        title: 'Client A In-Progress Internal Task',
+        client_id: 'client-A',
+        status: 'pending',
+        archived: false,
+      },
+      {
+        id: 't-clientB-completed',
+        title: 'Client B Delivered Work',
+        client_id: 'client-B',
+        status: 'completed',
+        archived: false,
+      },
+      {
+        id: 't-clientB-pending',
+        title: 'Client B Pending Work',
+        client_id: 'client-B',
+        status: 'pending',
+        archived: false,
+      },
+    ];
+
+    // Filter simulating RLS client portal query
+    function queryClientPortalJobs(clientId: string): DatabaseTaskRow[] {
+      return allDatabaseTasks.filter(
+        (task) => task.client_id === clientId && task.status === 'completed',
+      );
+    }
+
+    it('Client sees only own Completed jobs and preserves archived Completed jobs', () => {
+      const clientAJobs = queryClientPortalJobs('client-A');
+      expect(clientAJobs).toHaveLength(2);
+      expect(clientAJobs.map((j) => j.id)).toEqual([
+        't-clientA-completed-active',
+        't-clientA-completed-archived',
+      ]);
+    });
+
+    it('Pending jobs remain strictly hidden from Client', () => {
+      const clientAJobs = queryClientPortalJobs('client-A');
+      const hasPending = clientAJobs.some((j) => j.status === 'pending');
+      expect(hasPending).toBe(false);
+      expect(
+        clientAJobs.find((j) => j.id === 't-clientA-pending'),
+      ).toBeUndefined();
+    });
+
+    it('Client A cannot see Client B jobs (cross-client isolation)', () => {
+      const clientAJobs = queryClientPortalJobs('client-A');
+      const hasClientBJob = clientAJobs.some((j) => j.client_id === 'client-B');
+      expect(hasClientBJob).toBe(false);
+
+      const clientBJobs = queryClientPortalJobs('client-B');
+      expect(clientBJobs).toHaveLength(1);
+      expect(clientBJobs[0].id).toBe('t-clientB-completed');
+    });
+  });
 });

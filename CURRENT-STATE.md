@@ -1258,7 +1258,7 @@ All 14 phases (Phase 0 through Phase 13) have been implemented and verified:
 - **Phase 11:** Full QA Pass (119/119 unit, component, integration, and security matrix tests passing across 20 test suites).
 - **Phase 12:** Production Deployment Readiness (security headers, secret isolation audit, clean production build).
 - **Phase 13:** Project Link & Deliverable Attachments (promoted MVP deliverable outputs: safe external links, Supabase Storage attachments with 20MB limit and 300s signed URLs, full Admin and Client Portal integration, 140/140 tests passing).
-- **Post-Phase 13 Stabilization:** 404 and Route Navigation Synchronization (Safe Admin redirect from `/portal` and `/portal/jobs/[id]` to `/admin/dashboard`, root `/` role routing, LoginForm administrator provisioning notice without signup buttons, synchronized `ROUTES.md`, `AUTH.md`, `RBAC.md`, and `CURRENT-STATE.md`).
+- **Post-Phase 13 Stabilization:** 404 and Route Navigation Synchronization (Added dedicated `/portal/jobs` My Jobs route for Clients, redirecting `/portal` to `/portal/jobs`, safe Admin redirect from `/portal/jobs` and `/portal/jobs/[id]` to `/admin/dashboard`, simplified professional 404 page with "Go to Dashboard" CTA pointing to `/`, LoginForm administrator provisioning notice without signup buttons, synchronized `ROUTES.md`, `AUTH.md`, `RBAC.md`, and `CURRENT-STATE.md`).
 
 ---
 

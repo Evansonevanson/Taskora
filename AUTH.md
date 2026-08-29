@@ -26,7 +26,7 @@ Supabase Auth, email + password strategy. No social login, no magic links in MVP
 2. User submits email + password.
 3. On success, middleware/server reads the user's `profiles.role` and redirects:
    - `role = 'admin'` → `/admin/dashboard`
-   - `role = 'client'` → `/portal`
+   - `role = 'client'` → `/portal/jobs`
 4. On failure, show a generic "Invalid email or password" message — never reveal whether the email exists (prevents user enumeration).
 
 ## Rate Limiting on Auth

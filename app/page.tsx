@@ -29,7 +29,7 @@ export default async function HomePage() {
   }
 
   if (profile?.role === 'client') {
-    redirect('/portal');
+    redirect('/portal/jobs');
   }
 
   redirect('/login');
